@@ -1,0 +1,64 @@
+# Fichiers spécifiques à l'utilisateur
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Fichiers temporaires de Visual Studio
+.vs/
+.vscode/
+
+# Résultats de build
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+
+# Artifacts de .NET Core
+artifacts/
+project.lock.json
+project.fragment.lock.json
+
+# Résultats des tests
+TestResults/
+
+# Modules Node.js
+node_modules/
+
+# Logs et fichiers temporaires Node.js
+npm-debug.log
+yarn-error.log
+
+# Caches et fichiers système
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Fichiers de cache npm
+*.tgz
+package-lock.json
+yarn.lock
+
+# Ignorer tout dans wwwRoot
+GameShelf.API/wwwroot/
+
+# Ignorer les fichiers appsettings
+appsettings.json
+appsettings.*.json
+
+
+# Configs et outputs spécifiques
+*.log
+*.env
+*.env.local
+*.env.production
+*.env.test
