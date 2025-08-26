@@ -1,10 +1,10 @@
 using Asp.Versioning;
 
-namespace GameShelf.API.Configuration;
+namespace MovieTrackR.API.Configuration;
 
 public static class ApiVersioningConfiguration
 {
-    public static void AddApiVersioningConfiguration(this IServiceCollection services)
+    public static IServiceCollection AddApiVersioningConfiguration(this IServiceCollection services)
     {
         services.AddApiVersioning(options =>
         {
@@ -13,5 +13,7 @@ public static class ApiVersioningConfiguration
             options.ReportApiVersions = true;
             options.ApiVersionReader = new UrlSegmentApiVersionReader();
         });
+
+        return services;
     }
 }

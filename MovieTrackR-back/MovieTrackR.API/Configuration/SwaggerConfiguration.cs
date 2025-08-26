@@ -1,11 +1,11 @@
 using System.Reflection;
 using Microsoft.OpenApi.Models;
 
-namespace GameShelf.API.Configuration;
+namespace MovieTrackR.API.Configuration;
 
 public static class SwaggerConfiguration
 {
-    public static void AddSwaggerConfiguration(this IServiceCollection services)
+    public static IServiceCollection AddSwaggerConfiguration(this IServiceCollection services)
     {
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(options =>
@@ -27,6 +27,8 @@ public static class SwaggerConfiguration
                 Description = "API du projet MovieTrackR, Site de critiques de films collaboratif"
             });
         });
+
+        return services;
     }
 
     public static void UseSwaggerConfiguration(this IApplicationBuilder app)

@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    restart: always
+    container_name: movietrackr-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: movietrackr
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

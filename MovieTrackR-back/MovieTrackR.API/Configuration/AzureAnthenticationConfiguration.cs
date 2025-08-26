@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
-namespace GameShelf.API.Configuration;
+namespace MovieTrackR.API.Configuration;
 
 public static class AzureAnthenticationConfiguration
 {

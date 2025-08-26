@@ -1,18 +1,21 @@
 using System.Text.Json.Serialization;
-using GameShelf.API.Configuration;
+using MovieTrackR.API.Configuration;
+using MovieTrackR.Infrastructure.Persistence;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers().AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-});
-builder.Services.AddSwaggerConfiguration();
-builder.Services.AddApiVersioningConfiguration();
-builder.Services.AddAuthorization();
-builder.Services.AddAzureAnthenticationConfiguration(builder.Configuration);
-builder.Services.AddEndpointsApiExplorer();
+builder.Services
+    .AddSwaggerConfiguration()
+    .AddApiVersioningConfiguration()
+    .AddAuthorization()
+    .AddAzureAnthenticationConfiguration(builder.Configuration)
+    .AddEndpointsApiExplorer()
+    .AddInfrastructure(builder.Configuration) //custom service from Infrastructure project
+    .AddControllers().AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 WebApplication app = builder.Build();
 
@@ -21,18 +24,13 @@ app.MapGet("/hello", () => Results.Ok("Hello MovieTrackR!"))
    .WithTags("Hello")
    .WithOpenApi();
 
-// HTTPS Redirection
-app.UseHttpsRedirection();
+// Swagger
+if (app.Environment.IsDevelopment()) app.UseSwaggerConfiguration();
 
-// Authentication
+app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwaggerConfiguration();
-}
 
 // Static files server for static frontend
 app.UseDefaultFiles(); // Automaticaly serve index.html if exists
