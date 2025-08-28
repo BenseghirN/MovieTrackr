@@ -1,4 +1,5 @@
 using System.Reflection;
+using Asp.Versioning.ApiExplorer;
 using Microsoft.OpenApi.Models;
 
 namespace MovieTrackR.API.Configuration;
@@ -34,9 +35,15 @@ public static class SwaggerConfiguration
     public static void UseSwaggerConfiguration(this IApplicationBuilder app)
     {
         app.UseSwagger();
+        IApiVersionDescriptionProvider provider = app.ApplicationServices.GetRequiredService<IApiVersionDescriptionProvider>();
         app.UseSwaggerUI(options =>
         {
-            options.SwaggerEndpoint("/swagger/v1/swagger.json", "MovieTrackR API V1");
+            foreach (ApiVersionDescription desc in provider.ApiVersionDescriptions)
+            {
+                options.SwaggerEndpoint($"/swagger/{desc.GroupName}/swagger.json",
+                    $"MovieTrackR {desc.GroupName.ToUpperInvariant()}");
+            }
+            // options.SwaggerEndpoint("/swagger/v1/swagger.json", "MovieTrackR API V1");
         });
     }
 }

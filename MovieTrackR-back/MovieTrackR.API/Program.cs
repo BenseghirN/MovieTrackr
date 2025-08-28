@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using MovieTrackR.API.Configuration;
+using MovieTrackR.API.Endpoints;
 using MovieTrackR.Infrastructure.Persistence;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -18,11 +19,12 @@ builder.Services
     });
 
 WebApplication app = builder.Build();
+app.MapAuthEndpoints();
 
-app.MapGet("/hello", () => Results.Ok("Hello MovieTrackR!"))
-   .WithName("Hello")
-   .WithTags("Hello")
-   .WithOpenApi();
+// app.MapGet("/hello", () => Results.Ok("Hello MovieTrackR!"))
+//    .WithName("Hello")
+//    .WithTags("Hello")
+//    .WithOpenApi();
 
 // Swagger
 if (app.Environment.IsDevelopment()) app.UseSwaggerConfiguration();
