@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using MovieTrackR.Application.Common.Security;
 using MovieTrackR.Application.Interfaces;
 using MovieTrackR.Domain.Entities;
 using MovieTrackR.Domain.Enums;
@@ -81,7 +82,7 @@ public class RoleAuthorizationHandler(IMovieTrackRDbContext dbContext) : Authori
 {
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, RoleRequirement requirement)
     {
-        string externalId = context.User.FindFirst("sid")?.Value ?? string.Empty;
+        string? externalId = ClaimsExtensions.GetExternalId(context.User);
         if (string.IsNullOrWhiteSpace(externalId))
             return;
         User? user = await dbContext.Users.FirstOrDefaultAsync(u => u.ExternalId == externalId);

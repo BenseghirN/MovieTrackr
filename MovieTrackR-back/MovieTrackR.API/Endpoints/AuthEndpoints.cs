@@ -1,8 +1,11 @@
 using System.Security.Claims;
 using Asp.Versioning;
 using Asp.Versioning.Builder;
+using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using MovieTrackR.Application.DTOs;
+using MovieTrackR.Application.Users.Queries;
 
 namespace MovieTrackR.API.Endpoints;
 
@@ -20,7 +23,7 @@ public static class AuthEndpoints
             .WithTags("Auth");
 
         // GET /connect -> challenge OIDC
-        group.MapGet("/connect", (HttpContext ctx, IConfiguration config, string? returnUrl) =>
+        group.MapGet("/connect", (HttpContext context, IConfiguration config, string? returnUrl) =>
         {
             string scheme =
                 config["EntraExternalId:openIdScheme"] ??
@@ -44,15 +47,15 @@ public static class AuthEndpoints
         .Produces(StatusCodes.Status401Unauthorized);
 
         // GET /user-info -> UserDto via service
-        // group.MapGet("/user-info", async (IUserSynchronizationService sync, CancellationToken ct) =>
-        // {
-        //     var user = await sync.GetCurrentUserInfosAsync(ct);
-        //     return user is null ? Results.NotFound() : Results.Ok(user);
-        // })
-        // .RequireAuthorization()
-        // .Produces<UserDto>(StatusCodes.Status200OK)
-        // .Produces(StatusCodes.Status401Unauthorized)
-        // .Produces(StatusCodes.Status404NotFound);
+        group.MapGet("/user-info", async (IMediator mediator, ClaimsPrincipal user, CancellationToken cancellationToken) =>
+        {
+            UserDto? dto = await mediator.Send(new GetCurrentUserInfoQuery(user), cancellationToken);
+            return dto is null ? Results.NotFound() : Results.Ok(dto);
+        })
+        .RequireAuthorization()
+        .Produces<UserDto>(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status401Unauthorized)
+        .Produces(StatusCodes.Status404NotFound);
 
         // GET /logout -> supprime cookie & redirige
         group.MapGet("/logout", async (HttpContext ctx, string? returnUrl) =>

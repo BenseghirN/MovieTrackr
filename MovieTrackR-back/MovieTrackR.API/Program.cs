@@ -1,6 +1,8 @@
 using System.Text.Json.Serialization;
+using MovieTrackR.api.middleware;
 using MovieTrackR.API.Configuration;
 using MovieTrackR.API.Endpoints;
+using MovieTrackR.Application.Configuration;
 using MovieTrackR.Infrastructure.Persistence;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -13,23 +15,22 @@ builder.Services
     .AddAzureAnthenticationConfiguration(builder.Configuration)
     .AddEndpointsApiExplorer()
     .AddInfrastructure(builder.Configuration) //custom service from Infrastructure project
+    .AddApplication() //custom service from Application project
     .AddControllers().AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
 WebApplication app = builder.Build();
-app.MapAuthEndpoints();
-
-// app.MapGet("/hello", () => Results.Ok("Hello MovieTrackR!"))
-//    .WithName("Hello")
-//    .WithTags("Hello")
-//    .WithOpenApi();
 
 // Swagger
 if (app.Environment.IsDevelopment()) app.UseSwaggerConfiguration();
 
 app.UseHttpsRedirection();
+app.UseGlobalExceptionHandler();
+
+app.MapAuthEndpoints();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
