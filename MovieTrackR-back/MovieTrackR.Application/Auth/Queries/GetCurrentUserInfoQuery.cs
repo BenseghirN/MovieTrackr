@@ -1,11 +1,11 @@
 using System.Security.Claims;
 using AutoMapper;
 using MediatR;
+using MovieTrackR.Application.Common.Commands;
 using MovieTrackR.Application.DTOs;
-using MovieTrackR.Application.Users.Commands;
 using MovieTrackR.Domain.Entities;
 
-namespace MovieTrackR.Application.Users.Queries;
+namespace MovieTrackR.Application.Auth.Queries;
 
 public sealed record GetCurrentUserInfoQuery(ClaimsPrincipal User) : IRequest<UserDto?>;
 

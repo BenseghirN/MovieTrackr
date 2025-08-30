@@ -13,7 +13,7 @@ public static class RateLimitingConfiguration
             // 60 req/min per user (if logged off => per IP)
             options.AddPolicy("per-user", ctx =>
             {
-                var key =
+                string key =
                     ctx.User.Identity?.IsAuthenticated == true
                         ? (ctx.User.Identity!.Name
                            ?? ctx.User.FindFirst("sub")?.Value
@@ -32,7 +32,7 @@ public static class RateLimitingConfiguration
             // more strict for login : 10 req/min par IP
             options.AddPolicy("login", ctx =>
             {
-                var ip = ctx.Connection.RemoteIpAddress?.ToString() ?? "ip-unknown";
+                string ip = ctx.Connection.RemoteIpAddress?.ToString() ?? "ip-unknown";
                 return RateLimitPartition.GetFixedWindowLimiter(ip, _ => new FixedWindowRateLimiterOptions
                 {
                     PermitLimit = 10,

@@ -5,7 +5,7 @@ using MovieTrackR.Application.Common.Security;
 using MovieTrackR.Application.Interfaces;
 using MovieTrackR.Domain.Entities;
 
-namespace MovieTrackR.Application.Users.Commands;
+namespace MovieTrackR.Application.Common.Commands;
 
 public sealed record EnsureUserExistsCommand(ClaimsPrincipal User) : IRequest<User>;
 
@@ -32,7 +32,6 @@ public sealed class EnsureUserExistsHandler(IMovieTrackRDbContext dbContext)
                          : (!string.IsNullOrWhiteSpace(email) ? email.Split('@')[0] : $"user-{Guid.NewGuid():N}".Substring(0, 8));
 
         user = new User();
-        // Si ta méthode de domaine s'appelle Create(...) (comme dans ton ancien code) :
         user.Create(externalId, email, pseudo, given, surname);
 
         dbContext.Users.Add(user);

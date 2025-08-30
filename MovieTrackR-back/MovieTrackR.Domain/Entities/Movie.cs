@@ -81,7 +81,7 @@ public class Movie
 
     public void RemoveGenre(Guid genreId)
     {
-        var genreToRemove = MovieGenres.FirstOrDefault(mg => mg.GenreId == genreId);
+        MovieGenre? genreToRemove = MovieGenres.FirstOrDefault(mg => mg.GenreId == genreId);
         if (genreToRemove != null)
         {
             MovieGenres.Remove(genreToRemove);
@@ -105,7 +105,7 @@ public class Movie
 
     public void RemoveCast(Guid personId)
     {
-        var castToRemove = Cast.FirstOrDefault(c => c.PersonId == personId);
+        MovieCast? castToRemove = Cast.FirstOrDefault(c => c.PersonId == personId);
         if (castToRemove != null)
         {
             Cast.Remove(castToRemove);
@@ -129,7 +129,7 @@ public class Movie
 
     public void RemoveCrew(Guid personId, string job)
     {
-        var crewToRemove = Crew.FirstOrDefault(c => c.PersonId == personId && c.Job == job);
+        MovieCrew? crewToRemove = Crew.FirstOrDefault(c => c.PersonId == personId && c.Job == job);
         if (crewToRemove != null)
         {
             Crew.Remove(crewToRemove);

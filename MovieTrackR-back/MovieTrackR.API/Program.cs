@@ -1,7 +1,8 @@
 using System.Text.Json.Serialization;
 using MovieTrackR.api.middleware;
 using MovieTrackR.API.Configuration;
-using MovieTrackR.API.Endpoints;
+using MovieTrackR.API.Endpoints.Auth;
+using MovieTrackR.API.Endpoints.User;
 using MovieTrackR.Application.Configuration;
 using MovieTrackR.Infrastructure.Persistence;
 
@@ -30,6 +31,7 @@ app.UseHttpsRedirection();
 app.UseGlobalExceptionHandler();
 
 app.MapAuthEndpoints();
+app.MapUsersEndpoints();
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -51,7 +51,7 @@ public class User
 
     public void RemoveList(Guid listId)
     {
-        var list = Lists.FirstOrDefault(l => l.Id == listId);
+        UserList? list = Lists.FirstOrDefault(l => l.Id == listId);
         if (list != null)
             Lists.Remove(list);
     }

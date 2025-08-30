@@ -11,12 +11,12 @@ public sealed class ValidationBehavior<TRequest, TResponse>(
     public async Task<TResponse> Handle(
         TRequest request,
         RequestHandlerDelegate<TResponse> next,
-        CancellationToken ct)
+        CancellationToken cancellationToken)
     {
         if (validators.Any())
         {
             ValidationContext<TRequest> validationContext = new ValidationContext<TRequest>(request);
-            List<FluentValidation.Results.ValidationFailure>? errors = (await Task.WhenAll(validators.Select(v => v.ValidateAsync(validationContext, ct))))
+            List<FluentValidation.Results.ValidationFailure>? errors = (await Task.WhenAll(validators.Select(v => v.ValidateAsync(validationContext, cancellationToken))))
                          .SelectMany(r => r.Errors)
                          .Where(e => e is not null)
                          .ToList();

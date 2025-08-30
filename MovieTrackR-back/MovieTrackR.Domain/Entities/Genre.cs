@@ -36,7 +36,7 @@ public class Genre
 
     public void RemoveMovie(Guid movieId)
     {
-        var link = MovieGenres.FirstOrDefault(mg => mg.MovieId == movieId);
+        MovieGenre? link = MovieGenres.FirstOrDefault(mg => mg.MovieId == movieId);
         if (link != null)
             MovieGenres.Remove(link);
     }

@@ -20,5 +20,5 @@ public interface IMovieTrackRDbContext
     DbSet<MovieCast> MovieCasts { get; }
     DbSet<MovieCrew> MovieCrews { get; }
 
-    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

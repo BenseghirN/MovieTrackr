@@ -35,16 +35,16 @@ public static class ModelBuilderExtensions
     // Convert DateTime/DateTime? => UTC 
     public static ModelBuilder UseUtcDateTimes(this ModelBuilder b)
     {
-        var dtConv = new ValueConverter<DateTime, DateTime>(
+        ValueConverter<DateTime, DateTime> dtConv = new ValueConverter<DateTime, DateTime>(
             v => v.ToUniversalTime(),
             v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
 
-        var ndtConv = new ValueConverter<DateTime?, DateTime?>(
+        ValueConverter<DateTime?, DateTime?> ndtConv = new ValueConverter<DateTime?, DateTime?>(
             v => v.HasValue ? v.Value.ToUniversalTime() : v,
             v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : v);
 
-        foreach (var entity in b.Model.GetEntityTypes())
-            foreach (var p in entity.GetProperties())
+        foreach (IMutableEntityType entity in b.Model.GetEntityTypes())
+            foreach (IMutableProperty p in entity.GetProperties())
             {
                 if (p.ClrType == typeof(DateTime))
                     b.Entity(entity.ClrType).Property<DateTime>(p.Name).HasConversion(dtConv);

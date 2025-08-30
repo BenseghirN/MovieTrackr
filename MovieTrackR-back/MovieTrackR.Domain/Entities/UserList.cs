@@ -44,14 +44,14 @@ public class UserList
 
     public void RemoveMovie(Guid movieId)
     {
-        var item = Movies.FirstOrDefault(m => m.MovieId == movieId);
+        UserListMovie? item = Movies.FirstOrDefault(m => m.MovieId == movieId);
         if (item != null)
             Movies.Remove(item);
     }
 
     public void ReorderMovie(Guid movieId, int newPosition)
     {
-        var item = Movies.FirstOrDefault(m => m.MovieId == movieId);
+        UserListMovie? item = Movies.FirstOrDefault(m => m.MovieId == movieId);
         if (item != null)
             item.Position = newPosition;
     }

@@ -11,8 +11,8 @@ public static class ExceptionHandlingExtensions
         {
             errApp.Run(async ctx =>
             {
-                var feature = ctx.Features.Get<IExceptionHandlerPathFeature>();
-                var ex = feature?.Error;
+                IExceptionHandlerPathFeature? feature = ctx.Features.Get<IExceptionHandlerPathFeature>();
+                Exception? ex = feature?.Error;
 
                 ctx.Response.ContentType = "application/problem+json";
                 ctx.Response.StatusCode = ex switch
@@ -26,7 +26,7 @@ public static class ExceptionHandlingExtensions
                     _ => StatusCodes.Status500InternalServerError
                 };
 
-                var problem = CreateProblem(ctx, ex);
+                object problem = CreateProblem(ctx, ex);
                 await ctx.Response.WriteAsJsonAsync(problem);
             });
         });
@@ -36,11 +36,11 @@ public static class ExceptionHandlingExtensions
 
     private static object CreateProblem(HttpContext ctx, Exception? ex)
     {
-        var traceId = ctx.TraceIdentifier;
+        string traceId = ctx.TraceIdentifier;
 
         if (ex is ValidationException vex)
         {
-            var errors = vex.Errors
+            Dictionary<string, string[]> errors = vex.Errors
                 .GroupBy(e => e.PropertyName ?? string.Empty)
                 .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray());
 
@@ -54,7 +54,6 @@ public static class ExceptionHandlingExtensions
             };
         }
 
-        // payload générique RFC7807
         return new
         {
             type = "https://tools.ietf.org/html/rfc7807",
