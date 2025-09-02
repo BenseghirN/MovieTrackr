@@ -14,6 +14,7 @@ builder.Services
     .AddApiVersioningConfiguration()
     .AddAuthorization()
     .AddAzureAnthenticationConfiguration(builder.Configuration)
+    .AddAppAuthorization() // custom Authorization policies
     .AddEndpointsApiExplorer()
     .AddInfrastructure(builder.Configuration) //custom service from Infrastructure project
     .AddApplication() //custom service from Application project

@@ -1,6 +1,6 @@
 using Asp.Versioning;
 using Asp.Versioning.Builder;
-using MediatR;
+using MovieTrackR.API.Configuration;
 using MovieTrackR.Application.DTOs;
 
 namespace MovieTrackR.API.Endpoints.User;
@@ -17,7 +17,7 @@ public static class UsersEndpoints
             .WithApiVersionSet(vset)
             .MapToApiVersion(1, 0)
             .WithTags("Users")
-            .RequireAuthorization("AdminRolePolicy");
+            .RequireAuthorization(AuthorizationConfiguration.AdminPolicy);
 
         group.MapGet("/", UsersHandlers.GetAll)
         .WithName("Users_GetAll")

@@ -1,10 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using MovieTrackR.Application.Common.Security;
-using MovieTrackR.Application.Interfaces;
-using MovieTrackR.Domain.Entities;
 using MovieTrackR.Domain.Enums;
 
 namespace MovieTrackR.API.Configuration;
@@ -63,33 +59,6 @@ public static class AzureAnthenticationConfiguration
                         options.CallbackPath = callbackPath;
                     });
 
-        services.AddScoped<IAuthorizationHandler, RoleAuthorizationHandler>();
-        services.AddAuthorization(options =>
-            options.AddPolicy(name: "AdminRolePolicy", policyBuilder =>
-            {
-                policyBuilder
-                    .RequireAuthenticatedUser()
-                    .AddRequirements(new RoleRequirement(UserRole.Admin));
-            }
-        ));
-
         return services;
-    }
-}
-
-public record RoleRequirement(UserRole Role) : IAuthorizationRequirement;
-public class RoleAuthorizationHandler(IMovieTrackRDbContext dbContext) : AuthorizationHandler<RoleRequirement>()
-{
-    protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, RoleRequirement requirement)
-    {
-        string? externalId = ClaimsExtensions.GetExternalId(context.User);
-        if (string.IsNullOrWhiteSpace(externalId))
-            return;
-        User? user = await dbContext.Users.FirstOrDefaultAsync(u => u.ExternalId == externalId);
-
-        if (user != null && user.Role == requirement.Role)
-        {
-            context.Succeed(requirement);
-        }
     }
 }
