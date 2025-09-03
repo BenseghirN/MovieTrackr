@@ -8,6 +8,10 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
+        CreateMap<User, UserDto>().ReverseMap();
+        CreateMap<Movie, MovieDto>()
+            .ForMember(d => d.Genres, m => m.MapFrom(s => s.MovieGenres.Select(mg => mg.Genre.Name)));
+
         // CreateMap<Game, GameDto>()
         //     .ForMember(dest => dest.Tags, opt => opt.MapFrom(src =>
         //         src.GameTags.Select(gt => new TagDto
@@ -28,7 +32,6 @@ public class MappingProfile : Profile
         //     .ForMember(dest => dest.GameTags, opt => opt.Ignore())
         //     .ForMember(dest => dest.GamePlatforms, opt => opt.Ignore())
         //     .ForMember(dest => dest.UserGames, opt => opt.Ignore());
-        CreateMap<User, UserDto>().ReverseMap();
         // CreateMap<UserProposal, UserProposalDto>()
         //     .ForMember(dest => dest.Platform, opt => opt.MapFrom(src => src.Platform)).ReverseMap();
     }

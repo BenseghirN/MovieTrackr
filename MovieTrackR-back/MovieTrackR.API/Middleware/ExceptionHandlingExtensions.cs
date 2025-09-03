@@ -1,5 +1,9 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MovieTrackR.Application.Common.Exceptions;
+using Npgsql;
 
 namespace MovieTrackR.api.middleware;
 
@@ -18,11 +22,13 @@ public static class ExceptionHandlingExtensions
                 ctx.Response.StatusCode = ex switch
                 {
                     ValidationException => StatusCodes.Status400BadRequest,
-                    KeyNotFoundException => StatusCodes.Status404NotFound,
-                    UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
                     InvalidOperationException => StatusCodes.Status400BadRequest,
-                    OperationCanceledException => StatusCodes.Status499ClientClosedRequest, // si supporté
+                    UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
+                    KeyNotFoundException => StatusCodes.Status404NotFound,
+                    NotFoundException => StatusCodes.Status404NotFound,
+                    ConflictException => StatusCodes.Status409Conflict,
                     _ when IsConflict(ex) => StatusCodes.Status409Conflict,
+                    OperationCanceledException => StatusCodes.Status499ClientClosedRequest,
                     _ => StatusCodes.Status500InternalServerError
                 };
 
@@ -34,34 +40,20 @@ public static class ExceptionHandlingExtensions
         return app;
     }
 
-    private static object CreateProblem(HttpContext ctx, Exception? ex)
+    private static ProblemDetails CreateProblem(HttpContext ctx, Exception? ex)
     {
-        string traceId = ctx.TraceIdentifier;
+        int status = ctx.Response.StatusCode;
+        ProblemDetails detail = ex is ValidationException vex
+            ? new ValidationProblemDetails(
+                  vex.Errors.GroupBy(e => e.PropertyName ?? string.Empty)
+                            .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray()))
+            : new ProblemDetails { Detail = Sanitize(ex?.Message) };
 
-        if (ex is ValidationException vex)
-        {
-            Dictionary<string, string[]> errors = vex.Errors
-                .GroupBy(e => e.PropertyName ?? string.Empty)
-                .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray());
-
-            return new
-            {
-                type = "https://tools.ietf.org/html/rfc7807",
-                title = "Validation failed",
-                status = StatusCodes.Status400BadRequest,
-                traceId,
-                errors
-            };
-        }
-
-        return new
-        {
-            type = "https://tools.ietf.org/html/rfc7807",
-            title = GetTitleFor(ex),
-            status = ctx.Response.StatusCode,
-            detail = Sanitize(ex?.Message),
-            traceId
-        };
+        detail.Type = "https://tools.ietf.org/html/rfc7807";
+        detail.Title = GetTitleFor(ex);
+        detail.Status = status;
+        detail.Extensions["traceId"] = ctx.TraceIdentifier;
+        return detail;
     }
 
     private static string GetTitleFor(Exception? ex) => ex switch
@@ -76,8 +68,8 @@ public static class ExceptionHandlingExtensions
     private static string? Sanitize(string? message)
         => string.IsNullOrWhiteSpace(message) ? null : message;
 
-    // Détecte un conflit (ex: UNIQUE violation PostgreSQL / EF Core)
-    private static bool IsConflict(Exception? ex)
-        => ex is Microsoft.EntityFrameworkCore.DbUpdateException db &&
-           (db.InnerException?.Message?.Contains("unique", StringComparison.OrdinalIgnoreCase) ?? false);
+    private static bool IsConflict(Exception? ex) =>
+        ex is DbUpdateException db &&
+        db.InnerException is PostgresException pg &&
+        pg.SqlState == PostgresErrorCodes.UniqueViolation;
 }

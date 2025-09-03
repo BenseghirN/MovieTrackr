@@ -2,7 +2,8 @@ using System.Text.Json.Serialization;
 using MovieTrackR.api.middleware;
 using MovieTrackR.API.Configuration;
 using MovieTrackR.API.Endpoints.Auth;
-using MovieTrackR.API.Endpoints.User;
+using MovieTrackR.API.Endpoints.Movies;
+using MovieTrackR.API.Endpoints.Users;
 using MovieTrackR.Application.Configuration;
 using MovieTrackR.Infrastructure.Persistence;
 
@@ -31,8 +32,11 @@ if (app.Environment.IsDevelopment()) app.UseSwaggerConfiguration();
 app.UseHttpsRedirection();
 app.UseGlobalExceptionHandler();
 
-app.MapAuthEndpoints();
-app.MapUsersEndpoints();
+// Map endpoints
+app
+.MapAuthEndpoints()
+.MapUsersEndpoints()
+.MapMoviesEndpoints();
 
 app.UseAuthentication();
 app.UseAuthorization();

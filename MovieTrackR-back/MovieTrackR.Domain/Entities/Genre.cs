@@ -8,7 +8,7 @@ public class Genre
 
     public ICollection<MovieGenre> MovieGenres { get; private set; } = new List<MovieGenre>();
 
-    public static Genre Create(string name)
+    public static Genre Create(int? TmdbId, string name)
     {
         return new Genre
         {

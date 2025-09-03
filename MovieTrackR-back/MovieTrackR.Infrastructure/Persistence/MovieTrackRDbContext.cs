@@ -45,7 +45,7 @@ public class MovieTrackRDbContext : DbContext, IMovieTrackRDbContext
         b.Entity<Movie>(e =>
         {
             e.ToTable("movies");
-            e.HasIndex(x => x.TmdbId).IsUnique();
+            e.HasIndex(x => x.TmdbId).IsUnique().HasFilter("\"TmdbId\" IS NOT NULL");
             e.Property(x => x.ReleaseDate).HasColumnType("date");
             e.Property(x => x.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
         });

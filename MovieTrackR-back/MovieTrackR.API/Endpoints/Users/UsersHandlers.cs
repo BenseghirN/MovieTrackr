@@ -3,7 +3,7 @@ using MovieTrackR.Application.DTOs;
 using MovieTrackR.Application.Users.Commands;
 using MovieTrackR.Application.Users.Queries;
 
-namespace MovieTrackR.API.Endpoints.User;
+namespace MovieTrackR.API.Endpoints.Users;
 
 /// <summary>Handlers HTTP pour la gestion des utilisateurs (réservé aux administrateurs).</summary>
 public static class UsersHandlers

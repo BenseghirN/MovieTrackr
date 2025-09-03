@@ -11,10 +11,19 @@ public static class SwaggerConfiguration
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(options =>
         {
+            // XML Docs from API Project
             string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-            string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-            options.IncludeXmlComments(xmlPath);
+            string apiXml = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            if (File.Exists(apiXml))
+                options.IncludeXmlComments(apiXml);
+            // XML Docs from Application Project
+            Assembly appAssembly = typeof(Application.DTOs.UserDto).Assembly;
+            string appXml = Path.Combine(AppContext.BaseDirectory, $"{appAssembly.GetName().Name}.xml");
+            if (File.Exists(appXml))
+                options.IncludeXmlComments(appXml);
+
             options.UseInlineDefinitionsForEnums();
+            options.SupportNonNullableReferenceTypes();
 
             options.TagActionsBy(api =>
             {
