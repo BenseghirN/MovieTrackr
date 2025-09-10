@@ -1,9 +1,9 @@
-
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using MovieTrackR.Application.DTOs;
 using MovieTrackR.Application.Interfaces;
+using MovieTrackR.Domain.Entities;
 
 namespace MovieTrackR.Application.Movies.Queries;
 
@@ -16,7 +16,7 @@ public sealed class SearchMoviesHandler(IMovieTrackRDbContext dbContext, IMapper
     public async Task<(IReadOnlyList<MovieDto>, int)> Handle(SearchMoviesQuery searchQuery, CancellationToken cancellationToken)
     {
         MovieSearchCriteria searchCriteria = searchQuery.searchCriteria;
-        IQueryable<MovieTrackR.Domain.Entities.Movie> query = dbContext.Movies
+        IQueryable<Movie> query = dbContext.Movies
             .Include(m => m.MovieGenres).ThenInclude(mg => mg.Genre)
             .AsNoTracking()
             .AsQueryable();
@@ -39,7 +39,7 @@ public sealed class SearchMoviesHandler(IMovieTrackRDbContext dbContext, IMapper
         };
 
         int total = await query.CountAsync(cancellationToken);
-        List<MovieTrackR.Domain.Entities.Movie> movieResult = await query.Skip((searchCriteria.Page - 1) * searchCriteria.PageSize).Take(searchCriteria.PageSize).ToListAsync(cancellationToken);
+        List<Movie> movieResult = await query.Skip((searchCriteria.Page - 1) * searchCriteria.PageSize).Take(searchCriteria.PageSize).ToListAsync(cancellationToken);
         return (mapper.Map<IReadOnlyList<MovieDto>>(movieResult), total);
     }
 }

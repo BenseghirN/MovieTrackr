@@ -8,9 +8,14 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<User, UserDto>().ReverseMap();
+        CreateMap<User, UserDto>();
         CreateMap<Movie, MovieDto>()
             .ForMember(d => d.Genres, m => m.MapFrom(s => s.MovieGenres.Select(mg => mg.Genre.Name)));
+        CreateMap<UserList, UserListDto>()
+            .ForMember(d => d.MoviesCount, o => o.MapFrom(s => s.Movies.Count));
+        CreateMap<UserList, UserListDetailsDto>()
+            .ForMember(d => d.Movies, o => o.MapFrom(
+                s => s.Movies.OrderBy(m => m.Position)));
 
         // CreateMap<Game, GameDto>()
         //     .ForMember(dest => dest.Tags, opt => opt.MapFrom(src =>
