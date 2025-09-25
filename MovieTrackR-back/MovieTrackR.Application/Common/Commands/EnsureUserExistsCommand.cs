@@ -1,52 +1,44 @@
-using System.Security.Claims;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using MovieTrackR.Application.Common.Security;
 using MovieTrackR.Application.Interfaces;
 using MovieTrackR.Domain.Entities;
 
 namespace MovieTrackR.Application.Common.Commands;
 
-public sealed record EnsureUserExistsCommand(ClaimsPrincipal User) : IRequest<User>;
+public sealed record EnsureUserExistsCommand(string externalId, string email, string display, string given, string surname, string pseudo) : IRequest<Guid>;
 
 public sealed class EnsureUserExistsHandler(IMovieTrackRDbContext dbContext)
-    : IRequestHandler<EnsureUserExistsCommand, User>
+    : IRequestHandler<EnsureUserExistsCommand, Guid>
 {
-    public async Task<User> Handle(EnsureUserExistsCommand request, CancellationToken cancellationToken)
+    public async Task<Guid> Handle(EnsureUserExistsCommand request, CancellationToken cancellationToken)
     {
-        User? user = null;
-        ClaimsPrincipal claim = request.User;
-        string externalId = claim.GetExternalId()
-            ?? throw new UnauthorizedAccessException("ExternalId introuvable dans les claims.");
+        if (string.IsNullOrWhiteSpace(request.externalId))
+            throw new ArgumentException("ExternalId est requis.", nameof(request.externalId));
+        Guid existingUser = await dbContext.Users
+            .Where(u => u.ExternalId == request.externalId)
+            .Select(u => u.Id)
+            .FirstOrDefaultAsync(cancellationToken);
 
-        user = await dbContext.Users.FirstOrDefaultAsync(u => u.ExternalId == externalId, cancellationToken);
-        if (user is not null) return user;
+        if (existingUser != Guid.Empty) return existingUser;
 
-
-        string email = claim.GetEmail() ?? string.Empty;
-        string display = claim.GetDisplayName() ?? string.Empty;
-        string given = claim.GetGivenName() ?? string.Empty;
-        string surname = claim.GetSurname() ?? string.Empty;
-        string pseudo = !string.IsNullOrWhiteSpace(display)
-                         ? display
-                         : (!string.IsNullOrWhiteSpace(email) ? email.Split('@')[0] : $"user-{Guid.NewGuid():N}".Substring(0, 8));
-
-        user = new User();
-        user.Create(externalId, email, pseudo, given, surname);
+        User user = new User();
+        user.Create(request.externalId, request.email, request.pseudo, request.given, request.surname);
 
         dbContext.Users.Add(user);
 
         try
         {
             await dbContext.SaveChangesAsync(cancellationToken);
-            return user;
+            return user.Id;
         }
         catch (DbUpdateException ex)
         {
-            // Conflit unique concurrent → relire
+            // Conflit de création (concurrence) : un autre processus a créé l'utilisateur entre temps.
             if (ex.InnerException?.Message.Contains("UNIQUE", StringComparison.OrdinalIgnoreCase) == true)
-                return await dbContext.Users.FirstAsync(u => u.ExternalId == externalId, cancellationToken);
-
+                return await dbContext.Users
+                            .Where(u => u.ExternalId == request.externalId)
+                            .Select(u => u.Id)
+                            .FirstOrDefaultAsync(cancellationToken);
             throw;
         }
     }

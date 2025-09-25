@@ -1,6 +1,7 @@
 using FluentValidation;
 using MovieTrackR.Application.DTOs;
-namespace MovieTrackR.API.Validators;
+
+namespace MovieTrackR.Application.Validators.Movies;
 
 public sealed class MovieSearchRequestValidator : AbstractValidator<MovieSearchRequest>
 {

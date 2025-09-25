@@ -9,15 +9,15 @@ namespace MovieTrackR.Application.UserLists.Queries;
 
 public sealed record GetMyListsQuery(Guid UserId) : IRequest<IReadOnlyList<UserListDto>>;
 
-public sealed class GetMyListsHandler(IMovieTrackRDbContext db, IMapper mapper)
+public sealed class GetMyListsHandler(IMovieTrackRDbContext dbContext, IMapper mapper)
     : IRequestHandler<GetMyListsQuery, IReadOnlyList<UserListDto>>
 {
-    public async Task<IReadOnlyList<UserListDto>> Handle(GetMyListsQuery r, CancellationToken ct)
+    public async Task<IReadOnlyList<UserListDto>> Handle(GetMyListsQuery query, CancellationToken cancellationToken)
     {
-        return await db.UserLists
-            .Where(l => l.UserId == r.UserId)
+        return await dbContext.UserLists
+            .Where(l => l.UserId == query.UserId)
             .OrderBy(l => l.Title)
             .ProjectTo<UserListDto>(mapper.ConfigurationProvider)
-            .ToListAsync(ct);
+            .ToListAsync(cancellationToken);
     }
 }

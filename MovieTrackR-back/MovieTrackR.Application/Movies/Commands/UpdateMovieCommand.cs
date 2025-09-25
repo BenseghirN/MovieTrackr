@@ -22,7 +22,7 @@ public sealed class UpdateMovieHandler(IMovieTrackRDbContext dbContext)
 
         bool exists = await dbContext.Movies.AnyAsync(
             x => x.Id != updateCommand.Id && x.Title == updateCommand.dto.Title && x.Year == updateCommand.dto.Year, cancellationToken);
-        if (exists) throw new ConflictException("Another movie with same title+year exists.");
+        if (exists) throw new ConflictException("Another movie with same title & year exists.");
 
         movie.UpdateDetails(
             title: updateCommand.dto.Title.Trim(),

@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using FluentValidation;
 using MovieTrackR.api.middleware;
 using MovieTrackR.API.Configuration;
 using MovieTrackR.API.Endpoints.Auth;
@@ -19,6 +20,7 @@ builder.Services
     .AddEndpointsApiExplorer()
     .AddInfrastructure(builder.Configuration) //custom service from Infrastructure project
     .AddApplication() //custom service from Application project
+    .AddValidatorsFromAssembly(typeof(Program).Assembly) // Register FluentValidation validators
     .AddControllers().AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());

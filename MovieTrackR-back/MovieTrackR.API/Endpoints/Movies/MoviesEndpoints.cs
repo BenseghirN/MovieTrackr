@@ -1,6 +1,8 @@
 using Asp.Versioning;
 using Asp.Versioning.Builder;
 using MovieTrackR.API.Configuration;
+using MovieTrackR.API.Filters;
+using MovieTrackR.API.Validators.Movies;
 using MovieTrackR.Application.DTOs;
 
 namespace MovieTrackR.API.Endpoints.Movies;
@@ -35,6 +37,7 @@ public static class MoviesEndpoints
             .WithSummary("Create a movie")
             .RequireAuthorization(AuthorizationConfiguration.AdminPolicy)
             .Accepts<CreateMovieDto>("application/json")
+            .AddEndpointFilter<ValidationFilter<CreateMovieDtoValidator>>()
             .Produces(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status409Conflict);
@@ -44,6 +47,7 @@ public static class MoviesEndpoints
             .WithSummary("Update a movie")
             .RequireAuthorization(AuthorizationConfiguration.AdminPolicy)
             .Accepts<UpdateMovieDto>("application/json")
+            .AddEndpointFilter<ValidationFilter<UpdateMovieDtoValidator>>()
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
