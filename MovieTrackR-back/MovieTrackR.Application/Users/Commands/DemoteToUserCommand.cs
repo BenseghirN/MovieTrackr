@@ -1,6 +1,5 @@
 using AutoMapper;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using MovieTrackR.Application.DTOs;
 using MovieTrackR.Application.Interfaces;
 using MovieTrackR.Domain.Entities;
@@ -15,7 +14,7 @@ internal sealed class DemoteToUserHandler(IMovieTrackRDbContext dbContext, IMapp
 {
     public async Task<UserDto> Handle(DemoteToUserCommand command, CancellationToken cancellationToken)
     {
-        User user = await dbContext.Users.FindAsync(new object[] { command.Id }, cancellationToken)
+        User user = await dbContext.Users.FindAsync([command.Id], cancellationToken)
                         ?? throw new KeyNotFoundException("User not found");
 
         if (user.Role != UserRole.Admin)

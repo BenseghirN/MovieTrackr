@@ -2,8 +2,8 @@ using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using MovieTrackR.API.Middleware;
 using MovieTrackR.Application.Auth.Queries;
-using MovieTrackR.Application.Common.Security;
 using MovieTrackR.Application.DTOs;
 
 namespace MovieTrackR.API.Endpoints.Auth;
@@ -49,17 +49,9 @@ public static class AuthHandlers
     /// <returns><see cref="UserDto"/> si trouvé, sinon 404.</returns>
     public static async Task<IResult> GetUserInfo(IMediator mediator, ClaimsPrincipal user, CancellationToken cancellationToken)
     {
-        string externalId = user.GetExternalId()
-            ?? throw new UnauthorizedAccessException("ExternalId introuvable dans les claims.");
-        string email = user.GetEmail() ?? string.Empty;
-        string display = user.GetDisplayName() ?? string.Empty;
-        string given = user.GetGivenName() ?? string.Empty;
-        string surname = user.GetSurname() ?? string.Empty;
-        string pseudo = !string.IsNullOrWhiteSpace(display)
-                         ? display
-                         : (!string.IsNullOrWhiteSpace(email) ? email.Split('@')[0] : $"user-{Guid.NewGuid():N}".Substring(0, 8));
+        CurrentUserDto currentUser = user.ToCurrentUserDto();
 
-        UserDto? response = await mediator.Send(new GetCurrentUserInfoQuery(externalId, email, display, given, surname, pseudo), cancellationToken);
+        UserDto? response = await mediator.Send(new GetCurrentUserInfoQuery(currentUser), cancellationToken);
         return response is null ? Results.NotFound() : Results.Ok(response);
     }
 

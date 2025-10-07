@@ -1,20 +1,23 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using MovieTrackR.Application.Common.Commands;
 using MovieTrackR.Application.Common.Exceptions;
+using MovieTrackR.Application.DTOs;
 using MovieTrackR.Application.Interfaces;
 using MovieTrackR.Domain.Entities;
 
 namespace MovieTrackR.Application.UserLists.Commands;
 
-public sealed record DeleteListCommand(Guid UserId, Guid ListId) : IRequest;
+public sealed record DeleteListCommand(CurrentUserDto CurrentUser, Guid ListId) : IRequest;
 
-public sealed class DeleteListHandler(IMovieTrackRDbContext dbContext)
+public sealed class DeleteListHandler(IMovieTrackRDbContext dbContext, ISender sender)
     : IRequestHandler<DeleteListCommand>
 {
     public async Task Handle(DeleteListCommand command, CancellationToken cancellationToken)
     {
+        Guid userId = await sender.Send(new EnsureUserExistsCommand(command.CurrentUser), cancellationToken);
         UserList list = await dbContext.UserLists
-            .FirstOrDefaultAsync(l => l.Id == command.ListId && l.UserId == command.UserId, cancellationToken)
+            .FirstOrDefaultAsync(l => l.Id == command.ListId && l.UserId == userId, cancellationToken)
             ?? throw new NotFoundException("UserList", command.ListId);
 
         dbContext.UserLists.Remove(list);

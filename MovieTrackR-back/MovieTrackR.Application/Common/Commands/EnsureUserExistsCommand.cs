@@ -1,28 +1,38 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using MovieTrackR.Application.DTOs;
 using MovieTrackR.Application.Interfaces;
 using MovieTrackR.Domain.Entities;
 
 namespace MovieTrackR.Application.Common.Commands;
 
-public sealed record EnsureUserExistsCommand(string externalId, string email, string display, string given, string surname, string pseudo) : IRequest<Guid>;
+public sealed record EnsureUserExistsCommand(CurrentUserDto currentUser) : IRequest<Guid>;
 
 public sealed class EnsureUserExistsHandler(IMovieTrackRDbContext dbContext)
     : IRequestHandler<EnsureUserExistsCommand, Guid>
 {
     public async Task<Guid> Handle(EnsureUserExistsCommand request, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(request.externalId))
-            throw new ArgumentException("ExternalId est requis.", nameof(request.externalId));
+        if (string.IsNullOrWhiteSpace(request.currentUser.ExternalId))
+            throw new ArgumentException("ExternalId est requis.", nameof(request.currentUser.ExternalId));
         Guid existingUser = await dbContext.Users
-            .Where(u => u.ExternalId == request.externalId)
+            .Where(u => u.ExternalId == request.currentUser.ExternalId)
             .Select(u => u.Id)
             .FirstOrDefaultAsync(cancellationToken);
 
         if (existingUser != Guid.Empty) return existingUser;
 
         User user = new User();
-        user.Create(request.externalId, request.email, request.pseudo, request.given, request.surname);
+        if (string.IsNullOrWhiteSpace(request.currentUser.Email))
+            throw new ArgumentException("Email est requis.", nameof(request.currentUser.Email));
+
+        user.Create(
+            request.currentUser.ExternalId,
+            request.currentUser.Email,
+            request.currentUser.DisplayName ?? string.Empty,
+            request.currentUser.GivenName ?? string.Empty,
+            request.currentUser.Surname ?? string.Empty
+        );
 
         dbContext.Users.Add(user);
 
@@ -36,7 +46,7 @@ public sealed class EnsureUserExistsHandler(IMovieTrackRDbContext dbContext)
             // Conflit de création (concurrence) : un autre processus a créé l'utilisateur entre temps.
             if (ex.InnerException?.Message.Contains("UNIQUE", StringComparison.OrdinalIgnoreCase) == true)
                 return await dbContext.Users
-                            .Where(u => u.ExternalId == request.externalId)
+                            .Where(u => u.ExternalId == request.currentUser.ExternalId)
                             .Select(u => u.Id)
                             .FirstOrDefaultAsync(cancellationToken);
             throw;
