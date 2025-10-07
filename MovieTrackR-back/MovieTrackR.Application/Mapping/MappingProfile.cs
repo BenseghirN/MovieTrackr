@@ -17,6 +17,18 @@ public class MappingProfile : Profile
             .ForMember(d => d.Movies, o => o.MapFrom(
                 s => s.Movies.OrderBy(m => m.Position)));
 
+        // Review -> List item
+        CreateMap<Review, ReviewListItemDto>()
+            .ForMember(d => d.LikesCount, opt => opt.MapFrom(s => s.Likes.Count))
+            .ForMember(d => d.CommentsCount, opt => opt.MapFrom(s => s.Comments.Count));
+
+        // Review -> Details
+        CreateMap<Review, ReviewDetailsDto>()
+            .ForMember(d => d.LikesCount, opt => opt.MapFrom(s => s.Likes.Count))
+            .ForMember(d => d.CommentsCount, opt => opt.MapFrom(s => s.Comments.Count));
+
+        CreateMap<ReviewComment, CommentDto>();
+
         // CreateMap<Game, GameDto>()
         //     .ForMember(dest => dest.Tags, opt => opt.MapFrom(src =>
         //         src.GameTags.Select(gt => new TagDto

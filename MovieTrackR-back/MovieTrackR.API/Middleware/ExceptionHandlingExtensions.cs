@@ -27,6 +27,7 @@ public static class ExceptionHandlingExtensions
                     KeyNotFoundException => StatusCodes.Status404NotFound,
                     NotFoundException => StatusCodes.Status404NotFound,
                     ConflictException => StatusCodes.Status409Conflict,
+                    ForbiddenException => StatusCodes.Status403Forbidden,
                     _ when IsConflict(ex) => StatusCodes.Status409Conflict,
                     OperationCanceledException => StatusCodes.Status499ClientClosedRequest,
                     _ => StatusCodes.Status500InternalServerError
@@ -61,6 +62,7 @@ public static class ExceptionHandlingExtensions
         KeyNotFoundException => "Not Found",
         UnauthorizedAccessException => "Unauthorized",
         InvalidOperationException => "Invalid Operation",
+        ForbiddenException => "Forbidden",
         _ when IsConflict(ex) => "Conflict",
         _ => "Server Error"
     };

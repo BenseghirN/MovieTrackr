@@ -1,18 +1,18 @@
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using MovieTrackR.Application.Common.Exceptions;
+using MovieTrackR.Application.Common.Commands;
+using MovieTrackR.Application.DTOs;
 using MovieTrackR.Application.Interfaces;
-using MovieTrackR.Domain.Entities;
 
 namespace MovieTrackR.Application.UserLists.Commands;
 
-public sealed record AddMovieToListCommand(Guid UserId, Guid ListId, Guid? MovieId, int? TmdbId, int? Position) : IRequest;
+public sealed record AddMovieToListCommand(CurrentUserDto currentUser, Guid ListId, Guid? MovieId, int? TmdbId, int? Position) : IRequest;
 
 public sealed class AddMovieToListHandler(IMovieTrackRDbContext dbContext, ISender sender)
     : IRequestHandler<AddMovieToListCommand>
 {
     public async Task Handle(AddMovieToListCommand command, CancellationToken cancellationToken)
     {
+        Guid userId = await sender.Send(new EnsureUserExistsCommand(command.currentUser), cancellationToken);
         // UserList list = await dbContext.UserLists.FirstOrDefaultAsync(l => l.Id == command.ListId && l.UserId == command.UserId, cancellationToken)
         //            ?? throw new NotFoundException("List", command.ListId);
 
