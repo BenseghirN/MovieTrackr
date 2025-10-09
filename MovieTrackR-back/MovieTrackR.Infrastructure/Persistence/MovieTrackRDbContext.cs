@@ -46,6 +46,7 @@ public class MovieTrackRDbContext : DbContext, IMovieTrackRDbContext
         {
             e.ToTable("movies");
             e.HasIndex(x => x.TmdbId).IsUnique().HasFilter("\"TmdbId\" IS NOT NULL");
+            e.HasIndex(x => x.CreatedAt);
             e.Property(x => x.ReleaseDate).HasColumnType("date");
             e.Property(x => x.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
         });
@@ -70,7 +71,10 @@ public class MovieTrackRDbContext : DbContext, IMovieTrackRDbContext
         //  Reviews 
         b.Entity<Review>(e =>
         {
-            e.ToTable("reviews");
+            e.ToTable("reviews", t => t.HasCheckConstraint("CK_reviews_rating_range", "rating >= 0 AND rating <= 5"));
+            e.HasIndex(x => new { x.UserId, x.MovieId }).IsUnique();
+            e.HasIndex(x => x.MovieId);
+            e.HasIndex(x => x.UserId);
             e.Property(x => x.Rating).HasColumnType("real");
             e.Property(x => x.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
             e.HasOne(x => x.User).WithMany(u => u.Reviews).HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
@@ -81,6 +85,7 @@ public class MovieTrackRDbContext : DbContext, IMovieTrackRDbContext
         b.Entity<ReviewComment>(e =>
         {
             e.ToTable("review_comments");
+            e.HasIndex(x => new { x.ReviewId, x.CreatedAt });
             e.Property(x => x.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
             e.HasOne(x => x.Review).WithMany(r => r.Comments).HasForeignKey(x => x.ReviewId).OnDelete(DeleteBehavior.Cascade);
             e.HasOne(x => x.User).WithMany(u => u.ReviewComments).HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
@@ -109,9 +114,10 @@ public class MovieTrackRDbContext : DbContext, IMovieTrackRDbContext
         //  UserListMovies (composite PK + position) 
         b.Entity<UserListMovie>(e =>
         {
-            e.ToTable("user_list_movies");
+            e.ToTable("user_list_movies", t => t.HasCheckConstraint("CK_user_list_movies_position_gt_zero", "position > 0"));
             e.HasKey(x => new { x.UserListId, x.MovieId });
             e.Property(x => x.Position).IsRequired();
+            e.HasIndex(x => new { x.UserListId, x.Position }).IsUnique();
             e.HasOne(x => x.UserList).WithMany(l => l.Movies).HasForeignKey(x => x.UserListId).OnDelete(DeleteBehavior.Cascade);
             e.HasOne(x => x.Movie).WithMany().HasForeignKey(x => x.MovieId).OnDelete(DeleteBehavior.Cascade);
         });
@@ -129,7 +135,7 @@ public class MovieTrackRDbContext : DbContext, IMovieTrackRDbContext
         //  MovieCast 
         b.Entity<MovieCast>(e =>
         {
-            e.ToTable("movie_cast");
+            e.ToTable("movie_cast", t => t.HasCheckConstraint("CK_movie_cast_order_non_negative", "\"order\" >= 0"));
             e.Property(x => x.Order).HasColumnName("order"); // mot réservé
             e.HasIndex(x => new { x.MovieId, x.PersonId });
             e.HasOne(x => x.Movie).WithMany(m => m.Cast).HasForeignKey(x => x.MovieId).OnDelete(DeleteBehavior.Cascade);
@@ -140,7 +146,7 @@ public class MovieTrackRDbContext : DbContext, IMovieTrackRDbContext
         b.Entity<MovieCrew>(e =>
         {
             e.ToTable("movie_crew");
-            e.HasIndex(x => new { x.MovieId, x.PersonId, x.Job });
+            e.HasIndex(x => new { x.MovieId, x.PersonId, x.Department, x.Job }).IsUnique();
             e.HasOne(x => x.Movie).WithMany(m => m.Crew).HasForeignKey(x => x.MovieId).OnDelete(DeleteBehavior.Cascade);
             e.HasOne(x => x.Person).WithMany(p => p.CrewRoles).HasForeignKey(x => x.PersonId).OnDelete(DeleteBehavior.Cascade);
         });
