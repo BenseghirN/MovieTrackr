@@ -4,6 +4,7 @@ using MovieTrackR.Application.Common.Commands;
 using MovieTrackR.Application.Common.Exceptions;
 using MovieTrackR.Application.DTOs;
 using MovieTrackR.Application.Interfaces;
+using MovieTrackR.Domain.Entities;
 
 namespace MovieTrackR.Application.ReviewComments.Commands;
 
@@ -17,12 +18,12 @@ public sealed class DeleteCommentHandler(IMovieTrackRDbContext dbContext, ISende
     {
         Guid userId = await sender.Send(new EnsureUserExistsCommand(command.CurrentUser), cancellationToken);
 
-        var c = await dbContext.ReviewComments.FirstOrDefaultAsync(x => x.Id == command.CommentId && x.ReviewId == command.ReviewId, cancellationToken)
+        ReviewComment comment = await dbContext.ReviewComments.FirstOrDefaultAsync(x => x.Id == command.CommentId && x.ReviewId == command.ReviewId, cancellationToken)
             ?? throw new NotFoundException("Comment not found.");
 
-        if (c.UserId != userId) throw new ForbiddenException();
+        if (comment.UserId != userId) throw new ForbiddenException();
 
-        dbContext.ReviewComments.Remove(c);
+        dbContext.ReviewComments.Remove(comment);
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

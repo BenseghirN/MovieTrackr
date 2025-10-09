@@ -28,7 +28,7 @@ public static class UserListsEndpoints
     group.MapGet("/{id:guid}", UserListsHandlers.GetById)
       .WithName("Get_My_List_ById")
       .WithSummary("Récupère une de mes listes par son identifiant.")
-       .WithDescription("Retourne la vue 'détails' d’une liste, incluant les films ordonnés par position. Restreint au propriétaire de la liste.")
+      .WithDescription("Retourne la vue 'détails' d’une liste, incluant les films ordonnés par position. Restreint au propriétaire de la liste.")
       .Produces<UserListDetailsDto>(StatusCodes.Status200OK)
       .Produces(StatusCodes.Status404NotFound);
 
