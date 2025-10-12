@@ -13,6 +13,7 @@ public interface IMovieTrackRDbContext
     DbSet<ReviewComment> ReviewComments { get; }
     DbSet<ReviewLike> ReviewLikes { get; }
     DbSet<UserList> UserLists { get; }
+    DbSet<MovieProposal> MovieProposals { get; }
 
     // Relation tables
     DbSet<MovieGenre> MovieGenres { get; }

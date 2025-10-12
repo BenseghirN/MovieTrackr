@@ -19,6 +19,7 @@ public class MovieTrackRDbContext : DbContext, IMovieTrackRDbContext
     public DbSet<ReviewComment> ReviewComments => Set<ReviewComment>();
     public DbSet<ReviewLike> ReviewLikes => Set<ReviewLike>();
     public DbSet<UserList> UserLists => Set<UserList>();
+    public DbSet<MovieProposal> MovieProposals => Set<MovieProposal>();
 
     // Relations
     public DbSet<MovieGenre> MovieGenres => Set<MovieGenre>();
@@ -149,6 +150,28 @@ public class MovieTrackRDbContext : DbContext, IMovieTrackRDbContext
             e.HasIndex(x => new { x.MovieId, x.PersonId, x.Department, x.Job }).IsUnique();
             e.HasOne(x => x.Movie).WithMany(m => m.Crew).HasForeignKey(x => x.MovieId).OnDelete(DeleteBehavior.Cascade);
             e.HasOne(x => x.Person).WithMany(p => p.CrewRoles).HasForeignKey(x => x.PersonId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // MovieProposals
+        b.Entity<MovieProposal>(e =>
+        {
+            e.ToTable("movie_proposals",
+                t => t.HasCheckConstraint("CK_movie_proposals_release_year",
+                "release_year IS NULL OR (release_year >= 1888 AND release_year <= EXTRACT(YEAR FROM CURRENT_DATE)::int + 1)"));
+            e.Property(x => x.Title).IsRequired().HasMaxLength(200);
+            e.Property(x => x.OriginalTitle).HasMaxLength(200);
+            e.Property(x => x.Country).HasMaxLength(2);
+            e.Property(x => x.PosterUrl).HasMaxLength(2048);
+            e.Property(x => x.Overview).HasMaxLength(2000);
+            e.Property(x => x.Status).HasConversion(new EnumToStringConverter<MovieProposalStatus>());
+
+            e.HasIndex(x => x.ProposedByUserId);
+            e.HasIndex(x => x.Status);
+
+            e.HasOne(x => x.ProposedByUser)
+            .WithMany()
+            .HasForeignKey(x => x.ProposedByUserId)
+            .OnDelete(DeleteBehavior.Cascade);
         });
 
         b.UseSequentialGuids();   // => DEFAULT uuid_generate_v1mc() on PK GUID
