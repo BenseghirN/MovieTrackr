@@ -1,5 +1,7 @@
 using AutoMapper;
+using MovieTrackR.Application.Common.Helpers;
 using MovieTrackR.Application.DTOs;
+using MovieTrackR.Application.TMDB;
 using MovieTrackR.Domain.Entities;
 using MovieTrackR.Domain.Enums;
 
@@ -40,5 +42,29 @@ public class MappingProfile : Profile
             .ForMember(d => d.ProposedByUser, opt => opt.Ignore());
 
         CreateMap<ReviewComment, CommentDto>();
+
+        // DB -> DTO
+        CreateMap<Movie, SearchMovieResultDto>(MemberList.Source)
+            .ForMember(d => d.LocalId, o => o.MapFrom(s => s.Id))
+            .ForMember(d => d.TmdbId, o => o.MapFrom(s => s.TmdbId))
+            .ForMember(d => d.Title, o => o.MapFrom(s => s.Title))
+            .ForMember(d => d.Year, o => o.MapFrom(s => s.ReleaseDate.HasValue ? (int?)s.ReleaseDate.Value.Year : null))
+            .ForMember(d => d.OriginalTitle, o => o.MapFrom(s => s.OriginalTitle))
+            .ForMember(d => d.PosterPath, o => o.MapFrom(s => s.PosterUrl)) // ajuste si c'est PosterUrl côté entity
+            .ForMember(d => d.IsLocal, o => o.MapFrom(_ => true))
+            .ForMember(d => d.Overview, o => o.MapFrom(s => s.Overview));
+
+        // TMDb -> DTO
+        CreateMap<TmdbSearchMovieItem, SearchMovieResultDto>(MemberList.Source)
+            .ForMember(d => d.LocalId, o => o.Ignore())
+            .ForMember(d => d.TmdbId, o => o.MapFrom(s => s.Id))
+            .ForMember(d => d.Title, o => o.MapFrom(s => s.Title ?? s.OriginalTitle ?? "(Sans titre)"))
+            .ForMember(d => d.Year, o => o.MapFrom(s => TmdbMapHelpers.YearFromReleaseDate(s.ReleaseDate)))
+            .ForMember(d => d.OriginalTitle, o => o.MapFrom(s => s.OriginalTitle))
+            .ForMember(d => d.PosterPath, o => o.MapFrom(s => s.PosterPath))
+            .ForMember(d => d.IsLocal, o => o.MapFrom(_ => false))
+            .ForMember(d => d.VoteAverage, o => o.MapFrom(s => s.VoteAverage))
+            .ForMember(d => d.Popularity, o => o.MapFrom(s => s.Popularity))
+            .ForMember(d => d.Overview, o => o.Ignore());
     }
 }

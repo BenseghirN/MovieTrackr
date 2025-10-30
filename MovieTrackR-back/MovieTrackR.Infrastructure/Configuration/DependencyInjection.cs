@@ -2,8 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MovieTrackR.Application.Interfaces;
+using MovieTrackR.Infrastructure.Persistence;
 
-namespace MovieTrackR.Infrastructure.Persistence;
+namespace MovieTrackR.Infrastructure.Configuration;
 
 public static class DependencyInjection
 {
@@ -21,6 +22,9 @@ public static class DependencyInjection
             ).UseSnakeCaseNamingConvention()
         );
         services.AddScoped<IMovieTrackRDbContext>(provider => provider.GetRequiredService<MovieTrackRDbContext>());
+
+        // TMDB Configuration
+        services.AddTmdb(configuration);
 
         return services;
     }

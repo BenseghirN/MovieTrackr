@@ -1,5 +1,6 @@
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MovieTrackR.Application.behaviors;
 using MovieTrackR.Application.Mapping;
@@ -8,7 +9,7 @@ namespace MovieTrackR.Application.Configuration;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services)
+    public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
     {
         // AutoMapper : Add all profiles from Application
         services.AddAutoMapper(cfg => { }, typeof(MappingProfile).Assembly);

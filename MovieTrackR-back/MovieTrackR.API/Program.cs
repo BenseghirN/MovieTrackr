@@ -19,7 +19,7 @@ builder.Services
     .AddAppAuthorization() // custom Authorization policies
     .AddEndpointsApiExplorer()
     .AddInfrastructure(builder.Configuration) //custom service from Infrastructure project
-    .AddApplication() //custom service from Application project
+    .AddApplication(builder.Configuration) //custom service from Application project
     .AddValidatorsFromAssembly(typeof(Program).Assembly) // Register FluentValidation validators
     .AddControllers().AddJsonOptions(options =>
     {
