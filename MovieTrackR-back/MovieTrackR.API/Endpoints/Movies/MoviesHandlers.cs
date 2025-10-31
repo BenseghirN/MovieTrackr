@@ -27,12 +27,16 @@ public static class MoviesHandlers
     /// <returns>La liste paginée de films.</returns>
     public static async Task<IResult> Search([AsParameters] MovieSearchRequest query, IMediator mediator, HttpResponse response, CancellationToken cancellationToken)
     {
-        (IReadOnlyList<MovieDto> items, int total) = await mediator.Send(
-            new SearchMoviesQuery(query.ToCriteria()),
-            cancellationToken);
 
-        response.Headers["X-Total-Count"] = total.ToString();
-        return Results.Ok(items);
+        HybridPagedResult<SearchMovieResultDto> result =
+        await mediator.Send(new SearchMoviesHybridQuery(query.ToCriteria()), cancellationToken);
+
+        if (result.Meta.TotalResults is int tr)
+            response.Headers["X-Total-Tmdb"] = tr.ToString();
+
+        response.Headers["X-Total-Local"] = result.Meta.TotalLocal.ToString();
+        response.Headers["Access-Control-Expose-Headers"] = "X-Total-Tmdb, X-Total-Local";
+        return Results.Ok(result);
     }
 
 

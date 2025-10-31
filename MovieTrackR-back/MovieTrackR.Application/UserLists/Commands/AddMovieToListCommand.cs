@@ -1,7 +1,11 @@
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using MovieTrackR.Application.Common.Commands;
+using MovieTrackR.Application.Common.Exceptions;
 using MovieTrackR.Application.DTOs;
 using MovieTrackR.Application.Interfaces;
+using MovieTrackR.Application.Movies.Commands;
+using MovieTrackR.Domain.Entities;
 
 namespace MovieTrackR.Application.UserLists.Commands;
 
@@ -13,19 +17,25 @@ public sealed class AddMovieToListHandler(IMovieTrackRDbContext dbContext, ISend
     public async Task Handle(AddMovieToListCommand command, CancellationToken cancellationToken)
     {
         Guid userId = await sender.Send(new EnsureUserExistsCommand(command.currentUser), cancellationToken);
-        // UserList list = await dbContext.UserLists.FirstOrDefaultAsync(l => l.Id == command.ListId && l.UserId == command.UserId, cancellationToken)
-        //            ?? throw new NotFoundException("List", command.ListId);
+        UserList list = await dbContext.UserLists.FirstOrDefaultAsync(l => l.Id == command.ListId && l.UserId == userId, cancellationToken)
+                   ?? throw new ForbiddenException("You do not have permission to modify this list.");
 
-        // var movieId = await sender.Send(new EnsureLocalMovieCommand(command.MovieId, command.TmdbId), cancellationToken);
+        Guid movieId = await sender.Send(new EnsureLocalMovieCommand(command.MovieId, command.TmdbId), cancellationToken);
 
-        // bool exists = await dbContext.UserListItems.AnyAsync(i => i.ListId == list.Id && i.MovieId == movieId, cancellationToken);
-        // if (!exists)
-        // {
-        //     int pos = (await dbContext.UserListItems.Where(i => i.ListId == list.Id)
-        //                      .Select(i => (int?)i.Position).DefaultIfEmpty(0).MaxAsync(cancellationToken) ?? 0) + 10;
+        bool exists = await dbContext.UserListMovies.AnyAsync(i => i.UserListId == list.Id && i.MovieId == movieId, cancellationToken);
+        if (exists) throw new ConflictException("Movie already exists in the list.");
 
-        //     dbContext.UserListItems.Add(new UserListItem { Id = Guid.NewGuid(), ListId = list.Id, MovieId = movieId, Position = command.Position ?? pos });
-        //     await dbContext.SaveChangesAsync(cancellationToken);
-        // }
+        Movie movie = await dbContext.Movies.FirstOrDefaultAsync(m => m.Id == movieId, cancellationToken)
+            ?? throw new NotFoundException("Movie", movieId);
+
+        int position = command.Position
+            ?? ((await dbContext.UserListMovies
+                    .Where(i => i.UserListId == list.Id)
+                    .Select(i => (int?)i.Position)
+                    .MaxAsync(cancellationToken)) ?? 0) + 10;
+
+        list.AddMovie(movie, position);
+
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 }
