@@ -27,7 +27,7 @@ public static class MoviesEndpoints
             .Produces<MovieDto>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        group.MapGet("/", MoviesHandlers.Search)
+        group.MapGet("/search/", MoviesHandlers.Search)
             .WithName("Search_Movies")
             .WithSummary("Search movies (paged)")
             .Produces<IReadOnlyList<MovieDto>>(StatusCodes.Status200OK);

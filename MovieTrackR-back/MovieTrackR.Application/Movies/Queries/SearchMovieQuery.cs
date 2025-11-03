@@ -21,10 +21,10 @@ public sealed class SearchMoviesHandler(IMovieTrackRDbContext dbContext, IMapper
             .AsNoTracking()
             .AsQueryable();
 
-        if (!string.IsNullOrWhiteSpace(searchCriteria.Search))
+        if (!string.IsNullOrWhiteSpace(searchCriteria.Query))
             query = query.Where(m =>
-                EF.Functions.ILike(m.Title, $"%{searchCriteria.Search}%") ||
-                (m.OriginalTitle != null && EF.Functions.ILike(m.OriginalTitle, $"%{searchCriteria.Search}%")));
+                EF.Functions.ILike(m.Title, $"%{searchCriteria.Query}%") ||
+                (m.OriginalTitle != null && EF.Functions.ILike(m.OriginalTitle, $"%{searchCriteria.Query}%")));
 
         if (searchCriteria.Year is not null) query = query.Where(m => m.Year == searchCriteria.Year);
 

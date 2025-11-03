@@ -16,14 +16,24 @@ public static class TmdbDependencyInjection
         services.AddHttpClient<ITmdbClient, TmdbHttpClient>()
             .ConfigureHttpClient((sp, client) =>
             {
-                TmdbOptions opt = sp.GetRequiredService<IOptions<TmdbOptions>>().Value;
+                var opt = sp.GetRequiredService<IOptions<TmdbOptions>>().Value;
 
-                client.BaseAddress = new Uri(
-                    string.IsNullOrWhiteSpace(opt.BaseUrl)
-                        ? "https://api.themoviedb.org/3"
-                        : opt.BaseUrl);
+                var baseUrl = string.IsNullOrWhiteSpace(opt.BaseUrl)
+                    ? "https://api.themoviedb.org/3"
+                    : opt.BaseUrl;
+                if (!baseUrl.EndsWith("/")) baseUrl += "/";
 
-                client.Timeout = TimeSpan.FromSeconds(opt.HttpTimeoutSeconds <= 0 ? 3 : opt.HttpTimeoutSeconds);
+                client.BaseAddress = new Uri(baseUrl);
+                client.Timeout = TimeSpan.FromSeconds(opt.HttpTimeoutSeconds <= 0 ? 5 : opt.HttpTimeoutSeconds);
+
+                if (!string.IsNullOrWhiteSpace(opt.AccessTokenV4))
+                {
+                    client.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", opt.AccessTokenV4);
+                }
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(
+                    new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
             });
         services.AddScoped<ITmdbCatalogService, TmdbCatalogService>();
 

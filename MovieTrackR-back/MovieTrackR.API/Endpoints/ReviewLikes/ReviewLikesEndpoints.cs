@@ -5,7 +5,7 @@ namespace MovieTrackR.API.Endpoints.ReviewLikes;
 
 public static class ReviewLikesEndpoints
 {
-  public static IEndpointRouteBuilder MapMoviesEndpoints(this IEndpointRouteBuilder app)
+  public static IEndpointRouteBuilder MapReviewLikesEndpoints(this IEndpointRouteBuilder app)
   {
     ApiVersionSet vset = app.NewApiVersionSet()
         .HasApiVersion(new ApiVersion(1, 0))

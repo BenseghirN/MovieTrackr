@@ -2,7 +2,7 @@ namespace MovieTrackR.Application.Movies;
 
 public sealed class MovieSearchCriteria
 {
-    public string? Search { get; init; }
+    public string? Query { get; init; }
     public int? Year { get; init; }
     public Guid? GenreId { get; init; }
     public int Page { get; init; } = 1;

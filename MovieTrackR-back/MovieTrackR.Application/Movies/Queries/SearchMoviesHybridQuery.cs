@@ -27,10 +27,10 @@ public sealed class SearchMoviesHybridHandler(IMovieTrackRDbContext dbContext, I
             .AsNoTracking()
             .AsQueryable();
 
-        if (!string.IsNullOrWhiteSpace(searchCriteria.Search))
+        if (!string.IsNullOrWhiteSpace(searchCriteria.Query))
             localQuery = localQuery.Where(m =>
-                EF.Functions.ILike(m.Title, $"%{searchCriteria.Search}%") ||
-                (m.OriginalTitle != null && EF.Functions.ILike(m.OriginalTitle, $"%{searchCriteria.Search}%")));
+                EF.Functions.ILike(m.Title, $"%{searchCriteria.Query}%") ||
+                (m.OriginalTitle != null && EF.Functions.ILike(m.OriginalTitle, $"%{searchCriteria.Query}%")));
 
         if (searchCriteria.Year is not null) localQuery = localQuery.Where(m => m.Year == searchCriteria.Year);
 
@@ -56,11 +56,11 @@ public sealed class SearchMoviesHybridHandler(IMovieTrackRDbContext dbContext, I
         int? tmdbTotalPages = null;
         List<SearchMovieResultDto> tmdbDtos = [];
 
-        if (!string.IsNullOrWhiteSpace(searchCriteria.Search))
+        if (!string.IsNullOrWhiteSpace(searchCriteria.Query))
         {
             // TmdbSearchMoviesResponse tmdb = await tmdbClient.SearchMoviesAsync(searchCriteria.Search!, searchCriteria.Page, language: null!, region: null, cancellationToken);
             TmdbSearchMoviesResponse tmdb = await tmdbClient.SearchMoviesAsync(
-                query: searchCriteria.Search!, page: searchCriteria.Page, language: "fr-FR", region: null, cancellationToken: cancellationToken);
+                query: searchCriteria.Query!, page: searchCriteria.Page, language: "fr-FR", region: null, cancellationToken: cancellationToken);
             tmdbTotalResults = tmdb.TotalResults;
             tmdbTotalPages = tmdb.TotalPages;
             tmdbDtos = mapper.Map<List<SearchMovieResultDto>>(tmdb.Results);

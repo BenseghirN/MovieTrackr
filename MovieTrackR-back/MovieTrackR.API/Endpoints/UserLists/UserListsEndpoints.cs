@@ -7,7 +7,7 @@ namespace MovieTrackR.API.Endpoints.UserLists;
 
 public static class UserListsEndpoints
 {
-  public static IEndpointRouteBuilder MapMoviesEndpoints(this IEndpointRouteBuilder app)
+  public static IEndpointRouteBuilder MapUserListsEndpoints(this IEndpointRouteBuilder app)
   {
     ApiVersionSet vset = app.NewApiVersionSet()
         .HasApiVersion(new ApiVersion(1, 0))

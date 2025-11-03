@@ -9,9 +9,9 @@ namespace MovieTrackR.Application.Common.Services;
 
 public sealed class TmdbHttpClient(HttpClient httpClient, IOptions<TmdbOptions> options, ILogger<TmdbHttpClient> logger) : ITmdbClient
 {
-    private readonly string _apiKey = string.IsNullOrWhiteSpace(options.Value.ApiKey)
-        ? throw new InvalidOperationException("Tmdb:ApiKey is required.")
-        : options.Value.ApiKey!;
+    private readonly string? _apiKey = string.IsNullOrWhiteSpace(options.Value.AccessTokenV4)
+    ? options.Value.ApiKey ?? throw new InvalidOperationException("Tmdb:ApiKey is required when AccessTokenV4 is not set.")
+    : null;
 
     private readonly JsonSerializerOptions _json = new()
     {
@@ -43,21 +43,25 @@ public sealed class TmdbHttpClient(HttpClient httpClient, IOptions<TmdbOptions> 
 
     private async Task<T> GetFromTmdbAsync<T>(string relativeUrl, CancellationToken cancellationToken)
     {
-        string sep = relativeUrl.Contains('?') ? "&" : "?";
-        string urlWithKey = $"{relativeUrl}{sep}api_key={Uri.EscapeDataString(_apiKey)}";
+        string url = relativeUrl.StartsWith("/") ? relativeUrl[1..] : relativeUrl;
+        if (!string.IsNullOrWhiteSpace(_apiKey))
+        {
+            string sep = url.Contains('?') ? "&" : "?";
+            url = $"{url}{sep}api_key={Uri.EscapeDataString(_apiKey)}";
+        }
 
-        using HttpResponseMessage res = await httpClient.GetAsync(urlWithKey, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+        logger.LogInformation("TMDb GET {Base}{Url}", httpClient.BaseAddress, url);
+
+        using var res = await httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
         if (!res.IsSuccessStatusCode)
         {
             string body = await res.Content.ReadAsStringAsync(cancellationToken);
-            logger.LogWarning("TMDb call failed: {Status} {Url} {Body}", (int)res.StatusCode, urlWithKey, body);
+            logger.LogWarning("TMDb failed: {Status} {Url} {Body}", (int)res.StatusCode, url, body);
             res.EnsureSuccessStatusCode();
         }
 
-        using Stream stream = await res.Content.ReadAsStreamAsync(cancellationToken);
+        await using Stream stream = await res.Content.ReadAsStreamAsync(cancellationToken);
         T? data = await JsonSerializer.DeserializeAsync<T>(stream, _json, cancellationToken);
-        if (data is null) throw new InvalidOperationException($"TMDb returned empty payload for '{relativeUrl}'.");
-
-        return data;
+        return data ?? throw new InvalidOperationException($"Empty TMDb payload for '{relativeUrl}'.");
     }
 }

@@ -6,7 +6,7 @@ namespace MovieTrackR.Application.DTOs;
 public sealed class MovieSearchRequest
 {
     /// <summary>Texte recherché (titre/originalTitle).</summary>
-    public string? Search { get; init; }
+    public string? Query { get; init; }
 
     /// <summary>Filtre par année exacte.</summary>
     public int? Year { get; init; }
@@ -25,7 +25,7 @@ public sealed class MovieSearchRequest
 
     public MovieSearchCriteria ToCriteria() => new()
     {
-        Search = Search?.Trim(),
+        Query = Query?.Trim(),
         Year = Year,
         GenreId = GenreId,
         Page = Page,

@@ -4,9 +4,13 @@ using MovieTrackR.api.middleware;
 using MovieTrackR.API.Configuration;
 using MovieTrackR.API.Endpoints.Auth;
 using MovieTrackR.API.Endpoints.Movies;
+using MovieTrackR.API.Endpoints.ReviewComments;
+using MovieTrackR.API.Endpoints.ReviewLikes;
+using MovieTrackR.API.Endpoints.Reviews;
+using MovieTrackR.API.Endpoints.UserLists;
 using MovieTrackR.API.Endpoints.Users;
 using MovieTrackR.Application.Configuration;
-using MovieTrackR.Infrastructure.Persistence;
+using MovieTrackR.Infrastructure.Configuration;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -37,8 +41,12 @@ app.UseGlobalExceptionHandler();
 // Map endpoints
 app
 .MapAuthEndpoints()
-.MapUsersEndpoints()
-.MapMoviesEndpoints();
+.MapMoviesEndpoints()
+.MapReviewCommentsEndpoints()
+.MapReviewLikesEndpoints()
+.MapReviewsEndpoints()
+.MapUserListsEndpoints()
+.MapUsersEndpoints();
 
 app.UseAuthentication();
 app.UseAuthorization();

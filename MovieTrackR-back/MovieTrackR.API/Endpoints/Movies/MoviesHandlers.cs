@@ -27,7 +27,6 @@ public static class MoviesHandlers
     /// <returns>La liste paginée de films.</returns>
     public static async Task<IResult> Search([AsParameters] MovieSearchRequest query, IMediator mediator, HttpResponse response, CancellationToken cancellationToken)
     {
-
         HybridPagedResult<SearchMovieResultDto> result =
         await mediator.Send(new SearchMoviesHybridQuery(query.ToCriteria()), cancellationToken);
 

@@ -6,9 +6,9 @@ using MovieTrackR.Application.DTOs;
 
 namespace MovieTrackR.API.Endpoints.Reviews;
 
-public static class ReviewLikesEndpoints
+public static class ReviewsEndpoints
 {
-  public static IEndpointRouteBuilder MapMoviesEndpoints(this IEndpointRouteBuilder app)
+  public static IEndpointRouteBuilder MapReviewsEndpoints(this IEndpointRouteBuilder app)
   {
     ApiVersionSet vset = app.NewApiVersionSet()
         .HasApiVersion(new ApiVersion(1, 0))
