@@ -30,11 +30,9 @@ public static class MoviesHandlers
         HybridPagedResult<SearchMovieResultDto> result =
         await mediator.Send(new SearchMoviesHybridQuery(query.ToCriteria()), cancellationToken);
 
-        if (result.Meta.TotalResults is int tr)
-            response.Headers["X-Total-Tmdb"] = tr.ToString();
-
         response.Headers["X-Total-Local"] = result.Meta.TotalLocal.ToString();
-        response.Headers["Access-Control-Expose-Headers"] = "X-Total-Tmdb, X-Total-Local";
+        response.Headers["X-Total-Tmdb"] = result.Meta.TotalTmdb.ToString();
+        response.Headers["X-Total"] = result.Meta.TotalResults.ToString();
         return Results.Ok(result);
     }
 

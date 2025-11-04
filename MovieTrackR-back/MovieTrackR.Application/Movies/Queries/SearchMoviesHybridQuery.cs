@@ -29,9 +29,7 @@ public sealed class SearchMoviesHybridHandler(IMovieTrackRDbContext dbContext, I
 
         localQuery = localQuery.ApplyTitleFilter((DbContext)dbContext, searchCriteria.Query);
 
-
         if (searchCriteria.Year is not null) localQuery = localQuery.Where(m => m.Year == searchCriteria.Year);
-
         if (searchCriteria.GenreId is not null)
             localQuery = localQuery.Where(m => m.MovieGenres.Any(mg => mg.GenreId == searchCriteria.GenreId));
 
@@ -50,46 +48,53 @@ public sealed class SearchMoviesHybridHandler(IMovieTrackRDbContext dbContext, I
             .ToListAsync(cancellationToken);
 
         // 2. Requête TMDB
-        int? tmdbTotalResults = null;
-        int? tmdbTotalPages = null;
+        int totalTmdb = 0;
+        int? totalTmdbPages = null;
         List<SearchMovieResultDto> tmdbDtos = [];
 
         if (!string.IsNullOrWhiteSpace(searchCriteria.Query))
         {
-            // TmdbSearchMoviesResponse tmdb = await tmdbClient.SearchMoviesAsync(searchCriteria.Search!, searchCriteria.Page, language: null!, region: null, cancellationToken);
             TmdbSearchMoviesResponse tmdb = await tmdbClient.SearchMoviesAsync(
                 query: searchCriteria.Query!, page: searchCriteria.Page, language: "fr-FR", region: null, cancellationToken: cancellationToken);
-            tmdbTotalResults = tmdb.TotalResults;
-            tmdbTotalPages = tmdb.TotalPages;
+
+            totalTmdb = tmdb.TotalResults;
+            totalTmdbPages = tmdb.TotalPages;
             tmdbDtos = mapper.Map<List<SearchMovieResultDto>>(tmdb.Results);
         }
 
         // 3. Fusionner les résultats locaux et TMDB en évitant les doublons
-        HashSet<string> localKeys = new HashSet<string>(
-            locals.Select(x => $"{x.TmdbId?.ToString() ?? ""}|{x.Title}|{x.Year}"),
-            StringComparer.OrdinalIgnoreCase);
+        HashSet<string> localKeys =
+            new HashSet<string>(locals.Select(MakeKey), StringComparer.OrdinalIgnoreCase);
 
         List<SearchMovieResultDto> merged =
             locals.Concat(
-                tmdbDtos.Where(x =>
-                    !localKeys.Contains($"{x.TmdbId?.ToString() ?? ""}|{x.Title}|{x.Year}"))
+                tmdbDtos.Where(x => !localKeys.Contains(MakeKey(x)))
             )
             .Take(searchCriteria.PageSize)
             .ToList();
 
-        bool hasMore =
-            (tmdbTotalPages is int tp && searchCriteria.Page < tp) ||
-            (totalLocal > (Skip + Take));
+        bool localHasMore = totalLocal > (Skip + Take);
+        bool tmdbHasMore = totalTmdbPages is int tp && searchCriteria.Page < tp;
+        bool hasMore = localHasMore || tmdbHasMore;
 
-        var meta = new PageMeta(
-            Page: searchCriteria.Page,
-            PageSize: searchCriteria.PageSize,
-            TotalPages: tmdbTotalPages,
-            TotalResults: tmdbTotalResults,
-            TotalLocal: totalLocal,
-            HasMore: hasMore
+        PageMeta meta = new PageMeta(
+        Page: searchCriteria.Page,
+        PageSize: searchCriteria.PageSize,
+        TotalLocal: totalLocal,
+        TotalTmdb: totalTmdb,
+        TotalResults: totalLocal + totalTmdb,
+        TotalTmdbPages: totalTmdbPages,
+        HasMore: hasMore
         );
 
         return new HybridPagedResult<SearchMovieResultDto>(merged, meta);
+    }
+
+    static string MakeKey(SearchMovieResultDto x)
+    {
+        if (x.TmdbId is int id) return $"tmdb:{id}";
+        var t = (x.Title ?? "").Trim();
+        var y = x.Year?.ToString() ?? "";
+        return $"t:{t}|y:{y}";
     }
 }
