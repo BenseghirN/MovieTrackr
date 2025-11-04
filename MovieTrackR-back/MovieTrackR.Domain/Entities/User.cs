@@ -22,7 +22,13 @@ public class User
     public void PromoteToAdmin() => Role = UserRole.Admin;
     public void DemoteToUser() => Role = UserRole.User;
 
-    public void Create(string externalId, string email, string pseudo, string givenName, string surName, UserRole role = UserRole.User)
+    public static User Create(
+    string externalId,
+    string email,
+    string pseudo,
+    string givenName,
+    string surName,
+    UserRole role = UserRole.User)
     {
         if (string.IsNullOrWhiteSpace(pseudo)) throw new ArgumentException("Pseudo invalide.");
         if (string.IsNullOrWhiteSpace(givenName)) throw new ArgumentException("Prénom invalide.");
@@ -30,12 +36,17 @@ public class User
         if (string.IsNullOrWhiteSpace(externalId)) throw new ArgumentException("ID externe invalide.");
         if (string.IsNullOrWhiteSpace(email)) throw new ArgumentException("Email invalide.");
 
-        ExternalId = externalId;
-        Email = email;
-        Pseudo = pseudo;
-        GivenName = givenName;
-        Surname = surName;
-        Role = role;
+        return new User
+        {
+            Id = Guid.NewGuid(),
+            ExternalId = externalId,
+            Email = email,
+            Pseudo = pseudo,
+            GivenName = givenName,
+            Surname = surName,
+            Role = role,
+            CreatedAt = DateTime.UtcNow
+        };
     }
 
     public void UpdateProfile(string pseudo, string? externalId = null)

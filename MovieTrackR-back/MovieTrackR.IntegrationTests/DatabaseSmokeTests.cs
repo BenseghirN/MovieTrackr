@@ -1,6 +1,6 @@
 ﻿namespace MovieTrackR.IntegrationTests;
 
-public class UnitTest1
+public class DatabaseSmokeTests
 {
     [Fact]
     public void Test1()

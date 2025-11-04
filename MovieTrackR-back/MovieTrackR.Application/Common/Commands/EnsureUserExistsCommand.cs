@@ -22,11 +22,10 @@ public sealed class EnsureUserExistsHandler(IMovieTrackRDbContext dbContext)
 
         if (existingUser != Guid.Empty) return existingUser;
 
-        User user = new User();
         if (string.IsNullOrWhiteSpace(request.currentUser.Email))
             throw new ArgumentException("Email est requis.", nameof(request.currentUser.Email));
 
-        user.Create(
+        User user = User.Create(
             request.currentUser.ExternalId,
             request.currentUser.Email,
             request.currentUser.DisplayName ?? string.Empty,
