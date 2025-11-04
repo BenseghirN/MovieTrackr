@@ -34,6 +34,12 @@ public sealed class AddMovieToListHandler(IMovieTrackRDbContext dbContext, ISend
                     .Select(i => (int?)i.Position)
                     .MaxAsync(cancellationToken)) ?? 0) + 10;
 
+        bool positionUsed = await dbContext.UserListMovies
+            .AnyAsync(x => x.UserListId == list.Id && x.Position == position, cancellationToken);
+
+        if (positionUsed)
+            throw new ConflictException("This position is already used in the list.");
+
         list.AddMovie(movie, position);
 
         await dbContext.SaveChangesAsync(cancellationToken);

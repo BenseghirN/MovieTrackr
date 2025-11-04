@@ -63,4 +63,23 @@ public class EnsureLocalMovieCommandHandlerTests
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("*MovieId*TmdbId*");
     }
+
+    [Fact]
+    public async Task Should_return_existing_local_id_and_not_import_when_tmdbid_already_in_db()
+    {
+        var (dbAbs, db) = InMemoryDbContextFactory.Create();
+
+        Movie existing = Movie.CreateNew("Inception", 27205, "Inception", 2010, null, null, 148, "dream", new DateTime(2010, 7, 16));
+        db.Movies.Add(existing);
+        await db.SaveChangesAsync();
+
+        Mock<ITmdbCatalogService> catalog = new Mock<ITmdbCatalogService>(MockBehavior.Strict);
+        EnsureLocalMovieHandler handler = new EnsureLocalMovieHandler(dbAbs, catalog.Object);
+
+        EnsureLocalMovieCommand cmd = new EnsureLocalMovieCommand(MovieId: null, TmdbId: 27205);
+        Guid id = await handler.Handle(cmd, CancellationToken.None);
+
+        id.Should().Be(existing.Id);
+        catalog.VerifyNoOtherCalls();
+    }
 }

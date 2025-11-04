@@ -33,6 +33,9 @@ public class UserList
     {
         if (!Movies.Any(m => m.MovieId == movie.Id))
         {
+            if (Movies.Any(m => m.Position == position))
+                throw new InvalidOperationException("Position already used.");
+
             Movies.Add(new UserListMovie
             {
                 UserListId = Id,

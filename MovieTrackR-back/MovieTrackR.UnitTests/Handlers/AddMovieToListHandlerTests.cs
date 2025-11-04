@@ -176,4 +176,33 @@ public class AddMovieToListHandlerTests
 
         await act.Should().ThrowAsync<ForbiddenException>();
     }
+
+    [Fact]
+    public async Task Should_throw_conflict_when_position_already_used_in_list()
+    {
+        var (dbAbs, db) = InMemoryDbContextFactory.Create();
+
+        User user = User.Create("ext-1", "u@test.dev", "UserTest", "User", "Test");
+        UserList list = UserList.Create(user.Id, "List", null);
+        Movie m1 = Movie.CreateNew("A", null, null, 2000, null, null, 100, "a", new DateTime(2000, 1, 1));
+        Movie m2 = Movie.CreateNew("B", null, null, 2001, null, null, 100, "b", new DateTime(2001, 1, 1));
+
+        list.AddMovie(m1, 10);
+        db.Users.Add(user);
+        db.UserLists.Add(list);
+        db.Movies.AddRange(m1, m2);
+        await db.SaveChangesAsync();
+
+        Mock<ISender> sender = new Mock<ISender>();
+        sender.Setup(s => s.Send(It.IsAny<EnsureUserExistsCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(user.Id);
+        sender.Setup(s => s.Send(It.IsAny<EnsureLocalMovieCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(m2.Id);
+
+        AddMovieToListHandler handler = new AddMovieToListHandler(dbAbs, sender.Object);
+        AddMovieToListCommand cmd = new AddMovieToListCommand(new("ext-1", "u@test.dev", "UserTest", "User", "Test"),
+            list.Id, m2.Id, null, 10);
+
+        Func<Task> act = async () => await handler.Handle(cmd, CancellationToken.None);
+
+        await act.Should().ThrowAsync<ConflictException>().WithMessage("*position*");
+    }
 }
