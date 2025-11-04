@@ -2,6 +2,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using MovieTrackR.Application.Common.Helpers;
 using MovieTrackR.Application.DTOs;
 using MovieTrackR.Application.Interfaces;
 using MovieTrackR.Application.TMDB;
@@ -24,13 +25,10 @@ public sealed class SearchMoviesHybridHandler(IMovieTrackRDbContext dbContext, I
         // 1. Requête locale
         IQueryable<Movie> localQuery = dbContext.Movies
             .Include(m => m.MovieGenres).ThenInclude(mg => mg.Genre)
-            .AsNoTracking()
-            .AsQueryable();
+            .AsNoTracking();
 
-        if (!string.IsNullOrWhiteSpace(searchCriteria.Query))
-            localQuery = localQuery.Where(m =>
-                EF.Functions.ILike(m.Title, $"%{searchCriteria.Query}%") ||
-                (m.OriginalTitle != null && EF.Functions.ILike(m.OriginalTitle, $"%{searchCriteria.Query}%")));
+        localQuery = localQuery.ApplyTitleFilter((DbContext)dbContext, searchCriteria.Query);
+
 
         if (searchCriteria.Year is not null) localQuery = localQuery.Where(m => m.Year == searchCriteria.Year);
 
