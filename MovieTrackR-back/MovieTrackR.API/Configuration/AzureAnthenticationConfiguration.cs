@@ -10,7 +10,13 @@ public static class AzureAnthenticationConfiguration
     public static IServiceCollection AddAzureAnthenticationConfiguration(this IServiceCollection services, IConfiguration configuration)
     {
         IConfigurationSection azureB2CSection = configuration.GetSection("EntraExternalId");
-        string authority = azureB2CSection["Authority"] ?? throw new ArgumentNullException("Authority");
+        // string authority = azureB2CSection["Authority"] ?? throw new ArgumentNullException("Authority");
+        string? authority = azureB2CSection["Authority"];
+        if (string.IsNullOrWhiteSpace(authority) || authority.Contains("fake"))
+        {
+            // Auth de test sera configurée ailleurs (TestAppFactory)
+            return services;
+        }
         string clientId = azureB2CSection["ClientId"] ?? throw new ArgumentNullException("ClientId");
         string clientSecret = azureB2CSection["clientSecret"] ?? throw new ArgumentNullException("clientSecret");
         string callbackPath = azureB2CSection["CallbackPath"] ?? throw new ArgumentNullException("CallbackPath");

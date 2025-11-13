@@ -10,6 +10,7 @@ using MovieTrackR.Domain.Entities;
 using MovieTrackR.UnitTests.Utils;
 using Microsoft.Extensions.Logging.Abstractions;
 using MovieTrackR.Application.DTOs;
+
 namespace MovieTrackR.UnitTests.Handlers;
 
 public class SearchMoviesHybridHandlerTests

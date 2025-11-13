@@ -11,20 +11,20 @@ public static class ReviewCommentsEndpoints
         public static IEndpointRouteBuilder MapReviewCommentsEndpoints(this IEndpointRouteBuilder app)
         {
                 ApiVersionSet vset = app.NewApiVersionSet()
-                    .HasApiVersion(new ApiVersion(1, 0))
-                    .Build();
+                        .HasApiVersion(new ApiVersion(1, 0))
+                        .Build();
 
                 RouteGroupBuilder group = app.MapGroup("/api/v{version:apiVersion}/reviews/{reviewId:guid}/comments")
-                    .WithApiVersionSet(vset)
-                    .MapToApiVersion(1, 0)
-                    .WithTags("ReviewComments")
-                    .WithOpenApi();
+                        .WithApiVersionSet(vset)
+                        .MapToApiVersion(1, 0)
+                        .WithTags("ReviewComments")
+                        .WithOpenApi();
 
                 group.MapGet("", ReviewCommentsHandlers.GetComments)
-                            .AllowAnonymous()
-                            .WithSummary("List comments for a review")
-                            .WithDescription("Returns a paginated list of comments for the specified review.")
-                            .Produces<PagedResult<CommentDto>>(StatusCodes.Status200OK);
+                                .AllowAnonymous()
+                                .WithSummary("List comments for a review")
+                                .WithDescription("Returns a paginated list of comments for the specified review.")
+                                .Produces<PagedResult<CommentDto>>(StatusCodes.Status200OK);
 
                 group.MapPost("", ReviewCommentsHandlers.CreateComment)
                         .WithSummary("Create a comment")

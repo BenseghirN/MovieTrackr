@@ -19,13 +19,15 @@ builder.Services
     .AddSwaggerConfiguration()
     .AddApiVersioningConfiguration()
     .AddAuthorization()
+    .AddRateLimitingConfiguration()
     .AddAzureAnthenticationConfiguration(builder.Configuration)
     .AddAppAuthorization() // custom Authorization policies
     .AddEndpointsApiExplorer()
     .AddInfrastructure(builder.Configuration) //custom service from Infrastructure project
     .AddApplication(builder.Configuration) //custom service from Application project
     .AddValidatorsFromAssembly(typeof(Program).Assembly) // Register FluentValidation validators
-    .AddControllers().AddJsonOptions(options =>
+    .AddControllers()
+    .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
@@ -48,6 +50,7 @@ app
 .MapUserListsEndpoints()
 .MapUsersEndpoints();
 
+app.UseRateLimitingConfiguration();
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -67,5 +70,6 @@ app.UseStaticFiles(new StaticFileOptions // Serve  static files (CSS, JS, images
         }
     }
 });
+app.MapFallbackToFile("index.html");
 
 app.Run();

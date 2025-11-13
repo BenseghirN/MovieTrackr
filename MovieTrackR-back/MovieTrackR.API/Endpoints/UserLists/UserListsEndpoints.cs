@@ -25,7 +25,7 @@ public static class UserListsEndpoints
       .WithDescription("Retourne la vue 'résumé' des listes appartenant à l'utilisateur authentifié.")
       .Produces<IReadOnlyList<UserListDto>>(StatusCodes.Status200OK);
 
-    group.MapGet("/{id:guid}", UserListsHandlers.GetById)
+    group.MapGet("/{listId:guid}", UserListsHandlers.GetById)
       .WithName("Get_My_List_ById")
       .WithSummary("Récupère une de mes listes par son identifiant.")
       .WithDescription("Retourne la vue 'détails' d’une liste, incluant les films ordonnés par position. Restreint au propriétaire de la liste.")
@@ -41,7 +41,7 @@ public static class UserListsEndpoints
       .ProducesProblem(StatusCodes.Status400BadRequest)
       .ProducesProblem(StatusCodes.Status409Conflict);
 
-    group.MapPut("/{id:guid}", UserListsHandlers.Update)
+    group.MapPut("/{listId:guid}", UserListsHandlers.Update)
       .AddEndpointFilter<ValidationFilter<UpdateListDto>>()
       .WithName("Update_My_List")
       .WithSummary("Met à jour une de mes listes.")
@@ -51,13 +51,13 @@ public static class UserListsEndpoints
       .Produces(StatusCodes.Status404NotFound)
       .ProducesProblem(StatusCodes.Status409Conflict);
 
-    group.MapDelete("/{id:guid}", UserListsHandlers.Delete)
+    group.MapDelete("/{listId:guid}", UserListsHandlers.Delete)
       .WithName("Delete_My_List")
       .WithSummary("Supprime une de mes listes.")
       .Produces(StatusCodes.Status204NoContent)
       .Produces(StatusCodes.Status404NotFound);
 
-    group.MapPost("/{id:guid}/movie", UserListsHandlers.AddItem)
+    group.MapPost("/{listId:guid}/movie", UserListsHandlers.AddItem)
       .AddEndpointFilter<ValidationFilter<AddMovieToListDto>>()
       .WithName("Add_Movie_To_My_List")
       .WithSummary("Ajoute un film à l’une de mes listes (import TMDb si nécessaire).")
@@ -66,13 +66,13 @@ public static class UserListsEndpoints
       .ProducesProblem(StatusCodes.Status400BadRequest)
       .Produces(StatusCodes.Status404NotFound);
 
-    group.MapDelete("/{id:guid}/movie/{movieId:guid}", UserListsHandlers.RemoveItem)
+    group.MapDelete("/{listId:guid}/movie/{movieId:guid}", UserListsHandlers.RemoveItem)
       .WithName("Remove_Movie_From_My_List")
       .WithSummary("Retire un film de l’une de mes listes.")
       .Produces(StatusCodes.Status204NoContent)
       .Produces(StatusCodes.Status404NotFound);
 
-    group.MapPut("/{id:guid}/movie/reorder", UserListsHandlers.ReorderItem)
+    group.MapPut("/{listId:guid}/movie/reorder", UserListsHandlers.ReorderItem)
       .AddEndpointFilter<ValidationFilter<ReorderListItemDto>>()
       .WithName("Reorder_My_List_Item")
       .WithSummary("Change la position d’un film dans l’une de mes listes.")

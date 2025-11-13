@@ -4,7 +4,6 @@ using MovieTrackR.Infrastructure.Persistence;
 
 namespace MovieTrackR.UnitTests.Utils;
 
-
 public static class InMemoryDbContextFactory
 {
     public static (IMovieTrackRDbContext Abstraction, MovieTrackRDbContext Concrete) Create(string? name = null)

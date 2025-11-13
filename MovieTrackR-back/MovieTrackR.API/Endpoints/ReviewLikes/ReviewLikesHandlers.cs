@@ -15,10 +15,10 @@ public static class ReviewLikesHandlers
     /// </summary>
     /// <remarks>Erreurs (middleware) : 401, 404.</remarks>
     public static async Task<NoContent> Like(
-        Guid id, ClaimsPrincipal user, ISender sender, CancellationToken ct)
+        Guid reviewId, ClaimsPrincipal user, ISender sender, CancellationToken ct)
     {
         CurrentUserDto current = user.ToCurrentUserDto();
-        await sender.Send(new LikeReviewCommand(id, current), ct);
+        await sender.Send(new LikeReviewCommand(reviewId, current), ct);
         return TypedResults.NoContent();
     }
 
@@ -27,10 +27,10 @@ public static class ReviewLikesHandlers
     /// </summary>
     /// <remarks>Erreurs (middleware) : 401.</remarks>
     public static async Task<NoContent> Unlike(
-        Guid id, ClaimsPrincipal user, ISender sender, CancellationToken ct)
+        Guid reviewId, ClaimsPrincipal user, ISender sender, CancellationToken ct)
     {
         CurrentUserDto current = user.ToCurrentUserDto();
-        await sender.Send(new UnlikeReviewCommand(id, current), ct);
+        await sender.Send(new UnlikeReviewCommand(reviewId, current), ct);
         return TypedResults.NoContent();
     }
 }
