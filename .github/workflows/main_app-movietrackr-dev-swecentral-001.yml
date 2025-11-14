@@ -139,7 +139,7 @@ jobs:
 
       - name: Apply database migrations
         working-directory: ${{ env.WORKING_DIRECTORY }}
-        run: dotnet ef database update --project MovieTrackR.Infrastructure/MovieTrackR.Infrastructure.csproj --startup-project MovieTrackR.API/MovieTrackR.API.csproj --connection "${{ secrets.CONNECTION_STRING }}" --verbose
+        run: dotnet ef database update --project MovieTrackR.Infrastructure/MovieTrackR.Infrastructure.csproj --startup-project MovieTrackR.API/MovieTrackR.API.csproj --connection '${{ secrets.CONNECTION_STRING }}' --verbose
         env:
           ASPNETCORE_ENVIRONMENT: Production
 
@@ -156,4 +156,5 @@ jobs:
         with:
           app-name: "app-MovieTrackR-dev-swecentral-001"
           slot-name: "Production"
+
           package: ./publish
