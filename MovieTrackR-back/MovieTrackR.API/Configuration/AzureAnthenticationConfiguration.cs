@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using MovieTrackR.Domain.Enums;
 
 namespace MovieTrackR.API.Configuration;
 
@@ -10,7 +8,6 @@ public static class AzureAnthenticationConfiguration
     public static IServiceCollection AddAzureAnthenticationConfiguration(this IServiceCollection services, IConfiguration configuration)
     {
         IConfigurationSection azureB2CSection = configuration.GetSection("EntraExternalId");
-        // string authority = azureB2CSection["Authority"] ?? throw new ArgumentNullException("Authority");
         string? authority = azureB2CSection["Authority"];
         if (string.IsNullOrWhiteSpace(authority) || authority.Contains("fake"))
         {
