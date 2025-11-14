@@ -9,8 +9,8 @@ on:
       - main
       - dev
     paths:
-      - 'MovieTrackR-back/**'        # ← Déclenche si backend change
-      - '.github/workflows/main_*.yml'
+      - 'MovieTrackR-back/**' 
+      - '.github/workflows/main_app-movietrackr-dev-swecentral-001.yml'
   pull_request:
     branches:
       - main
@@ -20,7 +20,7 @@ on:
 
 env:
   DOTNET_VERSION: '9.0.x'
-  WORKING_DIRECTORY: './MovieTrackR-back'    # ← Le vrai chemin
+  WORKING_DIRECTORY: './MovieTrackR-back'
   PROJECT_PATH: 'MovieTrackR-back/MovieTrackR.API/MovieTrackR.API.csproj'
 
 jobs:
@@ -146,9 +146,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_76A632FB32E5438B82E2E4DEDB3AF142 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_00CD9E46A534490FAB98CE92FF187BBA }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_E6575CBF5AA34686A8B963192338DC51 }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -156,5 +156,4 @@ jobs:
         with:
           app-name: "app-MovieTrackR-dev-swecentral-001"
           slot-name: "Production"
-
           package: ./publish
