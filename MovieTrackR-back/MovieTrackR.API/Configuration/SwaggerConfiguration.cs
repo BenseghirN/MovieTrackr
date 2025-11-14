@@ -1,19 +1,29 @@
 using System.Reflection;
+using Asp.Versioning.ApiExplorer;
 using Microsoft.OpenApi.Models;
 
-namespace GameShelf.API.Configuration;
+namespace MovieTrackR.API.Configuration;
 
 public static class SwaggerConfiguration
 {
-    public static void AddSwaggerConfiguration(this IServiceCollection services)
+    public static IServiceCollection AddSwaggerConfiguration(this IServiceCollection services)
     {
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(options =>
         {
-            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-            options.IncludeXmlComments(xmlPath);
+            // XML Docs from API Project
+            string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            string apiXml = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            if (File.Exists(apiXml))
+                options.IncludeXmlComments(apiXml);
+            // XML Docs from Application Project
+            Assembly appAssembly = typeof(Application.DTOs.UserDto).Assembly;
+            string appXml = Path.Combine(AppContext.BaseDirectory, $"{appAssembly.GetName().Name}.xml");
+            if (File.Exists(appXml))
+                options.IncludeXmlComments(appXml);
+
             options.UseInlineDefinitionsForEnums();
+            options.SupportNonNullableReferenceTypes();
 
             options.TagActionsBy(api =>
             {
@@ -27,14 +37,22 @@ public static class SwaggerConfiguration
                 Description = "API du projet MovieTrackR, Site de critiques de films collaboratif"
             });
         });
+
+        return services;
     }
 
     public static void UseSwaggerConfiguration(this IApplicationBuilder app)
     {
         app.UseSwagger();
+        IApiVersionDescriptionProvider provider = app.ApplicationServices.GetRequiredService<IApiVersionDescriptionProvider>();
         app.UseSwaggerUI(options =>
         {
-            options.SwaggerEndpoint("/swagger/v1/swagger.json", "MovieTrackR API V1");
+            foreach (ApiVersionDescription desc in provider.ApiVersionDescriptions)
+            {
+                options.SwaggerEndpoint($"/swagger/{desc.GroupName}/swagger.json",
+                    $"MovieTrackR {desc.GroupName.ToUpperInvariant()}");
+            }
+            // options.SwaggerEndpoint("/swagger/v1/swagger.json", "MovieTrackR API V1");
         });
     }
 }

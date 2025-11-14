@@ -1,38 +1,59 @@
 using System.Text.Json.Serialization;
-using GameShelf.API.Configuration;
+using FluentValidation;
+using MovieTrackR.api.middleware;
+using MovieTrackR.API.Configuration;
+using MovieTrackR.API.Endpoints.Auth;
+using MovieTrackR.API.Endpoints.Movies;
+using MovieTrackR.API.Endpoints.ReviewComments;
+using MovieTrackR.API.Endpoints.ReviewLikes;
+using MovieTrackR.API.Endpoints.Reviews;
+using MovieTrackR.API.Endpoints.UserLists;
+using MovieTrackR.API.Endpoints.Users;
+using MovieTrackR.Application.Configuration;
+using MovieTrackR.Infrastructure.Configuration;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers().AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-});
-builder.Services.AddSwaggerConfiguration();
-builder.Services.AddApiVersioningConfiguration();
-builder.Services.AddAuthorization();
-builder.Services.AddAzureAnthenticationConfiguration(builder.Configuration);
-builder.Services.AddEndpointsApiExplorer();
+builder.Services
+    .AddSwaggerConfiguration()
+    .AddApiVersioningConfiguration()
+    .AddAuthorization()
+    .AddRateLimitingConfiguration()
+    .AddAzureAnthenticationConfiguration(builder.Configuration)
+    .AddAppAuthorization() // custom Authorization policies
+    .AddEndpointsApiExplorer()
+    .AddInfrastructure(builder.Configuration) //custom service from Infrastructure project
+    .AddApplication(builder.Configuration) //custom service from Application project
+    .AddValidatorsFromAssembly(typeof(Program).Assembly) // Register FluentValidation validators
+    .AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 WebApplication app = builder.Build();
 
-app.MapGet("/hello", () => Results.Ok("Hello MovieTrackR!"))
-   .WithName("Hello")
-   .WithTags("Hello")
-   .WithOpenApi();
+// Swagger
+if (app.Environment.IsDevelopment()) app.UseSwaggerConfiguration();
 
-// HTTPS Redirection
 app.UseHttpsRedirection();
+app.UseGlobalExceptionHandler();
 
-// Authentication
+// Map endpoints
+app
+.MapAuthEndpoints()
+.MapMoviesEndpoints()
+.MapReviewCommentsEndpoints()
+.MapReviewLikesEndpoints()
+.MapReviewsEndpoints()
+.MapUserListsEndpoints()
+.MapUsersEndpoints();
+
+app.UseRateLimitingConfiguration();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwaggerConfiguration();
-}
 
 // Static files server for static frontend
 app.UseDefaultFiles(); // Automaticaly serve index.html if exists
@@ -49,5 +70,6 @@ app.UseStaticFiles(new StaticFileOptions // Serve  static files (CSS, JS, images
         }
     }
 });
+app.MapFallbackToFile("index.html");
 
 app.Run();

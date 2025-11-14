@@ -1,16 +1,21 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
-namespace GameShelf.API.Configuration;
+namespace MovieTrackR.API.Configuration;
 
 public static class AzureAnthenticationConfiguration
 {
     public static IServiceCollection AddAzureAnthenticationConfiguration(this IServiceCollection services, IConfiguration configuration)
     {
-        IConfigurationSection azureB2CSection = configuration.GetSection("AzureAdB2C");
-        string authority = azureB2CSection["Authority"] ?? throw new ArgumentNullException("Authority");
+        IConfigurationSection azureB2CSection = configuration.GetSection("EntraExternalId");
+        string? authority = azureB2CSection["Authority"];
+        if (string.IsNullOrWhiteSpace(authority) || authority.Contains("fake"))
+        {
+            // Auth de test sera configurée ailleurs (TestAppFactory)
+            return services;
+        }
         string clientId = azureB2CSection["ClientId"] ?? throw new ArgumentNullException("ClientId");
+        string clientSecret = azureB2CSection["clientSecret"] ?? throw new ArgumentNullException("clientSecret");
         string callbackPath = azureB2CSection["CallbackPath"] ?? throw new ArgumentNullException("CallbackPath");
         string OpenIdScheme = azureB2CSection["OpenIdScheme"] ?? throw new ArgumentNullException("OpenIdScheme");
 
@@ -23,7 +28,7 @@ public static class AzureAnthenticationConfiguration
                     })
                 .AddCookie(options =>
                     {
-                        options.Cookie.Name = "GameShelf_auth";         // Custom cookie name
+                        options.Cookie.Name = "MovieTrackR_auth";         // Custom cookie name
                         options.Cookie.SecurePolicy = CookieSecurePolicy.None; // Use Secure cookies in production (HTTPS)
                         options.Cookie.SameSite = SameSiteMode.Strict;  // Prevent CSRF attacks
                         options.Cookie.HttpOnly = true;                 // Prevent JS access (XSS protection)
@@ -46,6 +51,7 @@ public static class AzureAnthenticationConfiguration
                     {
                         options.Authority = authority;
                         options.ClientId = clientId;
+                        options.ClientSecret = clientSecret;
                         options.ResponseType = OpenIdConnectResponseType.Code;
                         options.UsePkce = true;
                         options.SaveTokens = true;
@@ -53,38 +59,9 @@ public static class AzureAnthenticationConfiguration
                         options.Scope.Add("openid");
                         options.Scope.Add("profile");
                         options.Scope.Add("offline_access");
-                        options.Scope.Add(clientId);
                         options.CallbackPath = callbackPath;
                     });
-
-        // services.AddScoped<IAuthorizationHandler, RoleAuthorizationHandler>();
-        services.AddAuthorization(options =>
-            options.AddPolicy(name: "Admin", policyBuilder =>
-            {
-                policyBuilder
-                    .RequireAuthenticatedUser()
-                    .AddRequirements(new RoleRequirement("Admin"));
-            }
-        ));
 
         return services;
     }
 }
-
-// TODO : REPLACE ROLE STRING TO ENUM
-public record RoleRequirement(string Role) : IAuthorizationRequirement;
-// public class RoleAuthorizationHandler(IGameShelfDbContext dbContext) : AuthorizationHandler<RoleRequirement>()
-// {
-//     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, RoleRequirement requirement)
-//     {
-//         string externalId = context.User.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value ?? string.Empty;
-//         if (string.IsNullOrWhiteSpace(externalId))
-//             return;
-//         User? user = await dbContext.Users.FirstOrDefaultAsync(u => u.ExternalId == externalId);
-
-//         if (user != null && user.Role == requirement.Role)
-//         {
-//             context.Succeed(requirement);
-//         }
-//     }
-// }
