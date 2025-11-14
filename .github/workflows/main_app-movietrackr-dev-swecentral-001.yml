@@ -49,10 +49,10 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore MovieTrackR.sln
 
       - name: Build
-        run: dotnet build --no-restore --configuration Release
+        run: dotnet build MovieTrackR.sln --no-restore --configuration Release
 
       - name: Run Unit Tests
         run: dotnet test MovieTrackR.UnitTests/MovieTrackR.UnitTests.csproj --no-build --configuration Release --verbosity normal --logger "console;verbosity=detailed"
