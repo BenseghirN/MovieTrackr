@@ -1,0 +1,144 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy ASP.Net Core app to Azure Web App - app-MovieTrackR-dev-swecentral-001
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '9.0.x'
+  PROJECT_PATH: 'MovieTrackR.API/MovieTrackR.API.csproj'
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: movietrackr_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Run Unit Tests
+        run: dotnet test MovieTrackR.UnitTests/MovieTrackR.UnitTests.csproj --no-build --configuration Release --verbosity normal --logger "console;verbosity=detailed"
+
+      - name: Run Integration Tests
+        run: dotnet test MovieTrackR.IntegrationTests/MovieTrackR.IntegrationTests.csproj --no-build --configuration Release --verbosity normal --logger "console;verbosity=detailed"
+        env:
+          ConnectionStrings__DefaultConnection: Host=localhost;Database=movietrackr_test;Username=postgres;Password=postgres
+
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      contents: read #This is required for actions/checkout
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build with dotnet
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Publish application
+        run: dotnet publish ${{ env.PROJECT_PATH }} -c Release -o ${{env.DOTNET_ROOT}}/myapp
+
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v4
+        with:
+          name: .net-app
+          path: ${{env.DOTNET_ROOT}}/myapp
+
+  deploy:
+    name: Deploy to Azure Web App - app-MovieTrackR-dev-swecentral-001
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    permissions:
+      id-token: write #This is required for requesting the JWT
+      contents: read #This is required for actions/checkout
+
+    steps:
+      - name: Checkout code (for migrations)
+        uses: actions/checkout@v4
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: .net-app
+          path: ./publish
+      
+      - name: Install EF Core tools
+        run: dotnet tool install --global dotnet-ef --version 9.0.*
+
+      - name: Apply database migrations
+        run: dotnet ef database update --project MovieTrackR.Infrastructure/MovieTrackR.Infrastructure.csproj --startup-project MovieTrackR.API/MovieTrackR.API.csproj --connection "${{ secrets.CONNECTION_STRING }}" --verbose
+        env:
+          ASPNETCORE_ENVIRONMENT: Production
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_76A632FB32E5438B82E2E4DEDB3AF142 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_00CD9E46A534490FAB98CE92FF187BBA }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_E6575CBF5AA34686A8B963192338DC51 }}
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: "app-MovieTrackR-dev-swecentral-001"
+          slot-name: "Production"
+          package: ./publish
