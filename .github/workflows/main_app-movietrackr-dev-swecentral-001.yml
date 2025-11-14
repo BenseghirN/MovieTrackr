@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy ASP.Net Core app to Azure Web App - app-MovieTrackR-dev-swecentral-001
+name: Backend - Build, Test & Deploy to Azure
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - main
       - dev
     paths:
-      - 'MovieTrackR-back/**'
+      - 'MovieTrackR-back/**'        # ← Déclenche si backend change
       - '.github/workflows/main_*.yml'
   pull_request:
     branches:
@@ -20,7 +20,7 @@ on:
 
 env:
   DOTNET_VERSION: '9.0.x'
-  WORKING_DIRECTORY: './MovieTrackR-back'
+  WORKING_DIRECTORY: './MovieTrackR-back'    # ← Le vrai chemin
   PROJECT_PATH: 'MovieTrackR-back/MovieTrackR.API/MovieTrackR.API.csproj'
 
 jobs:
@@ -29,6 +29,10 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIRECTORY }}  # ← Important !
 
     services:
       postgres:
@@ -55,10 +59,10 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore MovieTrackR.sln
 
       - name: Build
-        run: dotnet build --no-restore --configuration Release
+        run: dotnet build MovieTrackR.sln --no-restore --configuration Release
 
       - name: Run Unit Tests
         run: dotnet test MovieTrackR.UnitTests/MovieTrackR.UnitTests.csproj --no-build --configuration Release --verbosity normal --logger "console;verbosity=detailed"
@@ -74,7 +78,7 @@ jobs:
     needs: test
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     defaults:
       run:
@@ -90,10 +94,10 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore MovieTrackR.sln
 
       - name: Build with dotnet
-        run: dotnet build --no-restore --configuration Release
+        run: dotnet build MovieTrackR.sln --no-restore --configuration Release
 
       - name: Publish application
         run: dotnet publish MovieTrackR.API/MovieTrackR.API.csproj -c Release -o ${{github.workspace}}/publish
@@ -105,15 +109,15 @@ jobs:
           path: ${{github.workspace}}/publish
 
   deploy:
-    name: Deploy to Azure Web App - app-MovieTrackR-dev-swecentral-001
+    name: Deploy to Azure
     runs-on: ubuntu-latest
     needs: build
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code (for migrations)
