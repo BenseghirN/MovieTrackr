@@ -8,14 +8,20 @@ on:
     branches:
       - main
       - dev
+    paths:
+      - 'MovieTrackR-back/**'
+      - '.github/workflows/main_*.yml'
   pull_request:
     branches:
       - main
+    paths:
+      - 'MovieTrackR-back/**'
   workflow_dispatch:
 
 env:
   DOTNET_VERSION: '9.0.x'
-  PROJECT_PATH: 'MovieTrackR.API/MovieTrackR.API.csproj'
+  WORKING_DIRECTORY: './MovieTrackR-back'
+  PROJECT_PATH: 'MovieTrackR-back/MovieTrackR.API/MovieTrackR.API.csproj'
 
 jobs:
   test:
@@ -49,10 +55,10 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore dependencies
-        run: dotnet restore MovieTrackR.sln
+        run: dotnet restore
 
       - name: Build
-        run: dotnet build MovieTrackR.sln --no-restore --configuration Release
+        run: dotnet build --no-restore --configuration Release
 
       - name: Run Unit Tests
         run: dotnet test MovieTrackR.UnitTests/MovieTrackR.UnitTests.csproj --no-build --configuration Release --verbosity normal --logger "console;verbosity=detailed"
@@ -70,6 +76,10 @@ jobs:
     permissions:
       contents: read #This is required for actions/checkout
 
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -86,13 +96,13 @@ jobs:
         run: dotnet build --no-restore --configuration Release
 
       - name: Publish application
-        run: dotnet publish ${{ env.PROJECT_PATH }} -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish MovieTrackR.API/MovieTrackR.API.csproj -c Release -o ${{github.workspace}}/publish
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          path: ${{github.workspace}}/publish
 
   deploy:
     name: Deploy to Azure Web App - app-MovieTrackR-dev-swecentral-001
@@ -124,6 +134,7 @@ jobs:
         run: dotnet tool install --global dotnet-ef --version 9.0.*
 
       - name: Apply database migrations
+        working-directory: ${{ env.WORKING_DIRECTORY }}
         run: dotnet ef database update --project MovieTrackR.Infrastructure/MovieTrackR.Infrastructure.csproj --startup-project MovieTrackR.API/MovieTrackR.API.csproj --connection "${{ secrets.CONNECTION_STRING }}" --verbose
         env:
           ASPNETCORE_ENVIRONMENT: Production
