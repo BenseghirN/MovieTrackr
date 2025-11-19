@@ -1,0 +1,54 @@
+<div class="home-container">
+  <section class="hero">
+    <h1>🎬 Bienvenue sur MovieTrackR</h1>
+    <p class="subtitle">Votre gestionnaire de films personnel</p>
+    
+    <p-card class="search-card">
+      <div class="search-box">
+        <input 
+          type="text" 
+          pInputText 
+          placeholder="Rechercher un film..." 
+          class="search-input"
+          [value]="searchQuery()"
+          (input)="searchQuery.set($any($event.target).value)"
+        />
+        <p-button 
+          label="Rechercher" 
+          icon="pi pi-search"
+          routerLink="/movies"
+          [queryParams]="{q: searchQuery()}">
+        </p-button>
+      </div>
+    </p-card>
+  </section>
+  
+  <section class="features">
+    <h2>Fonctionnalités</h2>
+    <div class="features-grid">
+      <p-card>
+        <div class="feature-item">
+          <i class="pi pi-search feature-icon"></i>
+          <h3>Recherche</h3>
+          <p>Trouvez des films parmi des millions de titres</p>
+        </div>
+      </p-card>
+      
+      <p-card>
+        <div class="feature-item">
+          <i class="pi pi-bookmark feature-icon"></i>
+          <h3>Watchlist</h3>
+          <p>Sauvegardez les films que vous voulez voir</p>
+        </div>
+      </p-card>
+      
+      <p-card>
+        <div class="feature-item">
+          <i class="pi pi-star feature-icon"></i>
+          <h3>Notes</h3>
+          <p>Notez et commentez vos films vus</p>
+        </div>
+      </p-card>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,46 @@
+<header class="header">
+  <div class="header-content">
+    <div class="logo">
+      <a routerLink="/">
+        <img src="assets/images/logo.png" alt="MovieTrackR" class="logo-image">
+        <!-- <span class="logo-text">MovieTrackR</span> -->
+      </a>
+    </div>
+    
+    <nav class="nav-links">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+        <i class="pi pi-home"></i>
+        Accueil
+      </a>
+      <a routerLink="/movies" routerLinkActive="active">
+        <i class="pi pi-search"></i>
+        Films
+      </a>
+      @if (isLoggedIn()) {
+        <a routerLink="/watchlist" routerLinkActive="active">
+          <i class="pi pi-bookmark"></i>
+          Ma Watchlist
+        </a>
+      }
+    </nav>
+    
+    <div class="auth-section">
+      @if (isLoggedIn()) {
+        <p-avatar icon="pi pi-user" shape="circle" class="mr-2"></p-avatar>
+        <p-button 
+          label="Déconnexion" 
+          icon="pi pi-sign-out" 
+          severity="secondary" 
+          [text]="true"
+          (click)="logout()">
+        </p-button>
+      } @else {
+        <p-button 
+          label="Connexion" 
+          icon="pi pi-sign-in" 
+          (click)="login()">
+        </p-button>
+      }
+    </div>
+  </div>
+</header>

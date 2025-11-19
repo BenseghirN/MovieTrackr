@@ -1,0 +1,29 @@
+.footer {
+  background-color: var(--surface-card);
+  border-top: 1px solid var(--surface-border);
+  padding: 1rem 1.5rem;
+  margin-top: auto;
+}
+
+.footer-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  text-align: center;
+  
+  p {
+    margin: 0.25rem 0;
+    color: var(--text-color-secondary);
+    font-size: 0.875rem;
+  }
+}
+
+.tmdb-attribution {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  
+  img {
+    height: 12px;
+  }
+}
