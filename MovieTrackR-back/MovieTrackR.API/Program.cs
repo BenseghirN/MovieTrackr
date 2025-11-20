@@ -17,6 +17,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services
     .AddSwaggerConfiguration()
+    .AddCorsConfiguration()
     .AddApiVersioningConfiguration()
     .AddAuthorization()
     .AddRateLimitingConfiguration()
@@ -51,6 +52,7 @@ app
 .MapUsersEndpoints();
 
 app.UseRateLimitingConfiguration();
+app.UseCorsConfiguration(app.Environment);
 app.UseAuthentication();
 app.UseAuthorization();
 
