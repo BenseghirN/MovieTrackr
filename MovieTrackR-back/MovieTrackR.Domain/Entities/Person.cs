@@ -14,21 +14,22 @@ public class Person
     public ICollection<MovieCast> CastRoles { get; private set; } = new List<MovieCast>();
     public ICollection<MovieCrew> CrewRoles { get; private set; } = new List<MovieCrew>();
 
-    public static Person Create(string name, int? tmdbId = null)
+    public static Person Create(string name, int? tmdbId = null, string? profilePath = null)
     {
         return new Person
         {
             Id = Guid.NewGuid(),
             Name = name,
             TmdbId = tmdbId,
+            ProfilePictureUrl = profilePath,
             CreatedAt = DateTime.UtcNow
         };
     }
 
-    public void UpdateDetails(string name, string? profileUrl, DateTime? birth, DateTime? death, string? bio)
+    public void UpdateDetails(string name, string? profilePath, DateTime? birth, DateTime? death, string? bio)
     {
         Name = name;
-        ProfilePictureUrl = profileUrl;
+        ProfilePictureUrl = profilePath;
         BirthDate = birth;
         DeathDate = death;
         Biography = bio;

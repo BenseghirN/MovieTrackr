@@ -24,13 +24,19 @@ public static class MoviesEndpoints
         group.MapGet("/{id:guid}", MoviesHandlers.GetById)
             .WithName("Movies_GetById")
             .WithSummary("Get a movie by id")
-            .Produces<MovieDto>(StatusCodes.Status200OK)
+            .Produces<MovieDetailsDto>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status404NotFound);
+
+        group.MapGet("/tmdb/{tmdbId:int}", MoviesHandlers.GetByTmdbId)
+            .WithName("Movies_GetByTmdbId")
+            .WithSummary("Get movie details from TMDB by TMDB id")
+            .Produces<MovieDetailsDto>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status404NotFound);
 
         group.MapGet("/search", MoviesHandlers.Search)
             .WithName("Search_Movies")
             .WithSummary("Search movies (paged)")
-            .Produces<IReadOnlyList<MovieDto>>(StatusCodes.Status200OK);
+            .Produces<IReadOnlyList<SearchMovieResultDto>>(StatusCodes.Status200OK);
 
         group.MapPost("/", MoviesHandlers.Create)
             .WithName("Create_Movie")

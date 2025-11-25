@@ -8,12 +8,12 @@ using MovieTrackR.Domain.Entities;
 namespace MovieTrackR.Application.Movies.Queries;
 
 public sealed record SearchMoviesQuery(MovieSearchCriteria searchCriteria)
-    : IRequest<(IReadOnlyList<MovieDto> Items, int Total)>;
+    : IRequest<(IReadOnlyList<MovieDetailsDto> Items, int Total)>;
 
 public sealed class SearchMoviesHandler(IMovieTrackRDbContext dbContext, IMapper mapper)
-    : IRequestHandler<SearchMoviesQuery, (IReadOnlyList<MovieDto>, int)>
+    : IRequestHandler<SearchMoviesQuery, (IReadOnlyList<MovieDetailsDto>, int)>
 {
-    public async Task<(IReadOnlyList<MovieDto>, int)> Handle(SearchMoviesQuery searchQuery, CancellationToken cancellationToken)
+    public async Task<(IReadOnlyList<MovieDetailsDto>, int)> Handle(SearchMoviesQuery searchQuery, CancellationToken cancellationToken)
     {
         MovieSearchCriteria searchCriteria = searchQuery.searchCriteria;
         IQueryable<Movie> query = dbContext.Movies
@@ -30,6 +30,6 @@ public sealed class SearchMoviesHandler(IMovieTrackRDbContext dbContext, IMapper
 
         int total = await query.CountAsync(cancellationToken);
         List<Movie> movieResult = await query.Skip((searchCriteria.Page - 1) * searchCriteria.PageSize).Take(searchCriteria.PageSize).ToListAsync(cancellationToken);
-        return (mapper.Map<IReadOnlyList<MovieDto>>(movieResult), total);
+        return (mapper.Map<IReadOnlyList<MovieDetailsDto>>(movieResult), total);
     }
 }

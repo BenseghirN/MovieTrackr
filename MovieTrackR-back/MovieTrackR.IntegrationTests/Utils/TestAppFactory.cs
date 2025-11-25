@@ -11,6 +11,7 @@ using MovieTrackR.IntegrationTests.Containers;
 using MovieTrackR.Application.Interfaces;
 using MovieTrackR.API;
 using Microsoft.Extensions.Configuration;
+using MovieTrackR.Application.TMDB;
 
 namespace MovieTrackR.IntegrationTests.Utils;
 
@@ -19,7 +20,11 @@ public sealed class TestAppFactory : WebApplicationFactory<Program>
     private readonly PostgresFixture _pg;
     public Mock<ITmdbClient> TmdbMock { get; } = new(MockBehavior.Strict);
 
-    public TestAppFactory(PostgresFixture pg) => _pg = pg;
+    public TestAppFactory(PostgresFixture pg)
+    {
+        _pg = pg;
+        ConfigureDefaultMocks();
+    }
 
     protected override IHost CreateHost(IHostBuilder builder)
     {
@@ -73,6 +78,22 @@ public sealed class TestAppFactory : WebApplicationFactory<Program>
         IHost host = base.CreateHost(builder);
 
         return host;
+    }
+
+    private void ConfigureDefaultMocks()
+    {
+        TmdbMock
+            .Setup(c => c.GetGenresAsync(
+                "fr-FR",
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new TmdbGenresResponse(
+                Genres: new List<TmdbGenre>
+                {
+                    new(Id: 878, Name: "Science-Fiction"),
+                    new(Id: 12, Name: "Aventure"),
+                    new(Id: 28, Name: "Action")
+                }
+            ));
     }
 
     public HttpClient CreateClientAuthenticated()

@@ -14,7 +14,7 @@ public class EnsureLocalMovieCommandHandlerTests
     {
         var (dbAbs, db) = InMemoryDbContextFactory.Create();
 
-        Movie movie = Movie.CreateNew("Interstellar", null, null, 2014, null, null, 120, "Test", new DateTime(2014, 1, 1));
+        Movie movie = Movie.CreateNew("Interstellar", null, null, 2014, null, null, null, 120, "Test", new DateTime(2014, 1, 1), null);
         db.Movies.Add(movie);
         await db.SaveChangesAsync();
 
@@ -69,7 +69,7 @@ public class EnsureLocalMovieCommandHandlerTests
     {
         var (dbAbs, db) = InMemoryDbContextFactory.Create();
 
-        Movie existing = Movie.CreateNew("Inception", 27205, "Inception", 2010, null, null, 148, "dream", new DateTime(2010, 7, 16));
+        Movie existing = Movie.CreateNew("Inception", 27205, "Inception", 2010, null, null, null, 148, "dream", new DateTime(2010, 7, 16), null);
         db.Movies.Add(existing);
         await db.SaveChangesAsync();
 

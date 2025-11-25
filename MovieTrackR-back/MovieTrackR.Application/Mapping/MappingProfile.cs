@@ -12,8 +12,20 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<User, UserDto>();
-        CreateMap<Movie, MovieDto>()
-            .ForMember(d => d.Genres, m => m.MapFrom(s => s.MovieGenres.Select(mg => mg.Genre.Name)));
+        CreateMap<Movie, MovieDetailsDto>()
+            .ForMember(d => d.Genres, m => m.MapFrom(s => s.MovieGenres.Select(mg => mg.Genre.Name)))
+            .ForMember(d => d.Cast, m => m.MapFrom(s => s.Cast.OrderBy(c => c.Order).Take(15)))
+            .ForMember(d => d.Crew, m => m.MapFrom(s => s.Crew.Where(c => c.Job == "Director" || c.Department == "Writing").Take(5)));
+
+        CreateMap<MovieCast, CastMemberDto>()
+            .ForMember(d => d.Name, m => m.MapFrom(s => s.Person.Name))
+            .ForMember(d => d.Character, m => m.MapFrom(s => s.CharacterName))
+            .ForMember(d => d.ProfilePath, m => m.MapFrom(s => s.Person.ProfilePictureUrl));
+
+        CreateMap<MovieCrew, CrewMemberDto>()
+            .ForMember(d => d.Name, m => m.MapFrom(s => s.Person.Name))
+            .ForMember(d => d.ProfilePath, m => m.MapFrom(s => s.Person.ProfilePictureUrl));
+
         CreateMap<UserList, UserListDto>()
             .ForMember(d => d.MoviesCount, o => o.MapFrom(s => s.Movies.Count));
         CreateMap<UserList, UserListDetailsDto>()

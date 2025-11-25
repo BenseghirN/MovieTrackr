@@ -29,10 +29,12 @@ public sealed class UpdateMovieHandler(IMovieTrackRDbContext dbContext)
             originalTitle: updateCommand.dto.OriginalTitle,
             year: updateCommand.dto.Year,
             posterUrl: updateCommand.dto.PosterUrl,
+            backdropPath: updateCommand.dto.BackdropPath,
             trailerUrl: updateCommand.dto.TrailerUrl,
             duration: updateCommand.dto.Duration,
             overview: updateCommand.dto.Overview,
-            releaseDate: updateCommand.dto.ReleaseDate
+            releaseDate: updateCommand.dto.ReleaseDate,
+            voteAverage: updateCommand.dto.VoteAverage
         );
 
         HashSet<Guid> currentGenres = movie.MovieGenres.Select(mg => mg.GenreId).ToHashSet();

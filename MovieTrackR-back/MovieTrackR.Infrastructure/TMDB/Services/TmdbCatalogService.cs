@@ -34,9 +34,11 @@ public sealed class TmdbCatalogService(ITmdbClient tmdbClient, IMovieTrackRDbCon
             originalTitle: details.OriginalTitle ?? movie.OriginalTitle,
             year: ParseYear(details.ReleaseDate) ?? movie.Year,
             posterUrl: details.PosterPath ?? movie.PosterUrl,
+            backdropPath: details.BackdropPath ?? movie.BackdropPath,
             trailerUrl: movie.TrailerUrl,
             duration: details.Runtime ?? movie.Duration,
             overview: details.Overview ?? movie.Overview,
+            voteAverage: details.VoteAverage ?? movie.VoteAverage,
             releaseDate: ParseDate(details.ReleaseDate) ?? movie.ReleaseDate
         );
 
@@ -72,7 +74,7 @@ public sealed class TmdbCatalogService(ITmdbClient tmdbClient, IMovieTrackRDbCon
 
         foreach (TmdbCast cast in castRows)
             if (!knownCastPeople.Any(p => p.TmdbId == cast.Id))
-                knownCastPeople.Add(Person.Create(cast.Name ?? "(Inconnu)", cast.Id));
+                knownCastPeople.Add(Person.Create(cast.Name ?? "(Inconnu)", cast.Id, cast.ProfilePath));
 
         if (knownCastPeople.Any(p => p.Id == Guid.Empty))
             dbContext.People.AddRange(knownCastPeople.Where(p => p.Id == Guid.Empty));
@@ -98,7 +100,7 @@ public sealed class TmdbCatalogService(ITmdbClient tmdbClient, IMovieTrackRDbCon
 
         foreach (TmdbCrew crew in crewRows)
             if (!knownCrewPeople.Any(p => p.TmdbId == crew.Id))
-                knownCrewPeople.Add(Person.Create(crew.Name ?? "(Inconnu)", crew.Id));
+                knownCrewPeople.Add(Person.Create(crew.Name ?? "(Inconnu)", crew.Id, crew.ProfilePath));
 
         if (knownCrewPeople.Any(p => p.Id == Guid.Empty))
             dbContext.People.AddRange(knownCrewPeople.Where(p => p.Id == Guid.Empty));
@@ -126,23 +128,23 @@ public sealed class TmdbCatalogService(ITmdbClient tmdbClient, IMovieTrackRDbCon
         string lang = tmdbOptions.DefaultLanguage ?? "fr-FR";
         TmdbMovieDetails details = await tmdbClient.GetMovieDetailsAsync(tmdbId, lang, cancellationToken);
 
-        // seed minimal
         Movie newMovie = Movie.CreateNew(
             title: details.Title ?? details.OriginalTitle ?? "(Sans titre)",
             tmdbId: tmdbId,
             originalTitle: details.OriginalTitle,
             year: ParseYear(details.ReleaseDate),
             posterUrl: details.PosterPath,
+            backdropPath: details.BackdropPath,
             trailerUrl: null,
             duration: details.Runtime,
             overview: details.Overview,
+            voteAverage: details.VoteAverage,
             releaseDate: ParseDate(details.ReleaseDate)
         );
 
         dbContext.Movies.Add(newMovie);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        // (Optionnel) enrichir immédiatement ; sinon laisse un job asynchrone faire la suite.
         try
         {
             await EnrichMovieAsync(newMovie.Id, cancellationToken);

@@ -50,8 +50,8 @@ public sealed class UserListsEndpointsTests : IClassFixture<PostgresFixture>, IA
 
             User user = User.Create("ext-1", "u@test.dev", "UserTest", "User", "Test");
             UserList list = UserList.Create(user.Id, "My List", null);
-            Movie m1 = Movie.CreateNew("A", null, null, 2000, null, null, 100, "a", new(2000, 1, 1));
-            Movie m2 = Movie.CreateNew("B", null, null, 2001, null, null, 100, "b", new(2001, 1, 1));
+            Movie m1 = Movie.CreateNew("A", null, null, 2000, null, null, null, 100, "a", new(2000, 1, 1), null);
+            Movie m2 = Movie.CreateNew("B", null, null, 2001, null, null, null, 100, "b", new(2001, 1, 1), null);
             list.AddMovie(m1, 10);
 
             db.Users.Add(user);
@@ -88,7 +88,7 @@ public sealed class UserListsEndpointsTests : IClassFixture<PostgresFixture>, IA
 
             User user = User.Create("ext-1", "u@test.dev", "UserTest", "User", "Test");
             UserList list = UserList.Create(user.Id, "Watchlist", null);
-            Movie m = Movie.CreateNew("Interstellar", 157336, "Interstellar", 2014, null, null, 169, "test", new(2014, 11, 7));
+            Movie m = Movie.CreateNew("Interstellar", 157336, "Interstellar", 2014, null, null, null, 169, "test", new(2014, 11, 7), null);
 
             db.Users.Add(user);
             db.UserLists.Add(list);

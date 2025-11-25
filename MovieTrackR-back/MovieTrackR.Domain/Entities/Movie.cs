@@ -8,10 +8,12 @@ public class Movie
     public string? OriginalTitle { get; private set; }
     public int? Year { get; private set; }
     public string? PosterUrl { get; private set; }
+    public string? BackdropPath { get; private set; }
     public string? TrailerUrl { get; private set; }
     public int? Duration { get; private set; }
     public string? Overview { get; private set; }
     public DateTime? ReleaseDate { get; private set; }
+    public double? VoteAverage { get; private set; }
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
     public ICollection<MovieGenre> MovieGenres { get; private set; } = new List<MovieGenre>();
@@ -26,10 +28,12 @@ public class Movie
         string? originalTitle,
         int? year,
         string? posterUrl,
+        string? backdropPath,
         string? trailerUrl,
         int? duration,
         string? overview,
-        DateTime? releaseDate)
+        DateTime? releaseDate,
+        double? voteAverage)
     {
         return new Movie
         {
@@ -39,10 +43,12 @@ public class Movie
             OriginalTitle = originalTitle,
             Year = year,
             PosterUrl = posterUrl,
+            BackdropPath = backdropPath,
             TrailerUrl = trailerUrl,
             Duration = duration,
             Overview = overview,
             ReleaseDate = releaseDate,
+            VoteAverage = voteAverage,
             CreatedAt = DateTime.UtcNow
         };
     }
@@ -52,19 +58,23 @@ public class Movie
         string? originalTitle,
         int? year,
         string? posterUrl,
+        string? backdropPath,
         string? trailerUrl,
         int? duration,
         string? overview,
+        double? voteAverage,
         DateTime? releaseDate)
     {
         Title = title;
         OriginalTitle = originalTitle;
         Year = year;
         PosterUrl = posterUrl;
+        BackdropPath = backdropPath;
         TrailerUrl = trailerUrl;
         Duration = duration;
         Overview = overview;
         ReleaseDate = releaseDate;
+        VoteAverage = voteAverage;
     }
 
     public void AddGenre(Genre genre)

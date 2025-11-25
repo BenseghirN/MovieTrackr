@@ -15,8 +15,33 @@ public static class MoviesHandlers
     /// <returns>Le film si trouvé, 404 sinon.</returns>
     public static async Task<IResult> GetById(Guid id, IMediator mediator, CancellationToken cancellationToken)
     {
-        MovieDto? dto = await mediator.Send(new GetMovieByIdQuery(id), cancellationToken);
+        MovieDetailsDto? dto = await mediator.Send(new GetMovieByIdQuery(id), cancellationToken);
         return dto is null ? Results.NotFound() : Results.Ok(dto);
+    }
+
+    /// <summary>Récupère un film TMDB (l'importe si nécessaire)</summary>
+    /// <param name="tmdbId">ID du film.</param>
+    /// <param name="mediator">Médiateur applicatif.</param>
+    /// <param name="cancellationToken">Token d'annulation.</param>
+    /// <returns>Le film si trouvé, 404 sinon.</returns>
+    public static async Task<IResult> GetByTmdbId(int tmdbId, IMediator mediator, CancellationToken cancellationToken)
+    {
+        try
+        {
+            Guid localId = await mediator.Send(
+                new EnsureLocalMovieCommand(MovieId: null, TmdbId: tmdbId),
+                cancellationToken);
+
+            MovieDetailsDto? dto = await mediator.Send(
+                new GetMovieByIdQuery(localId),
+                cancellationToken);
+
+            return dto is null ? Results.NotFound() : Results.Ok(dto);
+        }
+        catch (KeyNotFoundException)
+        {
+            return Results.NotFound(new { error = $"Film TMDB {tmdbId} introuvable" });
+        }
     }
 
     /// <summary>Recherche paginée de films par critères.</summary>

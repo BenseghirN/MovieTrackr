@@ -25,10 +25,12 @@ public sealed class CreateMovieHandler(IMovieTrackRDbContext dbContext)
             originalTitle: createCommand.Dto.OriginalTitle,
             year: createCommand.Dto.Year,
             posterUrl: createCommand.Dto.PosterUrl,
+            backdropPath: createCommand.Dto.BackdropPath,
             trailerUrl: createCommand.Dto.TrailerUrl,
             duration: createCommand.Dto.Duration,
             overview: createCommand.Dto.Overview,
-            releaseDate: createCommand.Dto.ReleaseDate
+            releaseDate: createCommand.Dto.ReleaseDate,
+            voteAverage: createCommand.Dto.VoteAverage
         );
 
         if (createCommand.Dto.GenreIds?.Count > 0)
