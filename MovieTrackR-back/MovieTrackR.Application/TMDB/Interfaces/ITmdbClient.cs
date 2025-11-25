@@ -1,3 +1,5 @@
+using MovieTrackR.Application.Movies;
+
 namespace MovieTrackR.Application.TMDB.Interfaces;
 
 /// <summary>
@@ -6,13 +8,9 @@ namespace MovieTrackR.Application.TMDB.Interfaces;
 public interface ITmdbClient
 {
     Task<TmdbSearchMoviesResponse> SearchMoviesAsync(
-        string query, int page, string language, string? region, CancellationToken cancellationToken);
-
-    Task<TmdbMovieDetails> GetMovieDetailsAsync(
-        int tmdbId, string language, CancellationToken cancellationToken);
-
-    Task<TmdbMovieCredits> GetMovieCreditsAsync(
-        int tmdbId, CancellationToken cancellationToken);
-
+        MovieSearchCriteria criterias, string language, string? region, CancellationToken cancellationToken);
+    Task<TmdbMovieDetails> GetMovieDetailsAsync(int tmdbId, string language, CancellationToken cancellationToken);
+    Task<TmdbMovieCredits> GetMovieCreditsAsync(int tmdbId, CancellationToken cancellationToken);
     Task<TmdbConfigurationImages> GetConfigurationImagesAsync(CancellationToken cancellationToken);
+    Task<TmdbGenresResponse> GetGenresAsync(string language, CancellationToken cancellationToken);
 }

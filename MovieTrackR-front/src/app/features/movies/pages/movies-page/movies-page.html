@@ -18,6 +18,21 @@
     ></p-button>
   </div>
 
+  <div class="filters">
+    <div class="filter-item">
+      <label for="year">Année</label>
+      <p-inputNumber
+        id="year"
+        [ngModel]="yearFilter()"
+        (ngModelChange)="onYearChange($event)"
+        placeholder="Ex: 2024"
+        [useGrouping]="false"
+        [min]="1900"
+        [max]="2030"
+      ></p-inputNumber>
+    </div>
+  </div>
+
   @if (loading()) {
     <div class="loading-container">
       <p-progressSpinner></p-progressSpinner>

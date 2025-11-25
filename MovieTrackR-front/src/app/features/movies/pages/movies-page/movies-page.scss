@@ -86,6 +86,26 @@
   }
 }
 
+.filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+
+  .filter-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 180px;
+
+    label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      // color: var(--text-color-secondary);
+    }
+  }
+}
+
 .movie-info {
   padding: 1rem;
 

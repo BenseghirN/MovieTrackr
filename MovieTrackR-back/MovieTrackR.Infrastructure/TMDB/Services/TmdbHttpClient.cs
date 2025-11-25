@@ -2,6 +2,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MovieTrackR.Application.Movies;
 using MovieTrackR.Application.TMDB;
 using MovieTrackR.Application.TMDB.Interfaces;
 
@@ -19,26 +20,37 @@ public sealed class TmdbHttpClient(HttpClient httpClient, IOptions<TmdbOptions> 
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
     };
 
-    public Task<TmdbConfigurationImages> GetConfigurationImagesAsync(CancellationToken cancellationToken)
-        => GetFromTmdbAsync<TmdbConfigurationImages>("configuration", cancellationToken);
+    public async Task<TmdbConfigurationImages> GetConfigurationImagesAsync(CancellationToken cancellationToken)
+        => await GetFromTmdbAsync<TmdbConfigurationImages>("configuration", cancellationToken);
 
-    public Task<TmdbMovieCredits> GetMovieCreditsAsync(int tmdbId, CancellationToken cancellationToken)
-        => GetFromTmdbAsync<TmdbMovieCredits>($"movie/{tmdbId}/credits", cancellationToken);
+    public async Task<TmdbMovieCredits> GetMovieCreditsAsync(int tmdbId, CancellationToken cancellationToken)
+        => await GetFromTmdbAsync<TmdbMovieCredits>($"movie/{tmdbId}/credits", cancellationToken);
 
-    public Task<TmdbMovieDetails> GetMovieDetailsAsync(int tmdbId, string language, CancellationToken cancellationToken)
-        => GetFromTmdbAsync<TmdbMovieDetails>($"movie/{tmdbId}?language={Uri.EscapeDataString(string.IsNullOrWhiteSpace(language) ? "fr-FR" : language)}", cancellationToken);
+    public async Task<TmdbMovieDetails> GetMovieDetailsAsync(int tmdbId, string language, CancellationToken cancellationToken)
+        => await GetFromTmdbAsync<TmdbMovieDetails>($"movie/{tmdbId}?language={Uri.EscapeDataString(string.IsNullOrWhiteSpace(language) ? "fr-FR" : language)}", cancellationToken);
 
-    public Task<TmdbSearchMoviesResponse> SearchMoviesAsync(string query, int page, string language, string? region, CancellationToken ct)
+    public async Task<TmdbGenresResponse> GetGenresAsync(string language = "fr-FR", CancellationToken cancellationToken = default)
     {
         string lang = string.IsNullOrWhiteSpace(language) ? "fr-FR" : language;
-        string q = string.IsNullOrWhiteSpace(query) ? string.Empty : Uri.EscapeDataString(query);
-        int safePage = page <= 0 ? 1 : page;
+        string relative = $"/genre/movie/list?language={Uri.EscapeDataString(lang)}";
+        return await GetFromTmdbAsync<TmdbGenresResponse>(relative, cancellationToken);
+    }
+
+    public async Task<TmdbSearchMoviesResponse> SearchMoviesAsync(MovieSearchCriteria criterias, string language, string? region, CancellationToken cancellationToken)
+    {
+        string lang = string.IsNullOrWhiteSpace(language) ? "fr-FR" : language;
+        string q = string.IsNullOrWhiteSpace(criterias.Query) ? string.Empty : Uri.EscapeDataString(criterias.Query);
+        int safePage = criterias.Page <= 0 ? 1 : criterias.Page;
 
         string relative = $"search/movie?query={q}&page={safePage}&language={Uri.EscapeDataString(lang)}&include_adult=false";
+        if (criterias.Year.HasValue)
+        {
+            relative += $"&year={criterias.Year.Value}";
+        }
         if (!string.IsNullOrWhiteSpace(region))
             relative += $"&region={Uri.EscapeDataString(region)}";
 
-        return GetFromTmdbAsync<TmdbSearchMoviesResponse>(relative, ct);
+        return await GetFromTmdbAsync<TmdbSearchMoviesResponse>(relative, cancellationToken);
     }
 
     private async Task<T> GetFromTmdbAsync<T>(string relativeUrl, CancellationToken cancellationToken)

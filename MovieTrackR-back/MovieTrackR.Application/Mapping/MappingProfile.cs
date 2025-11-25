@@ -19,6 +19,7 @@ public class MappingProfile : Profile
         CreateMap<UserList, UserListDetailsDto>()
             .ForMember(d => d.Movies, o => o.MapFrom(
                 s => s.Movies.OrderBy(m => m.Position)));
+        CreateMap<Genre, GenreDto>();
 
         // Review -> List item
         CreateMap<Review, ReviewListItemDto>()

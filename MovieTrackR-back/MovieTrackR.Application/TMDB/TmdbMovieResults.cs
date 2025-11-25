@@ -63,7 +63,10 @@ public sealed record TmdbGenre(
     [property: JsonPropertyName("name")]
     string Name
 );
-
+public sealed record TmdbGenresResponse(
+    [property: JsonPropertyName("genres")]
+    IReadOnlyList<TmdbGenre> Genres
+);
 public sealed record TmdbMovieCredits(
     [property: JsonPropertyName("id")]
     int Id,

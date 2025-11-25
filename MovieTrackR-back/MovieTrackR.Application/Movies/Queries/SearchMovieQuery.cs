@@ -28,16 +28,6 @@ public sealed class SearchMoviesHandler(IMovieTrackRDbContext dbContext, IMapper
 
         if (searchCriteria.Year is not null) query = query.Where(m => m.Year == searchCriteria.Year);
 
-        if (searchCriteria.GenreId is not null)
-            query = query.Where(m => m.MovieGenres.Any(mg => mg.GenreId == searchCriteria.GenreId));
-
-        query = searchCriteria.Sort?.ToLowerInvariant() switch
-        {
-            "year" => query.OrderByDescending(m => m.Year).ThenBy(m => m.Title),
-            "title" => query.OrderBy(m => m.Title),
-            _ => query.OrderBy(m => m.Title)
-        };
-
         int total = await query.CountAsync(cancellationToken);
         List<Movie> movieResult = await query.Skip((searchCriteria.Page - 1) * searchCriteria.PageSize).Take(searchCriteria.PageSize).ToListAsync(cancellationToken);
         return (mapper.Map<IReadOnlyList<MovieDto>>(movieResult), total);

@@ -3,6 +3,7 @@ using FluentValidation;
 using MovieTrackR.api.middleware;
 using MovieTrackR.API.Configuration;
 using MovieTrackR.API.Endpoints.Auth;
+using MovieTrackR.API.Endpoints.Genres;
 using MovieTrackR.API.Endpoints.Movies;
 using MovieTrackR.API.Endpoints.ReviewComments;
 using MovieTrackR.API.Endpoints.ReviewLikes;
@@ -10,6 +11,7 @@ using MovieTrackR.API.Endpoints.Reviews;
 using MovieTrackR.API.Endpoints.UserLists;
 using MovieTrackR.API.Endpoints.Users;
 using MovieTrackR.Application.Configuration;
+using MovieTrackR.Application.Interfaces;
 using MovieTrackR.Infrastructure.Configuration;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -35,6 +37,13 @@ builder.Services
 
 WebApplication app = builder.Build();
 
+// Seed des genres au démarrage
+using (var scope = app.Services.CreateScope())
+{
+    IGenreSeeder seeder = scope.ServiceProvider.GetRequiredService<IGenreSeeder>();
+    await seeder.SeedGenresAsync();
+}
+
 // Swagger
 if (app.Environment.IsDevelopment()) app.UseSwaggerConfiguration();
 
@@ -49,7 +58,8 @@ app
 .MapReviewLikesEndpoints()
 .MapReviewsEndpoints()
 .MapUserListsEndpoints()
-.MapUsersEndpoints();
+.MapUsersEndpoints()
+.MapGenresEndpoints();
 
 app.UseRateLimitingConfiguration();
 app.UseCorsConfiguration(app.Environment);

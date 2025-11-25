@@ -9,6 +9,9 @@ import { routes } from './app.routes';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
+import Lara from '@primeuix/themes/lara';
+
+const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -19,8 +22,8 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {
-        preset: Aura,
-      },
+        preset: isDarkMode ? Aura : Lara
+      }
     }),
   ],
 };

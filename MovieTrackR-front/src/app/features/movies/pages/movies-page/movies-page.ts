@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -10,24 +10,48 @@ import { MovieService } from '../../../../core/services/movie.service';
 import { TmdbImageService } from '../../../../core/services/tmdb-image.service';
 import { MovieSearchResponse, MovieSearchResult } from '../../../../core/models/movie.model';
 import { DecimalPipe } from '@angular/common';
+import { Genre } from '../../../../core/models/genre.model';
+import { GenresService } from '../../../../core/services/genre.sevice';
+import { InputNumberModule } from 'primeng/inputnumber';
+
+interface SortOption {
+  label: string;
+  value: string;
+}
 
 @Component({
   selector: 'app-movies-page',
   standalone: true,
-  imports: [FormsModule, CardModule, ButtonModule, InputTextModule, PaginatorModule, ProgressSpinnerModule, DecimalPipe],
+  imports: [
+    FormsModule, 
+    CardModule, 
+    ButtonModule, 
+    InputTextModule, 
+    InputNumberModule, 
+    PaginatorModule, 
+    ProgressSpinnerModule, 
+    DecimalPipe
+  ],
   templateUrl: './movies-page.html',
   styleUrl: './movies-page.scss',
 })
-export class MoviesPage {
+export class MoviesPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly moviesService = inject(MovieService);
   protected readonly imageService = inject(TmdbImageService);
 
   protected readonly searchQuery = signal('');
+  protected readonly yearFilter = signal<number | null>(null);
+
   protected readonly movies = signal<MovieSearchResult[]>([]);
   protected readonly loading = signal(false);
+  protected readonly loadingGenres = signal(false);
   protected readonly error = signal<string | null>(null);
+
+  protected readonly sortOptions: SortOption[] = [
+    { label: 'Année', value: 'year' }
+  ];
 
   protected readonly currentPage = signal(1);
   protected readonly pageSize = signal(20);
@@ -46,6 +70,15 @@ export class MoviesPage {
     }
   }
 
+  ngOnInit(): void {
+    const params = this.route.snapshot.queryParams;
+    if (params['q']) {
+      this.searchQuery.set(params['q']);
+      if (params['year']) this.yearFilter.set(+params['year']);
+      this.search();
+    }
+  }
+
   search(): void {
     const query = this.searchQuery();
     if (!query.trim()) return;
@@ -53,13 +86,17 @@ export class MoviesPage {
     this.loading.set(true);
     this.error.set(null);
 
-    this.router.navigate([], {
-      queryParams: { q: query },
-      queryParamsHandling: 'merge'
+    const queryParams: Record<string, string | number | null> = { query: query };
+    if (this.yearFilter()) queryParams['year'] = this.yearFilter();
+
+    this.router.navigate([], { 
+      queryParams, 
+      queryParamsHandling: 'merge' 
     });
 
     this.moviesService.search({
       query,
+      year: this.yearFilter() ?? undefined,
       page: this.currentPage(),
       pageSize: this.pageSize()
     }).subscribe({
@@ -75,7 +112,7 @@ export class MoviesPage {
     });
   }
 
-    onPageChange(event: PaginatorState): void {
+  onPageChange(event: PaginatorState): void {
     this.currentPage.set((event.page ?? 0) + 1);
     this.pageSize.set(event.rows ?? 20);
     this.search();
@@ -86,5 +123,14 @@ export class MoviesPage {
       this.currentPage.set(1);
       this.search();
     }
+  }
+
+  onQueryChange(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.searchQuery.set(value);
+  }
+
+  onYearChange(value: number | null): void {
+    this.yearFilter.set(value);
   }
 }
