@@ -12,7 +12,6 @@ public class Genre
     {
         return new Genre
         {
-            Id = Guid.NewGuid(),
             TmdbId = TmdbId,
             Name = name
         };

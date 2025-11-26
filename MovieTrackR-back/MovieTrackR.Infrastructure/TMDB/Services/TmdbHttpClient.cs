@@ -23,11 +23,19 @@ public sealed class TmdbHttpClient(HttpClient httpClient, IOptions<TmdbOptions> 
     public async Task<TmdbConfigurationImages> GetConfigurationImagesAsync(CancellationToken cancellationToken)
         => await GetFromTmdbAsync<TmdbConfigurationImages>("configuration", cancellationToken);
 
-    public async Task<TmdbMovieCredits> GetMovieCreditsAsync(int tmdbId, CancellationToken cancellationToken)
-        => await GetFromTmdbAsync<TmdbMovieCredits>($"movie/{tmdbId}/credits", cancellationToken);
+    public async Task<TmdbMovieCredits> GetMovieCreditsAsync(int tmdbId, string language, CancellationToken cancellationToken)
+    {
+        string lang = string.IsNullOrWhiteSpace(language) ? "fr-FR" : language;
+        string relative = $"movie/{tmdbId}/credits?language={Uri.EscapeDataString(lang)}";
+        return await GetFromTmdbAsync<TmdbMovieCredits>(relative, cancellationToken);
+    }
 
     public async Task<TmdbMovieDetails> GetMovieDetailsAsync(int tmdbId, string language, CancellationToken cancellationToken)
-        => await GetFromTmdbAsync<TmdbMovieDetails>($"movie/{tmdbId}?language={Uri.EscapeDataString(string.IsNullOrWhiteSpace(language) ? "fr-FR" : language)}", cancellationToken);
+    {
+        string lang = string.IsNullOrWhiteSpace(language) ? "fr-FR" : language;
+        string relative = $"movie/{tmdbId}?language={Uri.EscapeDataString(lang)}";
+        return await GetFromTmdbAsync<TmdbMovieDetails>(relative, cancellationToken);
+    }
 
     public async Task<TmdbGenresResponse> GetGenresAsync(string language = "fr-FR", CancellationToken cancellationToken = default)
     {

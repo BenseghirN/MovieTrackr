@@ -15,7 +15,6 @@ public class UserList
     {
         return new UserList
         {
-            Id = Guid.NewGuid(),
             UserId = userId,
             Title = title,
             Description = description,

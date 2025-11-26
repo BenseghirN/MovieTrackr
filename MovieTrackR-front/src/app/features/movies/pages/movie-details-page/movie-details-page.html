@@ -1,0 +1,152 @@
+<div class="movie-details-page">
+  @if (loading()) {
+    <div class="loading-container">
+      <p-progressSpinner></p-progressSpinner>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="error-message">
+      <i class="pi pi-exclamation-triangle"></i>
+      {{ error() }}
+    </div>
+  }
+
+  @if (movie(); as movie) {
+    <!-- Backdrop -->
+    @if (movie.backdropPath) {
+      <div class="backdrop">
+        <img 
+          [src]="imageService.getPosterUrl(movie.backdropPath, 'w1280')" 
+          [alt]="movie.title"
+        />
+        <div class="backdrop-overlay"></div>
+      </div>
+    }
+
+    <div class="content">
+      <div class="movie-header">
+        <div class="poster">
+          <img 
+            [src]="imageService.getPosterUrl(movie.posterUrl, 'w500')" 
+            [alt]="movie.title"
+          />
+        </div>
+
+        <div class="info">
+          <h1>{{ movie.title }}</h1>
+          
+          @if (movie.originalTitle && movie.originalTitle !== movie.title) {
+            <p class="original-title">{{ movie.originalTitle }}</p>
+          }
+
+          <div class="meta">
+            @if (movie.year) {
+              <span class="year">{{ movie.year }}</span>
+            }
+            @if (movie.duration) {
+              <span class="duration">{{ formatDuration(movie.duration) }}</span>
+            }
+            @if (movie.voteAverage) {
+              <span class="rating">
+                <i class="pi pi-star-fill"></i>
+                {{ movie.voteAverage | number:'1.1-1' }}/10
+              </span>
+            }
+          </div>
+
+          @if (movie.genres.length > 0) {
+            <div class="genres">
+              @for (genre of movie.genres; track genre.id) {
+                <p-chip [label]="genre.name"></p-chip>
+              }
+            </div>
+          }
+
+          @if (getDirector(); as director) {
+            <p class="director">
+              <strong>Réalisateur :</strong> {{ director }}
+            </p>
+          }
+
+          @if (movie.overview) {
+            <div class="overview">
+              <h2>Synopsis</h2>
+              <p>{{ movie.overview }}</p>
+            </div>
+          }
+
+          <div class="actions">
+            <p-button 
+              label="Ajouter à ma watchlist" 
+              icon="pi pi-bookmark"
+              [outlined]="true"
+            ></p-button>
+            @if (movie.trailerUrl) {
+              <p-button 
+                label="Voir la bande-annonce" 
+                icon="pi pi-play"
+                severity="secondary"
+              ></p-button>
+            }
+          </div>
+        </div>
+      </div>
+
+    <!-- Cast Section -->
+      <!-- @if (movie.cast.length > 0) {
+        <div class="section cast-section">
+          <h2>Distribution</h2>
+          <div class="cast-grid">
+            @for (actor of movie.cast; track actor.name) {
+              <div class="cast-card">
+                <div class="cast-photo">
+                  <img 
+                    [src]="imageService.getPosterUrl(actor.profilePath, 'w185')" 
+                    [alt]="actor.name"
+                  />
+                </div>
+                <div class="cast-info">
+                  <p class="cast-name">{{ actor.name }}</p>
+                  @if (actor.character) {
+                    <p class="cast-character">{{ actor.character }}</p>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      } -->
+      @if (movie.cast.length > 0) {
+        <div class="section cast-section">
+          <h2>Distribution</h2>
+          <p-carousel 
+            [value]="movie.cast" 
+            [numVisible]="6" 
+            [numScroll]="3"
+            [circular]="true"
+            [responsiveOptions]="carouselResponsiveOptions"
+            [showIndicators]="false"
+          >
+            <ng-template let-actor pTemplate="item">
+              <div class="cast-card">
+                <div class="cast-photo">
+                  <img 
+                    [src]="imageService.getPosterUrl(actor.profilePath, 'w185')" 
+                    [alt]="actor.name"
+                  />
+                </div>
+                <div class="cast-info">
+                  <p class="cast-name">{{ actor.name }}</p>
+                  @if (actor.character) {
+                    <p class="cast-character">{{ actor.character }}</p>
+                  }
+                </div>
+              </div>
+            </ng-template>
+          </p-carousel>
+        </div>
+      }
+    </div>
+  }
+</div>

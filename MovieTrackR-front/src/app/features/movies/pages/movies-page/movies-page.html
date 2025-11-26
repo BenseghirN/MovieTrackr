@@ -58,9 +58,14 @@
       <span>{{ totalResults() }} résultat(s) trouvé(s)</span>
     </div>
 
-    <div class="movies-grid">
+    <div 
+      class="movies-grid">
       @for (movie of movies(); track movie.tmdbId) {
-        <p-card class="movie-card">
+        <p-card 
+          class="movie-card"
+          (click)="onMovieClick(movie)"
+          [style.cursor]="'pointer'"
+        >
           <div class="movie-poster">
             <img
               [src]="imageService.getPosterUrl(movie.posterPath, 'w342')"

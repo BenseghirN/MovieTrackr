@@ -37,7 +37,6 @@ public class Movie
     {
         return new Movie
         {
-            Id = Guid.NewGuid(),
             TmdbId = tmdbId,
             Title = title,
             OriginalTitle = originalTitle,
@@ -100,17 +99,11 @@ public class Movie
 
     public void AddCast(Person person, string? characterName, int? order)
     {
-        if (!Cast.Any(c => c.PersonId == person.Id))
-        {
-            Cast.Add(new MovieCast
-            {
-                Id = Guid.NewGuid(),
-                MovieId = Id,
-                PersonId = person.Id,
-                CharacterName = characterName,
-                Order = order
-            });
-        }
+        if (Cast.Any(c => c.PersonId == person.Id && c.CharacterName == characterName))
+            return;
+
+        MovieCast cast = MovieCast.Create(this, person, characterName, order);
+        Cast.Add(cast);
     }
 
     public void RemoveCast(Guid personId)
@@ -124,17 +117,11 @@ public class Movie
 
     public void AddCrew(Person person, string job, string? department)
     {
-        if (!Crew.Any(c => c.PersonId == person.Id && c.Job == job))
-        {
-            Crew.Add(new MovieCrew
-            {
-                Id = Guid.NewGuid(),
-                MovieId = Id,
-                PersonId = person.Id,
-                Job = job,
-                Department = department
-            });
-        }
+        if (Crew.Any(c => c.PersonId == person.Id && c.Job == job))
+            return;
+
+        MovieCrew crew = MovieCrew.Create(this, person, job, department);
+        Crew.Add(crew);
     }
 
     public void RemoveCrew(Guid personId, string job)

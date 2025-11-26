@@ -18,7 +18,6 @@ public class Review
     {
         return new Review
         {
-            Id = Guid.NewGuid(),
             UserId = userId,
             MovieId = movieId,
             Rating = rating,

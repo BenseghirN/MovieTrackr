@@ -133,4 +133,14 @@ export class MoviesPage implements OnInit {
   onYearChange(value: number | null): void {
     this.yearFilter.set(value);
   }
+
+    onMovieClick(movie: MovieSearchResult): void {
+    const id = movie.isLocal && movie.localId 
+      ? movie.localId 
+      : movie.tmdbId?.toString();
+    
+    if (id) {
+      this.router.navigate(['/movies', id]);
+    }
+  }
 }

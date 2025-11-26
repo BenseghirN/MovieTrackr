@@ -15,7 +15,6 @@ public class ReviewComment
     {
         return new ReviewComment
         {
-            Id = Guid.NewGuid(),
             ReviewId = reviewId,
             UserId = userId,
             Content = content,

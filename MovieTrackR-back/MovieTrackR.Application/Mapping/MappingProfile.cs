@@ -4,6 +4,7 @@ using MovieTrackR.Application.DTOs;
 using MovieTrackR.Application.TMDB;
 using MovieTrackR.Domain.Entities;
 using MovieTrackR.Domain.Enums;
+using MovieTrackR.Domain.Helpers;
 
 namespace MovieTrackR.Application.Mapping;
 
@@ -13,9 +14,13 @@ public class MappingProfile : Profile
     {
         CreateMap<User, UserDto>();
         CreateMap<Movie, MovieDetailsDto>()
-            .ForMember(d => d.Genres, m => m.MapFrom(s => s.MovieGenres.Select(mg => mg.Genre.Name)))
+            .ForMember(d => d.Genres, m => m.MapFrom(s => s.MovieGenres.Select(mg => mg.Genre)))
             .ForMember(d => d.Cast, m => m.MapFrom(s => s.Cast.OrderBy(c => c.Order).Take(15)))
-            .ForMember(d => d.Crew, m => m.MapFrom(s => s.Crew.Where(c => c.Job == "Director" || c.Department == "Writing").Take(5)));
+            .ForMember(d => d.Crew, m => m.MapFrom(s =>
+                s.Crew
+                    .Where(c => CrewHelpers.IsImportantJob(c.Job))
+                    .OrderBy(c => CrewHelpers.GetJobPriority(c.Job))
+                    .Take(10)));
 
         CreateMap<MovieCast, CastMemberDto>()
             .ForMember(d => d.Name, m => m.MapFrom(s => s.Person.Name))
