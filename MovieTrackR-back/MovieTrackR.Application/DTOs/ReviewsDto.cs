@@ -38,6 +38,9 @@ public sealed class ReviewListItemDto
     /// <summary>Identifiant de l'auteur de la critique.</summary>
     public Guid UserId { get; set; }
 
+    /// <summary>Nom d'utilisateur de l'auteur de la critique.</summary>
+    public string UserName { get; set; } = string.Empty;
+
     /// <summary>Note attribuée (0 à 10).</summary>
     public float Rating { get; set; }
 
@@ -52,6 +55,9 @@ public sealed class ReviewListItemDto
 
     /// <summary>Date de création (UTC).</summary>
     public DateTime CreatedAt { get; set; }
+
+    /// <summary>Indique si l'utilisateur courant a liké cette critique.</summary>
+    public bool HasLiked { get; set; }
 }
 
 /// <summary>Détails complets d'une critique.</summary>

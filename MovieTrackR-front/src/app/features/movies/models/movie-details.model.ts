@@ -1,4 +1,4 @@
-import { Genre } from "./genre.model";
+import { Genre } from "../../../core/models/genre.model";
 
 export interface MovieDetails {
   id: string;

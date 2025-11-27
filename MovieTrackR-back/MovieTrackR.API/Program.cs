@@ -47,7 +47,7 @@ using (var scope = app.Services.CreateScope())
 // Swagger
 if (app.Environment.IsDevelopment()) app.UseSwaggerConfiguration();
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment()) app.UseHttpsRedirection();
 app.UseGlobalExceptionHandler();
 
 // Map endpoints

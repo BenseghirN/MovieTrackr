@@ -33,18 +33,19 @@ public static class ReviewsHandlers
     /// <summary>
     /// Liste paginée des reviews pour un film.
     /// </summary>
-    public static async Task<Ok<PagedResult<ReviewListItemDto>>> GetByMovie(Guid movieId, int page, int pageSize, ISender sender, CancellationToken ct)
+    public static async Task<Ok<PagedResult<ReviewListItemDto>>> GetByMovie(Guid movieId, ClaimsPrincipal user, int page, int pageSize, ISender sender, CancellationToken cancellationToken)
     {
-        PagedResult<ReviewListItemDto> result = await sender.Send(new GetReviewsByMovieQuery(movieId, page, pageSize), ct);
+        CurrentUserDto current = user.ToCurrentUserDto();
+        PagedResult<ReviewListItemDto> result = await sender.Send(new GetReviewsByMovieQuery(movieId, current, page, pageSize), cancellationToken);
         return TypedResults.Ok(result);
     }
 
     /// <summary>
     /// Liste paginée des reviews d'un utilisateur.
     /// </summary>
-    public static async Task<Ok<PagedResult<ReviewListItemDto>>> GetByUser(Guid userId, int page, int pageSize, ISender sender, CancellationToken ct)
+    public static async Task<Ok<PagedResult<ReviewListItemDto>>> GetByUser(Guid userId, int page, int pageSize, ISender sender, CancellationToken cancellationToken)
     {
-        PagedResult<ReviewListItemDto> result = await sender.Send(new GetReviewsByUserQuery(userId, page, pageSize), ct);
+        PagedResult<ReviewListItemDto> result = await sender.Send(new GetReviewsByUserQuery(userId, page, pageSize), cancellationToken);
         return TypedResults.Ok(result);
     }
 

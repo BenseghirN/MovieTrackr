@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:5298'  // ← Ton port local backend
+  apiUrl: 'http://localhost:5298'
 };

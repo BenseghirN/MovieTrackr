@@ -4,17 +4,17 @@ import { ActivatedRoute } from '@angular/router';
 import { Button } from 'primeng/button';
 import { Chip } from 'primeng/chip';
 import { ProgressSpinner } from 'primeng/progressspinner';
-import { MovieDetails } from '../../../../core/models/movie-details.model';
+import { MovieDetails } from '../../models/movie-details.model';
 import { TmdbImageService } from '../../../../core/services/tmdb-image.service';
-import { MovieService } from '../../../../core/services/movie.service';
+import { MovieService } from '../../services/movie.service';
 import { CarouselModule } from 'primeng/carousel';
 
 @Component({
   selector: 'app-movie-details-page',
   standalone: true,
   imports: [DecimalPipe, Chip, Button, ProgressSpinner, CarouselModule],
-  templateUrl: './movie-details-page.html',
-  styleUrl: './movie-details-page.scss',
+  templateUrl: './movie-details.page.html',
+  styleUrl: './movie-details.page.scss',
 })
 export class MovieDetailsPage implements OnInit {
   private readonly route = inject(ActivatedRoute);

@@ -16,16 +16,20 @@
         <i class="pi pi-search"></i>
         Films
       </a>
-      @if (isLoggedIn()) {
+      @if (authService.isAuthenticated()) {
         <a routerLink="/watchlist" routerLinkActive="active">
           <i class="pi pi-bookmark"></i>
           Ma Watchlist
+        </a>
+
+        <a routerLink="/profile" routerLinkActive="active">
+              Mon profil
         </a>
       }
     </nav>
     
     <div class="auth-section">
-      @if (isLoggedIn()) {
+      @if (authService.isAuthenticated()) {
         <p-avatar icon="pi pi-user" shape="circle" class="mr-2"></p-avatar>
         <p-button 
           label="Déconnexion" 

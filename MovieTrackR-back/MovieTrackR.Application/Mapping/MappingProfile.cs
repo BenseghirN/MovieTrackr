@@ -40,8 +40,21 @@ public class MappingProfile : Profile
 
         // Review -> List item
         CreateMap<Review, ReviewListItemDto>()
+            .ForMember(d => d.UserId, opt => opt.MapFrom(s => s.UserId))
+            .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.User.Pseudo))
+            .ForMember(d => d.Rating, opt => opt.MapFrom(s => s.Rating))
+            .ForMember(d => d.Content, opt => opt.MapFrom(s => s.Content))
+            .ForMember(d => d.CreatedAt, opt => opt.MapFrom(s => s.CreatedAt))
             .ForMember(d => d.LikesCount, opt => opt.MapFrom(s => s.Likes.Count))
-            .ForMember(d => d.CommentsCount, opt => opt.MapFrom(s => s.Comments.Count));
+            .ForMember(d => d.CommentsCount, opt => opt.MapFrom(s => s.Comments.Count))
+            .ForMember(d => d.HasLiked, opt => opt.Ignore())
+            .AfterMap((src, dest, context) =>
+            {
+                if (context.Items.TryGetValue("CurrentUserId", out object? userIdObj) && userIdObj is Guid userId)
+                {
+                    dest.HasLiked = src.Likes.Any(l => l.UserId == userId);
+                }
+            });
 
         // Review -> Details
         CreateMap<Review, ReviewDetailsDto>()

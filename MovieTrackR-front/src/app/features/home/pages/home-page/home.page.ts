@@ -7,9 +7,9 @@ import { InputTextModule } from 'primeng/inputtext';
 @Component({
   selector: 'app-home-page',
   imports: [RouterLink, ButtonModule, CardModule, InputTextModule],
-  templateUrl: './home-page.html',
-  styleUrl: './home-page.scss',
+  templateUrl: './home.page.html',
+  styleUrl: './home.page.scss',
 })
-export class HomePage {
+export class HomePageComponent {
   protected readonly searchQuery = signal('');
 }

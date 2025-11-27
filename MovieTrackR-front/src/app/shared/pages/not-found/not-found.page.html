@@ -1,0 +1,45 @@
+<div class="not-found-container">
+  <p-card styleClass="not-found-card">
+    <ng-template pTemplate="header">
+      <div class="not-found-header">
+        <h1 class="error-code">404</h1>
+        <h2 class="error-title">🤔 Page Introuvable</h2>
+      </div>
+    </ng-template>
+
+    <div class="not-found-content">
+      <div class="gif-container">
+        <img 
+          [src]="selectedGif().url" 
+          [alt]="selectedGif().movie"
+          class="error-gif"
+        />
+      </div>
+
+      <div class="message-container">
+        <blockquote class="quote">
+          <p class="quote-text">"{{ selectedGif().quote }}"</p>
+          <footer class="quote-author">— {{ selectedGif().movie }}</footer>
+        </blockquote>
+
+        <p class="error-message">
+          La page que vous cherchez n'existe pas ou a été déplacée.
+        </p>
+
+        <div class="actions">
+          <p-button 
+            label="Retour" 
+            icon="pi pi-arrow-left"
+            styleClass="p-button-secondary"
+            (onClick)="goBack()">
+          </p-button>
+          <p-button 
+            label="Accueil" 
+            icon="pi pi-home"
+            routerLink="/"
+            severity="help" />
+        </div>
+      </div>
+    </div>
+  </p-card>
+</div>

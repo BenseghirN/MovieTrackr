@@ -1,8 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApiService } from './api.service';
+import { ApiService } from '../../../core/services/api.service';
 import { MovieSearchParams, MovieSearchResponse, MovieSearchResult } from '../models/movie.model';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../../environments/environment';
 import { MovieDetails } from '../models/movie-details.model';
 
 

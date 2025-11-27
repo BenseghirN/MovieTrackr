@@ -6,12 +6,10 @@ import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { MovieService } from '../../../../core/services/movie.service';
+import { MovieService } from '../../services/movie.service';
 import { TmdbImageService } from '../../../../core/services/tmdb-image.service';
-import { MovieSearchResponse, MovieSearchResult } from '../../../../core/models/movie.model';
+import { MovieSearchResponse, MovieSearchResult } from '../../models/movie.model';
 import { DecimalPipe } from '@angular/common';
-import { Genre } from '../../../../core/models/genre.model';
-import { GenresService } from '../../../../core/services/genre.sevice';
 import { InputNumberModule } from 'primeng/inputnumber';
 
 interface SortOption {
@@ -32,8 +30,8 @@ interface SortOption {
     ProgressSpinnerModule, 
     DecimalPipe
   ],
-  templateUrl: './movies-page.html',
-  styleUrl: './movies-page.scss',
+  templateUrl: './movies.page.html',
+  styleUrl: './movies.page.scss',
 })
 export class MoviesPage implements OnInit {
   private readonly route = inject(ActivatedRoute);

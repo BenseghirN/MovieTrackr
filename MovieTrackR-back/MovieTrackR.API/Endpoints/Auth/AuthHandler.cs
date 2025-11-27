@@ -23,9 +23,20 @@ public static class AuthHandlers
         string scheme =
             config["EntraExternalId:openIdScheme"] ??
             config["EntraExternalId:OpenIdScheme"] ??
-            throw new InvalidOperationException("OpenId scheme manquant (EntraExternalId:openIdScheme).");
+            throw new InvalidOperationException("OpenId scheme manquant.");
 
-        AuthenticationProperties props = new AuthenticationProperties { RedirectUri = string.IsNullOrWhiteSpace(returnUrl) ? "/" : returnUrl };
+        string? frontOrigin = config["FrontEnd:Origin"];
+
+        string resolvedReturnUrl =
+            string.IsNullOrWhiteSpace(returnUrl)
+                ? (frontOrigin ?? "/")
+                : returnUrl;
+
+        AuthenticationProperties props = new AuthenticationProperties
+        {
+            RedirectUri = resolvedReturnUrl
+        };
+
         return Results.Challenge(props, [scheme]);
     }
 

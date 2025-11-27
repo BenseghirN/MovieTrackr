@@ -1,0 +1,110 @@
+.not-found-container {
+  background: var(--surface-ground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.not-found-card {
+  max-width: 900px;
+  width: 100%;
+
+  ::ng-deep .p-card {
+    background: var(--surface-card);
+    border: 1px solid var(--surface-border);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  }
+
+  ::ng-deep .p-card-body {
+    padding: 0;
+  }
+
+  ::ng-deep .p-card-content {
+    padding: 2rem;
+  }
+}
+
+.not-found-header {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  padding: 2rem;
+  text-align: center;
+
+  .error-code {
+    font-size: 5rem;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+  }
+
+  .error-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: white;
+    margin: 0.5rem 0 0 0;
+  }
+}
+
+.not-found-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.gif-container {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+  .error-gif {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+}
+
+.message-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.quote {
+  border-left: 4px solid #8b5cf6;
+  padding-left: 1rem;
+  margin: 0;
+
+  .quote-text {
+    font-size: 1.25rem;
+    font-style: italic;
+    color: var(--text-color);
+    margin: 0 0 0.5rem 0;
+  }
+
+  .quote-author {
+    font-size: 0.875rem;
+    color: var(--text-color-secondary);
+  }
+}
+
+.error-message {
+  color: var(--text-color-secondary);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+
+  ::ng-deep .p-button {
+    flex: 1;
+  }
+}
