@@ -1,0 +1,73 @@
+<p-card styleClass="review-card">
+  <ng-template pTemplate="header">
+    <div class="review-header">
+      <div class="review-author">
+        <div class="author-avatar">
+          {{ review().userName.charAt(0).toUpperCase() }}
+        </div>
+        <div class="author-info">
+          <span class="author-name">{{ review().userName }}</span>
+          <span class="review-date">{{ review().createdAt | date:'dd/MM/yyyy' }}</span>
+        </div>
+      </div>
+
+      <div class="review-rating">
+        <div class="stars">
+          @for (_ of [].constructor(stars().full); track $index) {
+            <i class="pi pi-star-fill star-full"></i>
+          }
+          @if (stars().half) {
+            <i class="pi pi-star-half-fill star-half"></i>
+          }
+          @for (_ of [].constructor(stars().empty); track $index) {
+            <i class="pi pi-star star-empty"></i>
+          }
+        </div>
+        <span class="rating-value">{{ review().rating }}/10</span>
+      </div>
+    </div>
+  </ng-template>
+
+  <div class="review-content">
+    <p>{{ review().content }}</p>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="review-footer">
+      <div class="review-actions">
+        <button
+          class="action-btn"
+          [class.liked]="review().hasLiked"
+          (click)="onLike()"
+        >
+          <i [class]="review().hasLiked ? 'pi pi-heart-fill' : 'pi pi-heart'"></i>
+          <span>{{ review().likesCount }}</span>
+        </button>
+
+        <button class="action-btn" (click)="onComments()">
+          <i class="pi pi-comment"></i>
+          <span>{{ review().commentsCount }}</span>
+        </button>
+      </div>
+
+      @if (isMyReview()) {
+        <div class="owner-actions">
+          <p-button
+            icon="pi pi-pencil"
+            [text]="true"
+            severity="secondary"
+            (onClick)="onEdit()"
+            pTooltip="Modifier"
+          />
+          <p-button
+            icon="pi pi-trash"
+            [text]="true"
+            severity="danger"
+            (onClick)="onDelete()"
+            pTooltip="Supprimer"
+          />
+        </div>
+      }
+    </div>
+  </ng-template>
+</p-card>

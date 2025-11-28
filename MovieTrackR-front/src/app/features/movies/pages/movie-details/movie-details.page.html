@@ -13,44 +13,53 @@
   }
 
   @if (movie(); as movie) {
-    <!-- Backdrop -->
     @if (movie.backdropPath) {
       <div class="backdrop">
-        <img 
-          [src]="imageService.getPosterUrl(movie.backdropPath, 'w1280')" 
+        <img
+          [src]="imageService.getBackdropUrl(movie.backdropPath, 'w1280')"
           [alt]="movie.title"
         />
         <div class="backdrop-overlay"></div>
       </div>
+    } @else {
+      <div class="backdrop backdrop-placeholder"></div>
     }
 
     <div class="content">
       <div class="movie-header">
         <div class="poster">
-          <img 
-            [src]="imageService.getPosterUrl(movie.posterUrl, 'w500')" 
+          <img
+            [src]="imageService.getPosterUrl(movie.posterUrl, 'w500')"
             [alt]="movie.title"
           />
         </div>
 
         <div class="info">
           <h1>{{ movie.title }}</h1>
-          
+
           @if (movie.originalTitle && movie.originalTitle !== movie.title) {
             <p class="original-title">{{ movie.originalTitle }}</p>
           }
 
           <div class="meta">
             @if (movie.year) {
-              <span class="year">{{ movie.year }}</span>
+              <span class="meta-pill">
+                <i class="pi pi-calendar"></i>
+                {{ movie.year }}
+              </span>
             }
+
             @if (movie.duration) {
-              <span class="duration">{{ formatDuration(movie.duration) }}</span>
+              <span class="meta-pill">
+                <i class="pi pi-clock"></i>
+                {{ formatDuration(movie.duration) }}
+              </span>
             }
+
             @if (movie.voteAverage) {
-              <span class="rating">
+              <span class="meta-pill rating-pill">
                 <i class="pi pi-star-fill"></i>
-                {{ movie.voteAverage | number:'1.1-1' }}/10
+                {{ movie.voteAverage | number: '1.1-1' }}/10
               </span>
             }
           </div>
@@ -63,7 +72,7 @@
             </div>
           }
 
-          @if (getDirector(); as director) {
+          @if (director(); as director) {
             <p class="director">
               <strong>Réalisateur :</strong> {{ director }}
             </p>
@@ -77,62 +86,48 @@
           }
 
           <div class="actions">
-            <p-button 
-              label="Ajouter à ma watchlist" 
+            <p-button
+              label="Ajouter à ma watchlist"
               icon="pi pi-bookmark"
               [outlined]="true"
+              styleClass="action-button primary"
             ></p-button>
+
             @if (movie.trailerUrl) {
-              <p-button 
-                label="Voir la bande-annonce" 
+              <p-button
+                label="Voir la bande-annonce"
                 icon="pi pi-play"
                 severity="secondary"
+                styleClass="action-button secondary"
               ></p-button>
             }
           </div>
         </div>
       </div>
 
-    <!-- Cast Section -->
-      <!-- @if (movie.cast.length > 0) {
-        <div class="section cast-section">
-          <h2>Distribution</h2>
-          <div class="cast-grid">
-            @for (actor of movie.cast; track actor.name) {
-              <div class="cast-card">
-                <div class="cast-photo">
-                  <img 
-                    [src]="imageService.getPosterUrl(actor.profilePath, 'w185')" 
-                    [alt]="actor.name"
-                  />
-                </div>
-                <div class="cast-info">
-                  <p class="cast-name">{{ actor.name }}</p>
-                  @if (actor.character) {
-                    <p class="cast-character">{{ actor.character }}</p>
-                  }
-                </div>
-              </div>
-            }
-          </div>
-        </div>
-      } -->
       @if (movie.cast.length > 0) {
         <div class="section cast-section">
-          <h2>Distribution</h2>
-          <p-carousel 
-            [value]="movie.cast" 
-            [numVisible]="6" 
+          <div class="section-header">
+            <h2>Distribution</h2>
+            <span class="section-subtitle">
+              {{ movie.cast.length }} acteur(s)
+            </span>
+          </div>
+
+          <p-carousel
+            [value]="movie.cast"
+            [numVisible]="6"
             [numScroll]="3"
             [circular]="true"
             [responsiveOptions]="carouselResponsiveOptions"
             [showIndicators]="false"
+            styleClass="cast-carousel"
           >
-            <ng-template let-actor pTemplate="item">
-              <div class="cast-card">
+            <ng-template pTemplate="item" let-actor>
+              <article class="cast-card">
                 <div class="cast-photo">
-                  <img 
-                    [src]="imageService.getPosterUrl(actor.profilePath, 'w185')" 
+                  <img
+                    [src]="imageService.getPosterUrl(actor.profilePath, 'w185')"
                     [alt]="actor.name"
                   />
                 </div>
@@ -142,11 +137,16 @@
                     <p class="cast-character">{{ actor.character }}</p>
                   }
                 </div>
-              </div>
+              </article>
             </ng-template>
           </p-carousel>
         </div>
       }
+    </div>
+    <div>
+      <app-movie-reviews
+        [movieId]="movie.id"
+      />
     </div>
   }
 </div>

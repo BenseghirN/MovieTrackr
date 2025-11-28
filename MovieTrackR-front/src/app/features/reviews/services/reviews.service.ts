@@ -1,13 +1,13 @@
 import { inject, Injectable } from "@angular/core";
-import { environment } from "../../../environments/environment";
 import { CreateReviewModel, PagedReviews, ReviewDetails, UpdateReviewModel } from "../models/review.model";
-import { ApiService } from "./api.service";
+import { ApiService } from "../../../core/services/api.service";
 import { Observable } from "rxjs";
+import { ConfigService } from "../../../core/services/config.service";
 
 @Injectable({ providedIn: 'root' })
-export class reviewService {
+export class ReviewService {
     private readonly api = inject(ApiService);
-    private readonly baseUrl = environment.apiUrl;
+    private readonly config = inject(ConfigService);
 
     getMovieReviews(movieId: string, page = 1, pageSize = 10): Observable<PagedReviews> {
         const queryParams = {
@@ -16,37 +16,37 @@ export class reviewService {
         };
 
         return this.api.get<PagedReviews>(
-            `${this.baseUrl}/api/v1/reviews/by-movie/${movieId}`,
-            { params: queryParams, withCredentials: true }
+            `${this.config.apiUrl}/reviews/by-movie/${movieId}`,
+            { params: queryParams, withCredentials: false }
         );
     }
 
     getReviewById(reviewId: string): Observable<ReviewDetails> {
         return this.api.get<ReviewDetails>(
-            `${this.baseUrl}/api/v1/reviews/${reviewId}`,
-            { withCredentials: true }
+            `${this.config.apiUrl}/reviews/${reviewId}`,
+            { withCredentials: false }
         );
     }
 
     getUserReviews(userId: string, page = 1, pageSize = 10): Observable<PagedReviews> {
         const queryParams = { page, pageSize };
         return this.api.get<PagedReviews>(
-            `${this.baseUrl}/api/v1/reviews/by-user/${userId}`,
+            `${this.config.apiUrl}/reviews/by-user/${userId}`,
             { params: queryParams, withCredentials: true }
         );
     }
 
-    createReview(dto: CreateReviewModel): Observable<void> {
+    createReview(review: CreateReviewModel): Observable<void> {
         return this.api.post<void>(
-            `${this.baseUrl}/api/v1/reviews`,
-            dto,
+            `${this.config.apiUrl}/reviews`,
+            review,
             { withCredentials: true }
         );
     }
 
     updateReview(reviewId: string, dto: UpdateReviewModel): Observable<void> {
         return this.api.put<void>(
-            `${this.baseUrl}/api/v1/reviews/${reviewId}`,
+            `${this.config.apiUrl}/reviews/${reviewId}`,
             dto,
             { withCredentials: true }
         );
@@ -54,7 +54,7 @@ export class reviewService {
 
     deleteReview(reviewId: string): Observable<void> {
         return this.api.delete<void>(
-            `${this.baseUrl}/api/v1/reviews/${reviewId}`,
+            `${this.config.apiUrl}/reviews/${reviewId}`,
             { withCredentials: true }
         );
     }

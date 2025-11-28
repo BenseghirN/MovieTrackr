@@ -1,22 +1,6 @@
-export interface ReviewDetails{
-  id: string
-  movieId: string
-  userId: string
-  rating: number
-  content: string
-  likesCount: number
-  commentsCount: number
-  createdAt: string
-}
+import { PagedResult } from "../../../core/models/paginated-result.model"
 
-export interface PagedReviews {
-  items: ReviewListItem[]
-  totalCount: number
-  page: number
-  pageSize: number
-  totalPages: number
-}
-
+export type PagedReviews = PagedResult<ReviewListItem>;
 export interface ReviewListItem {
   id: string
   movieId: string
@@ -30,14 +14,18 @@ export interface ReviewListItem {
   hasLiked: boolean
 }
 
-export interface PagedReviewComments {
-  items: ReviewComment[]
-  totalCount: number
-  page: number
-  pageSize: number
-  totalPages: number
+export interface ReviewDetails{
+  id: string
+  movieId: string
+  userId: string
+  rating: number
+  content: string
+  likesCount: number
+  commentsCount: number
+  createdAt: string
 }
 
+export type PagedComments = PagedResult<ReviewComment>;
 export interface ReviewComment {
   id: string
   reviewId: string

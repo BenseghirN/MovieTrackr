@@ -1,15 +1,15 @@
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
 import { MovieSearchParams, MovieSearchResponse, MovieSearchResult } from '../models/movie.model';
-import { environment } from '../../../../environments/environment';
 import { MovieDetails } from '../models/movie-details.model';
+import { ConfigService } from '../../../core/services/config.service';
 
 
 @Injectable({ providedIn: 'root' })
 export class MovieService {
     private readonly api = inject(ApiService);
-    private readonly baseUrl = environment.apiUrl;
+    private readonly config = inject(ConfigService);
 
 	search(params: MovieSearchParams): Observable<MovieSearchResponse> {
         const queryParams: Record<string, string | number> = {
@@ -24,10 +24,22 @@ export class MovieService {
 
 
 		return this.api.get<MovieSearchResponse>(
-            `${this.baseUrl}/api/v1/movies/search`,
-            { params: queryParams, withCredentials: true }
+            `${this.config.apiUrl}/movies/search`,
+            { params: queryParams, withCredentials: false }
         );
 	}
+
+    getMovieByRouteId(rawId: string): Observable<MovieDetails> {
+        if (!rawId) {
+            return throwError(() => new Error('ID du film manquant'));
+        }
+
+        const isGuid = rawId.includes('-');
+
+        return isGuid
+            ? this.getLocalMovie(rawId)
+            : this.getTmdbMovie(Number(rawId));
+    }
 
     getMovieDetails(result: MovieSearchResult): Observable<MovieDetails> {
         if (result.isLocal && result.localId) {
@@ -41,13 +53,15 @@ export class MovieService {
 
     private getLocalMovie(localId: string): Observable<MovieDetails> {
         return this.api.get<MovieDetails>(
-        `${this.baseUrl}/api/v1/movies/${localId}`
+            `${this.config.apiUrl}/movies/${localId}`,
+            { withCredentials: false }
         );
     }
 
     private getTmdbMovie(tmdbId: number): Observable<MovieDetails> {
         return this.api.get<MovieDetails>(
-        `${this.baseUrl}/api/v1/movies/tmdb/${tmdbId}`
+            `${this.config.apiUrl}/movies/tmdb/${tmdbId}`,
+            { withCredentials: false }
         );
     }
 

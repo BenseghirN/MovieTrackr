@@ -9,14 +9,18 @@ using MovieTrackR.Domain.Entities;
 
 namespace MovieTrackR.Application.Reviews.Queries;
 
-public sealed record GetReviewsByMovieQuery(Guid MovieId, CurrentUserDto CurrentUser, int Page = 1, int PageSize = 20) : IRequest<PagedResult<ReviewListItemDto>>;
+public sealed record GetReviewsByMovieQuery(Guid MovieId, CurrentUserDto? CurrentUser, int Page = 1, int PageSize = 20) : IRequest<PagedResult<ReviewListItemDto>>;
 
 public sealed class GetReviewsByMovieHandler(IMovieTrackRDbContext dbContext, IMapper mapper, ISender sender)
     : IRequestHandler<GetReviewsByMovieQuery, PagedResult<ReviewListItemDto>>
 {
     public async Task<PagedResult<ReviewListItemDto>> Handle(GetReviewsByMovieQuery query, CancellationToken cancellationToken)
     {
-        Guid userId = await sender.Send(new EnsureUserExistsCommand(query.CurrentUser), cancellationToken);
+        Guid? userId = null;
+        if (query.CurrentUser is not null)
+        {
+            userId = await sender.Send(new EnsureUserExistsCommand(query.CurrentUser), cancellationToken);
+        }
 
         IQueryable<Review> baseSql = dbContext.Reviews
                     .AsNoTracking()
@@ -34,7 +38,7 @@ public sealed class GetReviewsByMovieHandler(IMovieTrackRDbContext dbContext, IM
             .Take(query.PageSize)
             .ProjectTo<ReviewListItemDto>(
                 mapper.ConfigurationProvider,
-                new { userId }
+                new { CurrentUserId = userId }
             )
             .ToListAsync(cancellationToken);
 

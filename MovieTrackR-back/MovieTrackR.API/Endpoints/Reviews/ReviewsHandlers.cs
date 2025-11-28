@@ -35,7 +35,7 @@ public static class ReviewsHandlers
     /// </summary>
     public static async Task<Ok<PagedResult<ReviewListItemDto>>> GetByMovie(Guid movieId, ClaimsPrincipal user, int page, int pageSize, ISender sender, CancellationToken cancellationToken)
     {
-        CurrentUserDto current = user.ToCurrentUserDto();
+        CurrentUserDto? current = user.ToCurrentUserDtoOrNull();
         PagedResult<ReviewListItemDto> result = await sender.Send(new GetReviewsByMovieQuery(movieId, current, page, pageSize), cancellationToken);
         return TypedResults.Ok(result);
     }

@@ -1,14 +1,13 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Observable, tap, catchError, map, of } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { AuthUser, MeClaims } from './auth-user.model';
+import { AuthUser, MeClaims } from './models/auth-user.model';
 import { HttpBackend, HttpClient } from '@angular/common/http';
+import { ConfigService } from '../services/config.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-    // private readonly api = inject(ApiService);
     private readonly http = new HttpClient(inject(HttpBackend));
-    private readonly baseUrl = environment.apiUrl;
+    private readonly config = inject(ConfigService);
 
     private currentUserSignal = signal<AuthUser | null>(null);
     private isAuthenticatedSignal = signal<boolean>(false);
@@ -22,12 +21,20 @@ export class AuthService {
     }
 
     login(returnUrl: string = '/'): void {
-        const loginUrl = `${this.baseUrl}/api/v1/connect?returnUrl=${encodeURIComponent(returnUrl)}`;
+        const finalReturnUrl = !this.config.isProduction
+            ? window.location.origin + returnUrl
+            : returnUrl
+
+        const loginUrl = `${this.config.apiUrl}/connect?returnUrl=${encodeURIComponent(finalReturnUrl)}`;
         window.location.href = loginUrl;
     }
 
     logout(returnUrl: string = '/'): void {
-        const logoutUrl = `${this.baseUrl}/api/v1/logout?returnUrl=${encodeURIComponent(returnUrl)}`;
+        const finalReturnUrl = !this.config.isProduction
+            ? window.location.origin + returnUrl
+            : returnUrl
+
+        const logoutUrl = `${this.config.apiUrl}/logout?returnUrl=${encodeURIComponent(finalReturnUrl)}`;
         
         this.currentUserSignal.set(null);
         this.isAuthenticatedSignal.set(false);
@@ -36,18 +43,15 @@ export class AuthService {
     }
 
     checkAuth(): Observable<boolean> {
-        console.log("1/ CHECKAUTH");
         return this.http.get<MeClaims>(
-            `${this.baseUrl}/api/v1/me`,
+            `${this.config.apiUrl}/me`,
             { withCredentials: true }
             ).pipe(
             map(() => {
                 this.isAuthenticatedSignal.set(true);
-                console.log("2/ CHECKAUTH - SUCCESS", true);
                 return true;
             }),
             catchError((err) => {
-                console.error('3/ CHECKAUTH - ERROR', err);
                 this.isAuthenticatedSignal.set(false);
                 this.currentUserSignal.set(null);
                 return of(false);
@@ -57,7 +61,7 @@ export class AuthService {
 
     getUserInfo(): Observable<AuthUser> {
         return this.http.get<AuthUser>(
-            `${this.baseUrl}/api/v1/user-info`,
+            `${this.config.apiUrl}/user-info`,
             { withCredentials: true }
         ).pipe(
             tap(user => {

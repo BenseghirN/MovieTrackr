@@ -12,15 +12,16 @@
 .error-message {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 1rem;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  background: var(--red-100);
+  color: var(--red-900);
+  border-radius: 8px;
   margin: 2rem;
-  border-radius: var(--border-radius);
-  background-color: rgba(239, 68, 68, 0.1);
-  color: var(--red-400);
 
   i {
-    font-size: 1.25rem;
+    font-size: 2rem;
   }
 }
 
@@ -46,6 +47,10 @@
     height: 200px;
     background: linear-gradient(to top, var(--surface-ground), transparent);
   }
+}
+
+.backdrop-placeholder {
+  background: linear-gradient(135deg, var(--primary-700), var(--primary-900));
 }
 
 // Content

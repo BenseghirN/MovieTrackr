@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -9,12 +9,14 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { MovieService } from '../../services/movie.service';
 import { TmdbImageService } from '../../../../core/services/tmdb-image.service';
 import { MovieSearchResponse, MovieSearchResult } from '../../models/movie.model';
-import { DecimalPipe } from '@angular/common';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { MovieCardComponent } from '../../components/movie-card/movie-card.component';
+import { toSignal } from '@angular/core/rxjs-interop';
 
-interface SortOption {
-  label: string;
-  value: string;
+interface MovieSearchParams {
+  query: string;
+  page: number;
+  year?: number | null;
 }
 
 @Component({
@@ -27,13 +29,13 @@ interface SortOption {
     InputTextModule, 
     InputNumberModule, 
     PaginatorModule, 
-    ProgressSpinnerModule, 
-    DecimalPipe
+    ProgressSpinnerModule,
+    MovieCardComponent
   ],
   templateUrl: './movies.page.html',
   styleUrl: './movies.page.scss',
 })
-export class MoviesPage implements OnInit {
+export class MoviesPage {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly moviesService = inject(MovieService);
@@ -44,12 +46,7 @@ export class MoviesPage implements OnInit {
 
   protected readonly movies = signal<MovieSearchResult[]>([]);
   protected readonly loading = signal(false);
-  protected readonly loadingGenres = signal(false);
   protected readonly error = signal<string | null>(null);
-
-  protected readonly sortOptions: SortOption[] = [
-    { label: 'Année', value: 'year' }
-  ];
 
   protected readonly currentPage = signal(1);
   protected readonly pageSize = signal(20);
@@ -60,60 +57,86 @@ export class MoviesPage implements OnInit {
     !this.loading() && this.searchQuery() && !this.hasResults()
   );
 
-  constructor() {
-    const initialQuery = this.route.snapshot.queryParams['q'] || '';
-    if (initialQuery) {
-      this.searchQuery.set(initialQuery);
-      this.search();
-    }
-  }
+  private readonly queryParamsSignal = toSignal(
+    this.route.queryParamMap,
+    { initialValue: this.route.snapshot.queryParamMap },
+  );
 
-  ngOnInit(): void {
-    const params = this.route.snapshot.queryParams;
-    if (params['q']) {
-      this.searchQuery.set(params['q']);
-      if (params['year']) this.yearFilter.set(+params['year']);
-      this.search();
-    }
+
+  constructor() {
+    effect(() => {
+      const params = this.queryParamsSignal();
+      if (!params) return;
+
+      const queryParam = params.get('query') ?? '';
+      const yearParam = params.get('year');
+      const pageParam = params.get('page');
+
+      const page = pageParam ? +pageParam : 1;
+      const year = yearParam ? +yearParam : null;
+
+      this.searchQuery.set(queryParam);
+      this.yearFilter.set(Number.isNaN(year!) ? null : year);
+      this.currentPage.set(Number.isNaN(page) || page < 1 ? 1 : page);
+
+      if (!queryParam.trim()) {
+        this.movies.set([]);
+        this.totalResults.set(0);
+        return;
+      }
+
+      this.fetchMovies(queryParam, page);
+    });
   }
 
   search(): void {
-    const query = this.searchQuery();
-    if (!query.trim()) return;
-
-    this.loading.set(true);
-    this.error.set(null);
-
-    const queryParams: Record<string, string | number | null> = { query: query };
-    if (this.yearFilter()) queryParams['year'] = this.yearFilter();
+    if (!this.searchQuery().trim()) return;
+    this.currentPage.set(1);
 
     this.router.navigate([], { 
-      queryParams, 
+      relativeTo: this.route,
+      queryParams: this.buildQueryParams(), 
       queryParamsHandling: 'merge' 
-    });
-
-    this.moviesService.search({
-      query,
-      year: this.yearFilter() ?? undefined,
-      page: this.currentPage(),
-      pageSize: this.pageSize()
-    }).subscribe({
-      next: (response: MovieSearchResponse) => {
-        this.movies.set(response.items);
-        this.totalResults.set(response.meta.totalResults);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        this.error.set(err.message || 'Une erreur est survenue');
-        this.loading.set(false);
-      }
     });
   }
 
   onPageChange(event: PaginatorState): void {
-    this.currentPage.set((event.page ?? 0) + 1);
+    const newPage = (event.page ?? 0) + 1;
+    this.currentPage.set(newPage);
     this.pageSize.set(event.rows ?? 20);
-    this.search();
+    if (!this.searchQuery().trim()) return;
+
+    this.router.navigate([], { 
+      relativeTo: this.route,
+      queryParams: this.buildQueryParams(newPage), 
+      queryParamsHandling: 'merge' 
+    });
+  }
+
+  private fetchMovies(query: string, page: number): void {
+    this.loading.set(true);
+    this.error.set(null);
+
+    this.moviesService
+      .search({
+        query,
+        year: this.yearFilter() ?? undefined,
+        page,
+        pageSize: this.pageSize(),
+      })
+      .subscribe({
+        next: (result: MovieSearchResponse) => {
+          this.movies.set(result.items);
+          this.totalResults.set(result.meta.totalResults);
+          this.loading.set(false);
+        },
+        error: (err) => {
+          this.loading.set(false);
+          this.movies.set([]);
+          this.error.set('Impossible de charger les films');
+          console.log(err);
+        },
+      });
   }
 
   onSearchKeyup(event: KeyboardEvent): void {
@@ -129,10 +152,13 @@ export class MoviesPage implements OnInit {
   }
 
   onYearChange(value: number | null): void {
-    this.yearFilter.set(value);
+    this.yearFilter.set(value ?? null);
+    if (this.searchQuery().trim()) {
+      this.search();
+    }
   }
 
-    onMovieClick(movie: MovieSearchResult): void {
+  onMovieClick(movie: MovieSearchResult): void {
     const id = movie.isLocal && movie.localId 
       ? movie.localId 
       : movie.tmdbId?.toString();
@@ -140,5 +166,21 @@ export class MoviesPage implements OnInit {
     if (id) {
       this.router.navigate(['/movies', id]);
     }
+  }
+
+  private buildQueryParams(page: number = 1): MovieSearchParams {
+    const query = this.searchQuery().trim();
+    const year = this.yearFilter();
+
+    const params: MovieSearchParams = { 
+      query,
+      page,
+      year: year ?? null,
+    };
+
+    if (year) {
+      params['year'] = year;
+    }
+    return params;
   }
 }

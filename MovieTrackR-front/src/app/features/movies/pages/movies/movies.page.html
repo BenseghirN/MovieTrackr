@@ -1,35 +1,36 @@
 <div class="movies-page">
   <h1>🔍 Recherche de films</h1>
-
-  <div class="search-bar">
-    <input
-      type="text"
-      pInputText
-      placeholder="Rechercher un film..."
-      [(ngModel)]="searchQuery"
-      (keyup)="onSearchKeyup($event)"
-      class="search-input"
-    />
-    <p-button
-      label="Rechercher"
-      icon="pi pi-search"
-      (click)="currentPage.set(1); search()"
-      [loading]="loading()"
-    ></p-button>
-  </div>
-
-  <div class="filters">
-    <div class="filter-item">
-      <label for="year">Année</label>
-      <p-inputNumber
-        id="year"
-        [ngModel]="yearFilter()"
-        (ngModelChange)="onYearChange($event)"
-        placeholder="Ex: 2024"
-        [useGrouping]="false"
-        [min]="1900"
-        [max]="2030"
-      ></p-inputNumber>
+  <div class="search-panel">
+    <div class="search-bar">
+      <input
+        type="text"
+        pInputText
+        placeholder="Rechercher un film..."
+        [value]="searchQuery()"
+        (input)="onQueryChange($event)"
+        (keyup)="onSearchKeyup($event)"
+        class="search-input"
+      />
+      <p-button
+        label="Rechercher"
+        icon="pi pi-search"
+        (click)="currentPage.set(1); search()"
+        [loading]="loading()"
+      ></p-button>
+    </div>
+    <div class="filters-row">
+      <div class="filter-item">
+        <label for="year">Année (optionnel)</label>
+        <p-inputNumber
+          id="year"
+          [ngModel]="yearFilter()"
+          (ngModelChange)="onYearChange($event)"
+          placeholder="Ex: 2024"
+          [useGrouping]="false"
+          [min]="1900"
+          [max]="2030"
+        ></p-inputNumber>
+      </div>
     </div>
   </div>
 
@@ -61,31 +62,10 @@
     <div 
       class="movies-grid">
       @for (movie of movies(); track movie.tmdbId) {
-        <p-card 
-          class="movie-card"
-          (click)="onMovieClick(movie)"
-          [style.cursor]="'pointer'"
-        >
-          <div class="movie-poster">
-            <img
-              [src]="imageService.getPosterUrl(movie.posterPath, 'w342')"
-              [alt]="movie.title"
-              loading="lazy"
-            />
-          </div>
-          <div class="movie-info">
-            <h3 class="movie-title">{{ movie.title }}</h3>
-            @if (movie.year) {
-              <span class="movie-year">{{ movie.year }}</span>
-            }
-            @if (movie.voteAverage) {
-              <div class="movie-rating">
-                <i class="pi pi-star-fill"></i>
-                {{ movie.voteAverage | number:'1.1-1' }}
-              </div>
-            }
-          </div>
-        </p-card>
+        <app-movie-card 
+          [movie]="movie" 
+          (movieClick)="onMovieClick(movie)"
+        />
       }
     </div>
 
