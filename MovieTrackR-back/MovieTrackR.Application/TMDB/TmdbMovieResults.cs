@@ -1,3 +1,4 @@
+using System.Collections.Specialized;
 using System.Text.Json.Serialization;
 
 namespace MovieTrackR.Application.TMDB;
@@ -67,6 +68,7 @@ public sealed record TmdbGenresResponse(
     [property: JsonPropertyName("genres")]
     IReadOnlyList<TmdbGenre> Genres
 );
+
 public sealed record TmdbMovieCredits(
     [property: JsonPropertyName("id")]
     int Id,
@@ -113,4 +115,22 @@ public sealed record TmdbConfigurationImages(
     IReadOnlyList<string> BackdropSizes,
     [property: JsonPropertyName("profile_sizes")]
     IReadOnlyList<string> ProfileSizes
+);
+
+public sealed record TmdbMovieVideo(
+     [property: JsonPropertyName("name")]
+     string Name,
+     [property: JsonPropertyName("key")]
+     string Key,
+     [property: JsonPropertyName("site")]
+     string Site,
+     [property: JsonPropertyName("type")]
+     string Type,
+     [property: JsonPropertyName("official")]
+     bool Official
+);
+
+public sealed record TmdbVideosResponse(
+    [property: JsonPropertyName("results")]
+    IReadOnlyList<TmdbMovieVideo> Results
 );

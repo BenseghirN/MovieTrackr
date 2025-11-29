@@ -10,10 +10,23 @@ import { CarouselModule } from 'primeng/carousel';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map, switchMap, of, catchError, tap } from 'rxjs';
 import { MovieReviewsComponents } from '../../../reviews/components/movie-reviews/movie-reviews.components.ts/movie-reviews.components';
+import { CardModule } from 'primeng/card';
+import { SafeUrlPipe } from '../../../../shared/pipes/safe-url.pipe';
+import { DialogModule } from 'primeng/dialog';
 
 @Component({
   selector: 'app-movie-details-page',
-  imports: [DecimalPipe, Chip, Button, ProgressSpinner, CarouselModule, MovieReviewsComponents],
+  imports: [
+    DecimalPipe, 
+    Chip, 
+    Button, 
+    ProgressSpinner, 
+    CarouselModule, 
+    MovieReviewsComponents, 
+    CardModule, 
+    DialogModule, 
+    SafeUrlPipe
+  ],
   templateUrl: './movie-details.page.html',
   styleUrl: './movie-details.page.scss',
 })
@@ -55,6 +68,8 @@ export class MovieDetailsPage {
     ),
     { initialValue: null }
   );
+  protected trailerDialogVisible = signal(false);
+  protected currentTrailerUrl = signal<string>('');
 
   protected readonly hasCast = computed(() => !!this.movie()?.cast?.length);
   protected readonly hasCrew = computed(() => !!this.movie()?.crew?.length);
@@ -77,5 +92,32 @@ export class MovieDetailsPage {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     return `${hours}h ${mins}min`;
+  }
+
+  protected openTrailer(rawUrl: string): void {
+    this.currentTrailerUrl.set(this.buildEmbedUrl(rawUrl));
+    this.trailerDialogVisible.set(true);
+  }
+
+  protected onTrailerDialogVisibleChange(visible: boolean): void {
+    this.trailerDialogVisible.set(visible);
+    if (!visible) {
+      this.currentTrailerUrl.set('');
+    }
+  }
+
+  private buildEmbedUrl(rawUrl: string): string {
+    if (rawUrl.includes('/embed/')) {
+      return rawUrl;
+    }
+    try {
+      const url = new URL(rawUrl);
+      const key = url.searchParams.get('v');
+      if (key) {
+        return `https://www.youtube.com/embed/${key}`;
+      }
+    } catch {
+    }
+    return rawUrl;
   }
 }

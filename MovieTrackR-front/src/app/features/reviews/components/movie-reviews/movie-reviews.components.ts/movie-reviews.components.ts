@@ -38,7 +38,7 @@ export class MovieReviewsComponents {
 
   protected readonly hasReviews = computed(() => this.reviews().length > 0);
   protected readonly totalPages = computed(() => 
-    Math.ceil(this.totalCount() / this.pageSize())
+    Math.ceil(this.totalCount() / this.pageSize() || 1)
   );
   protected readonly isAuthenticated = this.authService.isAuthenticated;
 
@@ -51,9 +51,8 @@ export class MovieReviewsComponents {
       const id = this.movieId();
       const page = this.currentPage();
       const size = this.pageSize();
-      if (!id) {
-        return;
-      }
+      if (!id) return;
+
       this.loadReviews(id, page, size);
     })
   }
@@ -73,47 +72,34 @@ export class MovieReviewsComponents {
         this.reviews.set([]);
         this.error.set('Erreur lors de la récupération des critiques');
       }
-    })
+    });
   }
 
-  onPageChange(event: PaginatorState): void {
+  protected onPageChange(event: PaginatorState): void {
     this.currentPage.set((event.page ?? 0) + 1);
     this.pageSize.set(event.rows ?? 10);
   }
 
-  onWriteReview(): void {
+  private ensureAuthenticated(forAction: string): boolean {
     if (!this.isAuthenticated()) {
-      this.notificationService.warning('Vous devez être connecté pour rédiger une critique');
+      this.notificationService.warning(
+        `Vous devez être connecté pour ${forAction}`
+      );
       this.authService.login(window.location.pathname);
-      return;
+      return false;
     }
-
-    // this.dialogRef = this.dialogService.open(ReviewFormModalComponent, {
-    //   header: 'Rédiger une critique',
-    //   width: '600 px',
-    //   data: { movieId: this.movieId}
-    // });
-
-    this.dialogRef?.onClose.subscribe((success: boolean) => {
-      if (success) {
-        this.notificationService.success('Critique publiée avec succès !');
-        this.currentPage.set(1);
-      }
-    });
+    return true;
   }
 
-  onLike(review: ReviewListItem): void {
-    if (!this.isAuthenticated()) {
-      this.notificationService.warning('Vous devez être connecté pour liker une critique');
-      this.authService.login(window.location.pathname);
-      return;
-    }
-
+  protected onLike(review: ReviewListItem): void {
+    if (!this.ensureAuthenticated('liker une critique')) return;
+    
     this.updateReviewLikes(review.id);
-    const action = review.hasLiked
-      ? this.likesService.unlikeReview(review.id)
-      : this.likesService.likeReview(review.id);
 
+    const action = review.hasLiked
+    ? this.likesService.unlikeReview(review.id)
+    : this.likesService.likeReview(review.id);
+    
     action.subscribe({
       error: () => {
         this.updateReviewLikes(review.id);
@@ -122,33 +108,45 @@ export class MovieReviewsComponents {
     });
   }
 
-  onEdit(review: ReviewListItem): void {
-    if (!this.isAuthenticated()) {
-      this.notificationService.warning('Vous devez être connecté pour mettre à jour une critique');
-      this.authService.login(window.location.pathname);
-      return;
+  protected onWriteReview(): void {
+    if (!this.ensureAuthenticated('rédiger une critique')) return;
+
+    // this.dialogRef = this.dialogService.open(ReviewFormModalComponent, {
+    //   header: 'Rédiger une critique',
+    //   width: '600 px',
+    //   data: { movieId: this.movieId}
+    // });
+
+    if (this.dialogRef) {
+      this.dialogRef?.onClose.subscribe((success: boolean) => {
+        if (success) {
+          this.notificationService.success('Critique publiée avec succès !');
+          this.currentPage.set(1);
+        }
+      });
     }
+  }
+
+  protected onEdit(review: ReviewListItem): void {
+    if (!this.ensureAuthenticated('mettre à jour une critique')) return;
 
     // this.dialogRef = this.dialogService.open(ReviewFormModalComponent, {
     //   header: 'Modifier ma critique',
     //   width: '600 px',
     //   data: { movieId: this.movieId, review: review}
     // });
-
-    this.dialogRef?.onClose.subscribe((success: boolean) => {
-      if (success) {
-        this.notificationService.success('Critique modifiée avec succès !');
-        this.currentPage.set(1);
-      }
-    });
+    if (this.dialogRef) {
+      this.dialogRef?.onClose.subscribe((success: boolean) => {
+        if (success) {
+          this.notificationService.success('Critique modifiée avec succès !');
+          this.currentPage.set(1);
+        }
+      });
+    }
   }
 
-  onDelete(reviewId: string): void {
-    if (!this.isAuthenticated()) {
-      this.notificationService.warning('Vous devez être connecté pour supprimer une critique');
-      this.authService.login(window.location.pathname);
-      return;
-    }
+  protected onDelete(reviewId: string): void {
+    if (!this.ensureAuthenticated('supprimer une critique')) return;
 
     if (!confirm('Êtes-vous certain de vouloir supprimer cette critique ?')) {
       return;
@@ -158,20 +156,29 @@ export class MovieReviewsComponents {
       next: () => {
         this.notificationService.success('Critique supprimée');
         this.currentPage.set(1);
+      },
+      error: () => {
+        this.notificationService.error('Impossible de supprimer la critique');
       }
     });
   }
 
-  onComments(review: ReviewListItem): void {
+  protected onComments(review: ReviewListItem): void {
     // TODO: Open comments modal
     console.log('Open comments for review:', review.id);
   }
 
   private updateReviewLikes(reviewId: string): void {
     this.reviews.update(reviews => 
-      reviews.map(r => 
+      reviews.map((r) => 
         r.id === reviewId
-        ? {...r, hasLiked: !r.hasLiked, likesCount: r.hasLiked ? r.likesCount - 1 : r.likesCount + 1}
+        ? {
+          ...r, 
+          hasLiked: !r.hasLiked, 
+          likesCount: r.hasLiked 
+            ? r.likesCount - 1 
+            : r.likesCount + 1
+        }
         : r
       )
     );

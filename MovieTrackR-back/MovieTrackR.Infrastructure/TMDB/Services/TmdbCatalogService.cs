@@ -61,7 +61,6 @@ public sealed class TmdbCatalogService(
         }
         finally
         {
-            // On repart avec un ChangeTracker propre après un import
             foreach (var entry in dbContext.ChangeTracker.Entries().ToList())
             {
                 entry.State = EntityState.Detached;
@@ -73,7 +72,6 @@ public sealed class TmdbCatalogService(
 
     public async Task EnrichMovieAsync(Guid movieId, CancellationToken cancellationToken)
     {
-        // Movie TRACKÉ, avec ses collections
         Movie? movie = await dbContext.Movies
             .Include(m => m.MovieGenres).ThenInclude(mg => mg.Genre)
             .Include(m => m.Cast).ThenInclude(m => m.Person)
@@ -90,8 +88,20 @@ public sealed class TmdbCatalogService(
         int tmdbId = movie.TmdbId.Value;
         string lang = TmdbOptions.DefaultLanguage ?? "fr-FR";
 
-        // 1 - Détails
+        // 1/2 - Détails & Video trailers
         TmdbMovieDetails details = await tmdbClient.GetMovieDetailsAsync(tmdbId, lang, cancellationToken);
+        TmdbVideosResponse videos = await tmdbClient.GetMovieVideosAsync(tmdbId, lang, cancellationToken);
+
+        TmdbMovieVideo? preferredTrailer = videos.Results.Where(v =>
+                v.Site.Equals("YouTube", StringComparison.OrdinalIgnoreCase) &&
+                v.Type.Equals("Trailer", StringComparison.OrdinalIgnoreCase))
+            .OrderByDescending(v => v.Official)
+            .ThenBy(v => v.Name)
+            .FirstOrDefault();
+
+        string? trailerUrl = preferredTrailer is null
+            ? null
+            : $"https://www.youtube.com/embed/{preferredTrailer.Key}";
 
         movie.UpdateDetails(
             title: details.Title ?? details.OriginalTitle ?? movie.Title,
@@ -99,7 +109,7 @@ public sealed class TmdbCatalogService(
             year: ParseYear(details.ReleaseDate) ?? movie.Year,
             posterUrl: details.PosterPath ?? movie.PosterUrl,
             backdropPath: details.BackdropPath ?? movie.BackdropPath,
-            trailerUrl: movie.TrailerUrl,
+            trailerUrl: trailerUrl,
             duration: details.Runtime ?? movie.Duration,
             overview: details.Overview ?? movie.Overview,
             voteAverage: details.VoteAverage ?? movie.VoteAverage,
@@ -107,10 +117,10 @@ public sealed class TmdbCatalogService(
         );
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        // 2 - Genres (ton code existant)
+        // 3 - Genres (ton code existant)
         await EnrichMovieGenres(movie, details, cancellationToken);
 
-        // 3/4 - Cast & Crew
+        // 4/5 - Cast & Crew
         TmdbMovieCredits credits = await tmdbClient.GetMovieCreditsAsync(tmdbId, lang, cancellationToken);
 
         List<TmdbCast> castRows = credits.Cast

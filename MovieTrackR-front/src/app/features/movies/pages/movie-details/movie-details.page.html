@@ -99,32 +99,68 @@
                 icon="pi pi-play"
                 severity="secondary"
                 styleClass="action-button secondary"
+                (onClick)="openTrailer(movie.trailerUrl)"
               ></p-button>
-            }
+            }            
+            <p-dialog
+              [visible]="trailerDialogVisible()"
+              [modal]="true"
+              [dismissableMask]="true"
+              [style]="{ width: '800px', maxWidth: '95vw' }"
+              (visibleChange)="onTrailerDialogVisibleChange($event)"
+            >
+              <div class="trailer-wrapper">
+                @if (currentTrailerUrl()) {
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    [src]="currentTrailerUrl() | safeUrl"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen>
+                  </iframe>
+                }
+              </div>
+            </p-dialog>
           </div>
         </div>
       </div>
 
       @if (movie.cast.length > 0) {
-        <div class="section cast-section">
+        <div class="section">
           <div class="section-header">
             <h2>Distribution</h2>
             <span class="section-subtitle">
               {{ movie.cast.length }} acteur(s)
             </span>
           </div>
-
           <p-carousel
             [value]="movie.cast"
-            [numVisible]="6"
-            [numScroll]="3"
+            [numVisible]="7"
+            [numScroll]="2"
             [circular]="true"
             [responsiveOptions]="carouselResponsiveOptions"
-            [showIndicators]="false"
             styleClass="cast-carousel"
           >
             <ng-template pTemplate="item" let-actor>
-              <article class="cast-card">
+              <p-card styleClass="cast-card">
+                <ng-template pTemplate="header">
+                  <div class="cast-photo">
+                    <img
+                      [src]="imageService.getPosterUrl(actor.profilePath, 'w185')"
+                      [alt]="actor.name"
+                      loading="lazy"
+                    />
+                  </div>
+                </ng-template>
+                <div class="cast-info">
+                  <p class="cast-name">{{ actor.name }}</p>
+                  @if (actor.character) {
+                    <p class="cast-character">{{ actor.character }}</p>
+                  }
+                </div>
+              </p-card>
+              <!-- <article class="cast-card">
                 <div class="cast-photo">
                   <img
                     [src]="imageService.getPosterUrl(actor.profilePath, 'w185')"
@@ -137,7 +173,7 @@
                     <p class="cast-character">{{ actor.character }}</p>
                   }
                 </div>
-              </article>
+              </article> -->
             </ng-template>
           </p-carousel>
         </div>
