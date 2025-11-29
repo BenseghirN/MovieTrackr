@@ -49,14 +49,19 @@ public sealed class UserListsEndpointsTests : IClassFixture<PostgresFixture>, IA
             MovieTrackRDbContext db = scope.ServiceProvider.GetRequiredService<MovieTrackRDbContext>();
 
             User user = User.Create("ext-1", "u@test.dev", "UserTest", "User", "Test");
+            db.Users.Add(user);
+            await db.SaveChangesAsync();
+
             UserList list = UserList.Create(user.Id, "My List", null);
+            db.UserLists.Add(list);
+            await db.SaveChangesAsync();
+
             Movie m1 = Movie.CreateNew("A", null, null, 2000, null, null, null, null, 100, "a", new(2000, 1, 1), null);
             Movie m2 = Movie.CreateNew("B", null, null, 2001, null, null, null, null, 100, "b", new(2001, 1, 1), null);
-            list.AddMovie(m1, 10);
-
-            db.Users.Add(user);
-            db.UserLists.Add(list);
             db.Movies.AddRange(m1, m2);
+            await db.SaveChangesAsync();
+
+            list.AddMovie(m1, 10);
             await db.SaveChangesAsync();
 
             listId = list.Id;
@@ -87,12 +92,15 @@ public sealed class UserListsEndpointsTests : IClassFixture<PostgresFixture>, IA
             MovieTrackRDbContext db = scope.ServiceProvider.GetRequiredService<MovieTrackRDbContext>();
 
             User user = User.Create("ext-1", "u@test.dev", "UserTest", "User", "Test");
-            UserList list = UserList.Create(user.Id, "Watchlist", null);
-            Movie m = Movie.CreateNew("Interstellar", 157336, "Interstellar", 2014, null, null, null, null, 169, "test", new(2014, 11, 7), null);
-
             db.Users.Add(user);
+            await db.SaveChangesAsync();
+
+            UserList list = UserList.Create(user.Id, "Watchlist", null);
             db.UserLists.Add(list);
+
+            Movie m = Movie.CreateNew("Interstellar", 157336, "Interstellar", 2014, null, null, null, null, 169, "test", new(2014, 11, 7), null);
             db.Movies.Add(m);
+
             await db.SaveChangesAsync();
 
             listId = list.Id;

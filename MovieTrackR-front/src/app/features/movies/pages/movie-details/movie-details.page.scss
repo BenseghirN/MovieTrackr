@@ -75,8 +75,8 @@
 }
 
 .poster-flip-container {
-  width: 260px;        // ou ce que tu veux
-  aspect-ratio: 2 / 3; // largeur:hauteur du poster
+  width: 260px;
+  aspect-ratio: 2 / 3;
   perspective: 1000px;
   position: relative;
 }
@@ -267,11 +267,21 @@
   }
 
   .tagline {
-    margin-top: 0.25rem;
-    margin-bottom: 0.75rem;
+    margin-top: 0.35rem;
+    margin-bottom: 1rem;
     font-style: italic;
     font-size: 1rem;
-    opacity: 0.9;
+    opacity: 0.85;
+    letter-spacing: 0.2px;
+    color: #e5e5e5;
+
+    &::before {
+      content: "« ";
+    }
+
+    &::after {
+      content: " »";
+    }
   }
 
   .meta {
