@@ -26,6 +26,7 @@ public class AddMovieToListHandlerTests
             posterUrl: null,
             backdropPath: null,
             trailerUrl: null,
+            tagLine: null,
             duration: 120,
             overview: "Test movie",
             releaseDate: year is int y ? new DateTime(y, 1, 1) : null,
@@ -186,8 +187,8 @@ public class AddMovieToListHandlerTests
 
         User user = User.Create("ext-1", "u@test.dev", "UserTest", "User", "Test");
         UserList list = UserList.Create(user.Id, "List", null);
-        Movie m1 = Movie.CreateNew("A", null, null, 2000, null, null, null, 100, "a", new DateTime(2000, 1, 1), null);
-        Movie m2 = Movie.CreateNew("B", null, null, 2001, null, null, null, 100, "b", new DateTime(2001, 1, 1), null);
+        Movie m1 = Movie.CreateNew("A", null, null, 2000, null, null, null, null, 100, "a", new DateTime(2000, 1, 1), null);
+        Movie m2 = Movie.CreateNew("B", null, null, 2001, null, null, null, null, 100, "b", new DateTime(2001, 1, 1), null);
 
         list.AddMovie(m1, 10);
         db.Users.Add(user);

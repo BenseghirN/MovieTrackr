@@ -71,7 +71,7 @@ public static class MoviesEndpoints
             .AllowAnonymous()
             .WithName("Movies_GetStreamingProviders")
             .WithSummary("Get streaming providers for a TMDb movie")
-            .Produces<MovieDetailsDto>(StatusCodes.Status200OK)
+            .Produces<StreamingOfferDto>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         return app;

@@ -9,6 +9,7 @@ export interface MovieDetails {
   posterUrl: string | null;
   backdropPath: string | null;
   trailerUrl: string | null;
+  tagline: string | null;
   duration: number | null;
   overview: string | null;
   releaseDate: string | null;

@@ -29,6 +29,9 @@ public class MovieDetailsDto
     /// <summary>URL vers la bande-annonce officielle.</summary>
     public string? TrailerUrl { get; set; }
 
+    /// <summary>Tag Line ou Réplique culte du film</summary>
+    public string? Tagline { get; set; }
+
     /// <summary>Durée du film en minutes.</summary>
     public int? Duration { get; set; }
 
@@ -80,6 +83,9 @@ public sealed record CreateMovieDto
     /// <summary>URL de la bande-annonce (si disponible).</summary>
     public string? TrailerUrl { get; init; }
 
+    /// <summary>Tagline du film (si disponible).</summary>
+    public string? Tagline { get; init; }
+
     /// <summary>Durée en minutes.</summary>
     public int? Duration { get; init; }
 
@@ -118,6 +124,9 @@ public sealed record UpdateMovieDto
 
     /// <summary>Nouvelle URL de la bande-annonce (optionnelle).</summary>
     public string? TrailerUrl { get; init; }
+
+    /// <summary>Nouvelle Tagline (optionnelle).</summary>
+    public string? Tagline { get; init; }
 
     /// <summary>Nouvelle durée en minutes (optionnelle).</summary>
     public int? Duration { get; init; }

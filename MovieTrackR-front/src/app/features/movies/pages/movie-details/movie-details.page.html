@@ -27,11 +27,111 @@
 
     <div class="content">
       <div class="movie-header">
-        <div class="poster">
-          <img
-            [src]="imageService.getPosterUrl(movie.posterUrl, 'w500')"
-            [alt]="movie.title"
-          />
+        <div 
+          class="poster-flip-container" 
+          [class.flipped]="posterFlipped()" 
+          (click)="togglePosterFlip()"
+        >
+          <div class="poster-inner">
+            <div class="poster-face poster-front">
+              <img
+                [src]="imageService.getPosterUrl(movie.posterUrl, 'w500')"
+                [alt]="movie.title"
+              />
+
+              <button 
+                type="button" 
+                class="where-to-watch-tag"
+                (click)="togglePosterFlip(); $event.stopPropagation()"
+              >
+                <span class="label">Où regarder ?</span>
+                <i class="pi pi-angle-up"></i>
+              </button>
+            </div>
+
+            <div class="poster-face poster-back">
+              <div class="providers-header">
+                <div class="title">
+                  <span>Où regarder</span>
+                  @if (streamingOffers(); as offers) {
+                    <small>{{ offers.country }}</small>
+                  }
+                </div>
+
+                <button 
+                  type="button" 
+                  class="close-flip" 
+                  (click)="togglePosterFlip(); $event.stopPropagation()"
+                >
+                  <i class="pi pi-times"></i>
+                </button>
+              </div>
+
+              @if (streamingLoading()) {
+                <div class="providers-loading">
+                  <p-progressSpinner></p-progressSpinner>
+                </div>
+              } @else if (streamingError()) {
+                <p class="providers-error">{{ streamingError() }}</p>
+              } @else if (streamingOffers(); as offers) {
+                <div class="providers-groups">
+                  @if (offers.flatrate.length) {
+                    <div class="providers-group">
+                      <span class="group-title">En streaming</span>
+                      <div class="provider-logos">
+                        @for (p of offers.flatrate; track p.providerId) {
+                          <button
+                            type="button"
+                            class="provider-logo"
+                            (click)="openStreamingLink(offers.link, $event)"
+                          >
+                            <img [src]="p.logoPath" [alt]="p.providerName" />
+                          </button>
+                        }
+                      </div>
+                    </div>
+                  }
+
+                  @if (offers.free.length) {
+                    <div class="providers-group">
+                      <span class="group-title">Gratuit</span>
+                      <div class="provider-logos">
+                        @for (p of offers.free; track p.providerId) {
+                          <button
+                            type="button"
+                            class="provider-logo"
+                            (click)="openStreamingLink(offers.link, $event)"
+                          >
+                            <img [src]="p.logoPath" [alt]="p.providerName" />
+                          </button>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+
+                @if (!offers.flatrate.length && !offers.free.length) {
+                  <p class="providers-empty">
+                    Pas d'offres de streaming connues pour ce pays.
+                  </p>
+                }
+
+                @if (offers.link) {
+                  <button
+                    type="button"
+                    class="providers-tmdb-link"
+                    (click)="openStreamingLink(offers.link, $event)"
+                  >
+                    Voir les offres détaillées sur TMDb
+                  </button>
+                }
+              } @else {
+                <p class="providers-empty">
+                  Pas d'information de streaming pour ce film.
+                </p>
+              }
+            </div>
+          </div>
         </div>
 
         <div class="info">
@@ -39,6 +139,10 @@
 
           @if (movie.originalTitle && movie.originalTitle !== movie.title) {
             <p class="original-title">{{ movie.originalTitle }}</p>
+          }
+
+          @if (movie.tagline) {
+            <p class="tagline">« {{ movie.tagline }} »</p>
           }
 
           <div class="meta">

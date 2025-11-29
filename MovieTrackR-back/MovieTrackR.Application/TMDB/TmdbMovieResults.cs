@@ -46,6 +46,8 @@ public sealed record TmdbMovieDetails(
     string? ReleaseDate,
     [property: JsonPropertyName("poster_path")]
     string? PosterPath,
+    [property: JsonPropertyName("tagline")]
+    string? Tagline,
     [property: JsonPropertyName("backdrop_path")]
     string? BackdropPath,
     [property: JsonPropertyName("runtime")]

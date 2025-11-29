@@ -29,7 +29,7 @@ public class SearchMoviesHybridHandlerTests
     private static Movie MakeMovie(string title, int? year = null, int? tmdbId = null)
         => Movie.CreateNew(
             title: title, tmdbId: tmdbId, originalTitle: null,
-            year: year, posterUrl: null, backdropPath: null, trailerUrl: null,
+            year: year, posterUrl: null, backdropPath: null, trailerUrl: null, tagLine: null,
             duration: 120, overview: "test", releaseDate: year is int y ? new DateTime(y, 1, 1) : null, voteAverage: null);
 
     [Fact]

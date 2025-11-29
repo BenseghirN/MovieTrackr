@@ -27,6 +27,7 @@ public sealed class CreateMovieHandler(IMovieTrackRDbContext dbContext)
             posterUrl: createCommand.Dto.PosterUrl,
             backdropPath: createCommand.Dto.BackdropPath,
             trailerUrl: createCommand.Dto.TrailerUrl,
+            tagLine: createCommand.Dto.Tagline,
             duration: createCommand.Dto.Duration,
             overview: createCommand.Dto.Overview,
             releaseDate: createCommand.Dto.ReleaseDate,

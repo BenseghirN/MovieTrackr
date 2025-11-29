@@ -48,7 +48,7 @@ public sealed class MoviesEndpointsTests : IClassFixture<PostgresFixture>, IAsyn
         using (var scope = _factory.Services.CreateScope())
         {
             MovieTrackRDbContext db = scope.ServiceProvider.GetRequiredService<MovieTrackRDbContext>();
-            db.Movies.Add(Movie.CreateNew("Interstellar", 157336, "Interstellar", 2014, null, null, null, 169, "test", new(2014, 11, 7), null));
+            db.Movies.Add(Movie.CreateNew("Interstellar", 157336, "Interstellar", 2014, null, null, null, null, 169, "test", new(2014, 11, 7), null));
             await db.SaveChangesAsync();
         }
 
@@ -85,8 +85,8 @@ public sealed class MoviesEndpointsTests : IClassFixture<PostgresFixture>, IAsyn
         {
             var db = scope.ServiceProvider.GetRequiredService<MovieTrackRDbContext>();
             db.Movies.AddRange(
-                Movie.CreateNew("A", null, null, 2000, null, null, null, 100, "a", new(2000, 1, 1), null),
-                Movie.CreateNew("B", null, null, 2001, null, null, null, 100, "b", new(2001, 1, 1), null)
+                Movie.CreateNew("A", null, null, 2000, null, null, null, null, 100, "a", new(2000, 1, 1), null),
+                Movie.CreateNew("B", null, null, 2001, null, null, null, null, 100, "b", new(2001, 1, 1), null)
             );
             await db.SaveChangesAsync();
         }

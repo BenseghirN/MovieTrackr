@@ -10,6 +10,7 @@ public class Movie
     public string? PosterUrl { get; private set; }
     public string? BackdropPath { get; private set; }
     public string? TrailerUrl { get; private set; }
+    public string? Tagline { get; private set; }
     public int? Duration { get; private set; }
     public string? Overview { get; private set; }
     public DateTime? ReleaseDate { get; private set; }
@@ -30,6 +31,7 @@ public class Movie
         string? posterUrl,
         string? backdropPath,
         string? trailerUrl,
+        string? tagLine,
         int? duration,
         string? overview,
         DateTime? releaseDate,
@@ -44,6 +46,7 @@ public class Movie
             PosterUrl = posterUrl,
             BackdropPath = backdropPath,
             TrailerUrl = trailerUrl,
+            Tagline = tagLine,
             Duration = duration,
             Overview = overview,
             ReleaseDate = releaseDate,
@@ -59,6 +62,7 @@ public class Movie
         string? posterUrl,
         string? backdropPath,
         string? trailerUrl,
+        string? tagLine,
         int? duration,
         string? overview,
         double? voteAverage,
@@ -70,6 +74,7 @@ public class Movie
         PosterUrl = posterUrl;
         BackdropPath = backdropPath;
         TrailerUrl = trailerUrl;
+        Tagline = tagLine;
         Duration = duration;
         Overview = overview;
         ReleaseDate = releaseDate;

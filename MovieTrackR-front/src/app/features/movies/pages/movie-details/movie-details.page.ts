@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Button } from 'primeng/button';
 import { Chip } from 'primeng/chip';
@@ -13,6 +13,7 @@ import { MovieReviewsComponents } from '../../../reviews/components/movie-review
 import { CardModule } from 'primeng/card';
 import { SafeUrlPipe } from '../../../../shared/pipes/safe-url.pipe';
 import { DialogModule } from 'primeng/dialog';
+import { MovieStreamingOffers } from '../../models/streaming-offers.model';
 
 @Component({
   selector: 'app-movie-details-page',
@@ -68,6 +69,12 @@ export class MovieDetailsPage {
     ),
     { initialValue: null }
   );
+  protected readonly streamingOffers = signal<MovieStreamingOffers | null>(null);
+  protected readonly streamingLoading = signal(false);
+  protected readonly streamingError = signal<string | null>(null);
+
+  protected readonly posterFlipped = signal(false);
+
   protected trailerDialogVisible = signal(false);
   protected currentTrailerUrl = signal<string>('');
 
@@ -106,6 +113,31 @@ export class MovieDetailsPage {
     }
   }
 
+  protected togglePosterFlip(): void {
+    if (!this.streamingOffers()) return;
+    this.posterFlipped.update(v => !v);
+  }
+
+  protected openStreamingLink(url: string | null, event: MouseEvent): void {
+    event.stopPropagation();
+    if (!url) return;
+    window.open(url, '_blank');
+  }
+
+  constructor() {
+    effect(() => {
+      const m = this.movie();
+      if (!m?.tmdbId){
+        this.streamingOffers.set(null);
+        this.posterFlipped.set(false);
+        return;
+      }
+
+      this.loadStreamingOffers(m.tmdbId);
+    });
+    
+  }
+
   private buildEmbedUrl(rawUrl: string): string {
     if (rawUrl.includes('/embed/')) {
       return rawUrl;
@@ -119,5 +151,22 @@ export class MovieDetailsPage {
     } catch {
     }
     return rawUrl;
+  }
+
+  private loadStreamingOffers(tmdbId: number): void {
+    this.streamingLoading.set(true);
+    this.streamingError.set(null);
+
+    this.moviesService.getStreamingOffers(tmdbId, 'BE').subscribe({
+      next: result => {
+        this.streamingOffers.set(result);
+        this.streamingLoading.set(false);
+      },
+      error: () => {
+        this.streamingError.set('Impossible de charger les offres de streaming.');
+        this.streamingLoading.set(false);
+        this.streamingOffers.set(null);
+      }
+    });
   }
 }

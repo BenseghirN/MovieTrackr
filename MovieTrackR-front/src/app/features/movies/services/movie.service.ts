@@ -4,6 +4,7 @@ import { ApiService } from '../../../core/services/api.service';
 import { MovieSearchParams, MovieSearchResponse, MovieSearchResult } from '../models/movie.model';
 import { MovieDetails } from '../models/movie-details.model';
 import { ConfigService } from '../../../core/services/config.service';
+import { MovieStreamingOffers } from '../models/streaming-offers.model';
 
 
 @Injectable({ providedIn: 'root' })
@@ -30,9 +31,8 @@ export class MovieService {
 	}
 
     getMovieByRouteId(rawId: string): Observable<MovieDetails> {
-        if (!rawId) {
+        if (!rawId)
             return throwError(() => new Error('ID du film manquant'));
-        }
 
         const isGuid = rawId.includes('-');
 
@@ -49,6 +49,16 @@ export class MovieService {
         } else {
         throw new Error('Film sans ID valide');
         }
+    }
+
+    getStreamingOffers(tmdbId: number, country: string): Observable<MovieStreamingOffers> {
+        if (!tmdbId)
+            return throwError(() => new Error('ID du film manquant'));
+
+        return this.api.get<MovieStreamingOffers>(
+            `${this.config.apiUrl}/movies/${tmdbId}/streaming`,
+            { params: {country: country}, withCredentials: false }
+        );
     }
 
     private getLocalMovie(localId: string): Observable<MovieDetails> {

@@ -31,6 +31,7 @@ public sealed class UpdateMovieHandler(IMovieTrackRDbContext dbContext)
             posterUrl: updateCommand.dto.PosterUrl,
             backdropPath: updateCommand.dto.BackdropPath,
             trailerUrl: updateCommand.dto.TrailerUrl,
+            tagLine: updateCommand.dto.Tagline,
             duration: updateCommand.dto.Duration,
             overview: updateCommand.dto.Overview,
             releaseDate: updateCommand.dto.ReleaseDate,
