@@ -36,6 +36,7 @@ public static class MoviesEndpoints
         group.MapGet("/search", MoviesHandlers.Search)
             .WithName("Search_Movies")
             .WithSummary("Search movies (paged)")
+            .AllowAnonymous()
             .Produces<IReadOnlyList<SearchMovieResultDto>>(StatusCodes.Status200OK);
 
         group.MapPost("/", MoviesHandlers.Create)
@@ -64,6 +65,13 @@ public static class MoviesEndpoints
             .WithSummary("Delete a movie")
             .RequireAuthorization(AuthorizationConfiguration.AdminPolicy)
             .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
+        group.MapGet("/{tmdbId:int}/streaming", MoviesHandlers.GetMovieStreamingOffers)
+            .AllowAnonymous()
+            .WithName("Movies_GetStreamingProviders")
+            .WithSummary("Get streaming providers for a TMDb movie")
+            .Produces<MovieDetailsDto>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         return app;

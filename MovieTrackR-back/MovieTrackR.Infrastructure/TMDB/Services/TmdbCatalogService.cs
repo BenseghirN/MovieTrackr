@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MovieTrackR.Application.DTOs;
 using MovieTrackR.Application.Interfaces;
 using MovieTrackR.Application.TMDB;
 using MovieTrackR.Application.TMDB.Interfaces;
@@ -69,7 +70,6 @@ public sealed class TmdbCatalogService(
 
         return newMovie.Id;
     }
-
     public async Task EnrichMovieAsync(Guid movieId, CancellationToken cancellationToken)
     {
         Movie? movie = await dbContext.Movies
@@ -134,6 +134,21 @@ public sealed class TmdbCatalogService(
 
         await EnrichMovieCast(movie, castRows, cancellationToken);
         await EnrichMovieCrew(movie, crewRows, cancellationToken);
+    }
+    public async Task<StreamingOfferDto?> GetMovieStreamingOffersAsync(int tmdbId, string countryCode = "BE", CancellationToken cancellationToken = default)
+    {
+        TmdbWatchProvidersResponse? providers = await tmdbClient.GetMovieWatchProvidersAsync(tmdbId, cancellationToken);
+
+        if (providers?.Results is null || !providers.Results.TryGetValue(countryCode, out var offer))
+            return null;
+
+        return new StreamingOfferDto
+        {
+            Country = countryCode,
+            Link = offer.Link,
+            Flatrate = MapList(offer.Flatrate, TmdbOptions.ProviderIconBaseUrl),
+            Free = MapList(offer.Free, TmdbOptions.ProviderIconBaseUrl)
+        };
     }
 
     #region Helpers
@@ -240,6 +255,25 @@ public sealed class TmdbCatalogService(
         }
 
         await dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    #endregion
+
+    #region WatchProvider
+
+    private static IReadOnlyList<WatchProviderDto> MapList(IReadOnlyList<TmdbProvider>? list, string baseUrl)
+    {
+        if (list is null) return Array.Empty<WatchProviderDto>();
+
+        return list
+            .OrderBy(p => p.DisplayPriority)
+            .Select(p => new WatchProviderDto
+            {
+                ProviderId = p.ProviderId,
+                ProviderName = p.ProviderName,
+                LogoPath = $"{baseUrl}{p.LogoPath}"
+            })
+            .ToList();
     }
 
     #endregion

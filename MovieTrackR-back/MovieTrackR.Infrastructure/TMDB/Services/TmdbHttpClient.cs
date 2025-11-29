@@ -19,6 +19,11 @@ public sealed class TmdbHttpClient(HttpClient httpClient, IOptions<TmdbOptions> 
         PropertyNameCaseInsensitive = true,
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
     };
+    public async Task<TmdbWatchProvidersResponse?> GetMovieWatchProvidersAsync(int tmdbId, CancellationToken cancellationToken)
+    {
+        string relative = $"movie/{tmdbId}/watch/providers";
+        return await GetFromTmdbAsync<TmdbWatchProvidersResponse>(relative, cancellationToken);
+    }
 
     public async Task<TmdbConfigurationImages> GetConfigurationImagesAsync(CancellationToken cancellationToken)
         => await GetFromTmdbAsync<TmdbConfigurationImages>("configuration", cancellationToken);
@@ -91,4 +96,5 @@ public sealed class TmdbHttpClient(HttpClient httpClient, IOptions<TmdbOptions> 
         T? data = await JsonSerializer.DeserializeAsync<T>(stream, _json, cancellationToken);
         return data ?? throw new InvalidOperationException($"Empty TMDb payload for '{relativeUrl}'.");
     }
+
 }

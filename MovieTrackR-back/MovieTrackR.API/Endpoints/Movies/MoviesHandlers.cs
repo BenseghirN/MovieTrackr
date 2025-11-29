@@ -96,4 +96,19 @@ public static class MoviesHandlers
         await mediator.Send(new DeleteMovieCommand(id), cancellationToken);
         return Results.NoContent();
     }
+
+    /// <summary>Récupère les offres de streaming d'un film</summary>
+    /// <param name="tmdbId">ID du film.</param>
+    /// <param name="country">Code pays pour les offres</param>
+    /// <param name="mediator">Médiateur applicatif.</param>
+    /// <param name="cancellationToken">Token d'annulation.</param>
+    /// <returns>La liste des offres si trouvé, 404 sinon.</returns>
+    public static async Task<IResult> GetMovieStreamingOffers(int tmdbId, string? country, IMediator mediator, CancellationToken cancellationToken)
+    {
+        string countryCode = string.IsNullOrWhiteSpace(country)
+            ? "BE"
+            : country.ToUpperInvariant();
+        StreamingOfferDto? dto = await mediator.Send(new GetStreamingOffersForMovieQuery(tmdbId, countryCode), cancellationToken);
+        return dto is null ? Results.NotFound() : Results.Ok(dto);
+    }
 }

@@ -12,6 +12,7 @@ public interface ITmdbClient
     Task<TmdbMovieDetails> GetMovieDetailsAsync(int tmdbId, string language, CancellationToken cancellationToken);
     Task<TmdbMovieCredits> GetMovieCreditsAsync(int tmdbId, string language, CancellationToken cancellationToken);
     Task<TmdbVideosResponse> GetMovieVideosAsync(int tmdbId, string language, CancellationToken cancellationToken);
+    Task<TmdbWatchProvidersResponse?> GetMovieWatchProvidersAsync(int tmdbId, CancellationToken cancellationToken);
     Task<TmdbConfigurationImages> GetConfigurationImagesAsync(CancellationToken cancellationToken);
     Task<TmdbGenresResponse> GetGenresAsync(string language, CancellationToken cancellationToken);
 }

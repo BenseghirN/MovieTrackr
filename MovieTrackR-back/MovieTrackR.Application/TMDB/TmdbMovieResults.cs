@@ -134,3 +134,30 @@ public sealed record TmdbVideosResponse(
     [property: JsonPropertyName("results")]
     IReadOnlyList<TmdbMovieVideo> Results
 );
+
+public sealed record TmdbWatchProvidersResponse(
+    [property: JsonPropertyName("id")]
+    int Id,
+    [property: JsonPropertyName("results")]
+    Dictionary<string, TmdbWatchProviderCountry> Results
+);
+
+public sealed record TmdbWatchProviderCountry(
+    [property: JsonPropertyName("link")]
+    string Link,
+    [property: JsonPropertyName("flatrate")]
+    IReadOnlyList<TmdbProvider>? Flatrate,
+    [property: JsonPropertyName("free")]
+    IReadOnlyList<TmdbProvider>? Free
+);
+
+public sealed record TmdbProvider(
+    [property: JsonPropertyName("logo_path")]
+    string? LogoPath,
+    [property: JsonPropertyName("provider_id")]
+    int ProviderId,
+    [property: JsonPropertyName("provider_name")]
+    string ProviderName,
+    [property: JsonPropertyName("display_priority")]
+    int DisplayPriority
+);
