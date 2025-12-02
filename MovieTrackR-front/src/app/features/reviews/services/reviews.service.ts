@@ -37,6 +37,7 @@ export class ReviewService {
     }
 
     createReview(review: CreateReviewModel): Observable<void> {
+        console.log('Creating review with data:', review);
         return this.api.post<void>(
             `${this.config.apiUrl}/reviews`,
             review,
@@ -45,6 +46,7 @@ export class ReviewService {
     }
 
     updateReview(reviewId: string, dto: UpdateReviewModel): Observable<void> {
+        console.log('Updating review with ID:', reviewId, 'with data:', dto);
         return this.api.put<void>(
             `${this.config.apiUrl}/reviews/${reviewId}`,
             dto,

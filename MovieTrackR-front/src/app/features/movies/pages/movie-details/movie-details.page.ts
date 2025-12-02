@@ -9,7 +9,7 @@ import { MovieService } from '../../services/movie.service';
 import { CarouselModule } from 'primeng/carousel';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map, switchMap, of, catchError, tap } from 'rxjs';
-import { MovieReviewsComponents } from '../../../reviews/components/movie-reviews/movie-reviews.components.ts/movie-reviews.components';
+import { MovieReviewsComponents } from '../../../reviews/components/movie-reviews/movie-reviews.components';
 import { CardModule } from 'primeng/card';
 import { SafeUrlPipe } from '../../../../shared/pipes/safe-url.pipe';
 import { DialogModule } from 'primeng/dialog';

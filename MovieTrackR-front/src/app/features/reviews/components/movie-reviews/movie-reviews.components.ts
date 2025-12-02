@@ -3,13 +3,14 @@ import { Component, computed, effect, inject, Input, input, signal } from '@angu
 import { ButtonModule } from 'primeng/button';
 import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { ReviewService } from '../../../services/reviews.service';
-import { ReviewLikesService } from '../../../services/review-likes.service';
-import { AuthService } from '../../../../../core/auth/auth-service';
-import { NotificationService } from '../../../../../core/services/notification.service';
+import { ReviewService } from '../../services/reviews.service';
+import { ReviewLikesService } from '../../services/review-likes.service';
+import { AuthService } from '../../../../core/auth/auth-service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { ReviewListItem } from '../../../models/review.model';
-import { ReviewCardComponent } from '../../review-card/review-card.component';
+import { ReviewListItem } from '../../models/review.model';
+import { ReviewCardComponent } from '../review-card/review-card.component';
+import { ReviewFormModalComponent } from '../review-form-modal/review-form-modal.component';
 
 @Component({
   selector: 'app-movie-reviews',
@@ -26,12 +27,13 @@ export class MovieReviewsComponents {
   private readonly likesService = inject(ReviewLikesService);
   private readonly authService = inject(AuthService);
   private readonly notificationService = inject(NotificationService);
-  // private readonly dialogService = inject(DialogService);
-  private dialogRef?: DynamicDialogRef;
+  private readonly dialogService = inject(DialogService);
+  private dialogRef: DynamicDialogRef<ReviewFormModalComponent> | null = null;
 
   protected readonly reviews = signal<ReviewListItem[]>([]);
   protected readonly totalCount = signal(0);
   protected readonly currentPage = signal(1);
+  protected readonly reloadKey = signal(0);
   protected readonly pageSize = signal(10);
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
@@ -51,6 +53,7 @@ export class MovieReviewsComponents {
       const id = this.movieId();
       const page = this.currentPage();
       const size = this.pageSize();
+      const reload = this.reloadKey();
       if (!id) return;
 
       this.loadReviews(id, page, size);
@@ -111,17 +114,18 @@ export class MovieReviewsComponents {
   protected onWriteReview(): void {
     if (!this.ensureAuthenticated('rédiger une critique')) return;
 
-    // this.dialogRef = this.dialogService.open(ReviewFormModalComponent, {
-    //   header: 'Rédiger une critique',
-    //   width: '600 px',
-    //   data: { movieId: this.movieId}
-    // });
+    this.dialogRef = this.dialogService.open(ReviewFormModalComponent, {
+      header: 'Rédiger une critique',
+      width: '800px',
+      data: { movieId: this.movieId()}
+    });
 
     if (this.dialogRef) {
       this.dialogRef?.onClose.subscribe((success: boolean) => {
         if (success) {
           this.notificationService.success('Critique publiée avec succès !');
           this.currentPage.set(1);
+          this.reloadKey.update(x => x + 1);
         }
       });
     }
@@ -130,16 +134,21 @@ export class MovieReviewsComponents {
   protected onEdit(review: ReviewListItem): void {
     if (!this.ensureAuthenticated('mettre à jour une critique')) return;
 
-    // this.dialogRef = this.dialogService.open(ReviewFormModalComponent, {
-    //   header: 'Modifier ma critique',
-    //   width: '600 px',
-    //   data: { movieId: this.movieId, review: review}
-    // });
+    this.dialogRef = this.dialogService.open(ReviewFormModalComponent, {
+      header: 'Modifier ma critique',
+      width: '800px',
+      data: { 
+        movieId: this.movieId(), 
+        review: review
+      }
+    });
+
     if (this.dialogRef) {
       this.dialogRef?.onClose.subscribe((success: boolean) => {
         if (success) {
           this.notificationService.success('Critique modifiée avec succès !');
           this.currentPage.set(1);
+          this.reloadKey.update(x => x + 1);
         }
       });
     }

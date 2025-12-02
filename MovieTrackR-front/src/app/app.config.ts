@@ -12,6 +12,7 @@ import Aura from '@primeuix/themes/aura';
 import Lara from '@primeuix/themes/lara';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
+import { DialogService } from 'primeng/dynamicdialog';
 
 const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
@@ -29,5 +30,6 @@ export const appConfig: ApplicationConfig = {
         preset: isDarkMode ? Aura : Lara
       }
     }),
+    DialogService,
   ],
 };

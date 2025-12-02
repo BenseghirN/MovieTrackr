@@ -44,7 +44,7 @@ public static class MoviesEndpoints
             .WithSummary("Create a movie")
             .RequireAuthorization(AuthorizationConfiguration.AdminPolicy)
             .Accepts<CreateMovieDto>("application/json")
-            .AddEndpointFilter<ValidationFilter<CreateMovieDtoValidator>>()
+            .AddEndpointFilter<ValidationFilter<CreateMovieDto>>()
             .Produces(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status409Conflict);
@@ -54,7 +54,7 @@ public static class MoviesEndpoints
             .WithSummary("Update a movie")
             .RequireAuthorization(AuthorizationConfiguration.AdminPolicy)
             .Accepts<UpdateMovieDto>("application/json")
-            .AddEndpointFilter<ValidationFilter<UpdateMovieDtoValidator>>()
+            .AddEndpointFilter<ValidationFilter<UpdateMovieDto>>()
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)

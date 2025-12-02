@@ -8,7 +8,7 @@
   },
   "include": [
     "src/**/*.ts"
-  ],
+, "src/app/features/reviews/components/movie-reviews/movie-rev"  ],
   "exclude": [
     "src/**/*.spec.ts"
   ]

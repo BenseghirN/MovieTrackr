@@ -1,1 +1,96 @@
-<p>review-form-modal works!</p>
+<div class="review-form-modal">
+  <form [formGroup]="reviewForm" (ngSubmit)="onSubmit()">
+    
+    <!-- Rating Section -->
+    <div class="form-section">
+      <label class="form-label">
+        Note
+        @if (rating() > 0) {
+          <span class="rating-value">{{ rating() }}/10</span>
+        }
+      </label>
+      
+      <div class="rating-container">
+        <p-rating
+          formControlName="rating"
+          [stars]="10"
+          [invalid]="isInvalid('rating')"
+        />
+        
+        @if (isInvalid('rating')) {
+          <p-message 
+            severity="error" 
+            size="small" 
+            variant="simple"
+            text="Veuillez donner une note"
+          />
+        }
+      </div>
+    </div>
+
+    <!-- Content Section -->
+    <div class="form-section">
+      <label class="form-label">
+        Votre critique
+        <span class="char-count" [class.error]="contentLength() < 10">
+          {{ contentLength() }}/2000 caractères (min. 10)
+        </span>
+      </label>
+      
+      <p-floatlabel variant="on">
+        <textarea
+          pTextarea
+          id="review_content"
+          formControlName="content"
+          rows="8"
+          [style]="{ resize: 'vertical', width: '100%' }"
+        ></textarea>
+        <label for="review_content">Partagez votre avis sur ce film...</label>
+      </p-floatlabel>
+
+      <!-- Form validation errors -->
+      @if (isInvalid('content')) {
+        <div class="error-message">
+          @if (reviewForm.get('content')?.hasError('required')) {
+            <p>Le contenu est obligatoire</p>
+          }
+          @if (reviewForm.get('content')?.hasError('minlength')) {
+            <p>Le contenu doit contenir au moins 10 caractères</p>
+          }
+          @if (reviewForm.get('content')?.hasError('maxlength')) {
+            <p>Le contenu ne peut pas dépasser 2000 caractères</p>
+          }
+        </div>
+      }
+
+      <!-- API validation errors -->
+      @if (validationErrors()['Content']) {
+        <div class="error-message">
+          @for (error of validationErrors()['Content']; track error) {
+            <p>{{ error }}</p>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Actions -->
+    <div class="form-actions">
+      <p-button
+        label="Annuler"
+        severity="secondary"
+        [outlined]="true"
+        type="button"
+        (onClick)="onCancel()"
+        [disabled]="loading()"
+      />
+      
+      <p-button
+        [label]="isEditMode() ? 'Modifier' : 'Publier'"
+        icon="pi pi-check"
+        type="submit"
+        [disabled]="!canSubmit()"
+        [loading]="loading()"
+      />
+    </div>
+  </form>
+</div>
