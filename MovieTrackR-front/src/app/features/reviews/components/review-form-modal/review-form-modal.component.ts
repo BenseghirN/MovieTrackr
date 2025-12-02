@@ -10,7 +10,6 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { RatingModule } from 'primeng/rating';
 import { MessageModule } from 'primeng/message';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { map, startWith } from 'rxjs/operators';
 import { NotificationService } from '../../../../core/services/notification.service';
 
 interface ReviewFormDialogData {

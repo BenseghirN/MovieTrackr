@@ -89,7 +89,7 @@ export class MoviesPage {
     });
   }
 
-  search(): void {
+  protected search(): void {
     if (!this.searchQuery().trim()) return;
     this.currentPage.set(1);
 
@@ -100,7 +100,7 @@ export class MoviesPage {
     });
   }
 
-  onPageChange(event: PaginatorState): void {
+  protected onPageChange(event: PaginatorState): void {
     const newPage = (event.page ?? 0) + 1;
     this.currentPage.set(newPage);
     this.pageSize.set(event.rows ?? 20);
@@ -139,26 +139,26 @@ export class MoviesPage {
       });
   }
 
-  onSearchKeyup(event: KeyboardEvent): void {
+  protected onSearchKeyup(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
       this.currentPage.set(1);
       this.search();
     }
   }
 
-  onQueryChange(event: Event): void {
+  protected onQueryChange(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
     this.searchQuery.set(value);
   }
 
-  onYearChange(value: number | null): void {
+  protected onYearChange(value: number | null): void {
     this.yearFilter.set(value ?? null);
     if (this.searchQuery().trim()) {
       this.search();
     }
   }
 
-  onMovieClick(movie: MovieSearchResult): void {
+  protected onMovieClick(movie: MovieSearchResult): void {
     const id = movie.isLocal && movie.localId 
       ? movie.localId 
       : movie.tmdbId?.toString();

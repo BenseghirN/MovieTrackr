@@ -46,7 +46,6 @@
         <label for="review_content">Partagez votre avis sur ce film...</label>
       </p-floatlabel>
 
-      <!-- Form validation errors -->
       @if (isInvalid('content')) {
         <div class="error-message">
           @if (reviewForm.get('content')?.hasError('required')) {
@@ -61,7 +60,6 @@
         </div>
       }
 
-      <!-- API validation errors -->
       @if (validationErrors()['Content']) {
         <div class="error-message">
           @for (error of validationErrors()['Content']; track error) {
@@ -71,7 +69,6 @@
       }
     </div>
 
-    <!-- Actions -->
     <div class="form-actions">
       <p-button
         label="Annuler"

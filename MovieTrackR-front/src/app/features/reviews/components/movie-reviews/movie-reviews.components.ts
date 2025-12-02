@@ -11,6 +11,7 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ReviewListItem } from '../../models/review.model';
 import { ReviewCardComponent } from '../review-card/review-card.component';
 import { ReviewFormModalComponent } from '../review-form-modal/review-form-modal.component';
+import { CommentsModalComponent } from '../comments-modal/comments-modal.component';
 
 @Component({
   selector: 'app-movie-reviews',
@@ -28,7 +29,8 @@ export class MovieReviewsComponents {
   private readonly authService = inject(AuthService);
   private readonly notificationService = inject(NotificationService);
   private readonly dialogService = inject(DialogService);
-  private dialogRef: DynamicDialogRef<ReviewFormModalComponent> | null = null;
+  private reviewDialogRef: DynamicDialogRef<ReviewFormModalComponent> | null = null;
+  private commentsDialogRef: DynamicDialogRef<CommentsModalComponent> | null = null;
   protected readonly isAuthenticated = this.authService.isAuthenticated;
 
   protected readonly reviews = signal<ReviewListItem[]>([]);
@@ -40,9 +42,7 @@ export class MovieReviewsComponents {
   protected readonly error = signal<string | null>(null);
 
   protected readonly hasReviews = computed(() => this.reviews().length > 0);
-  protected readonly totalPages = computed(() => 
-    Math.ceil(this.totalCount() / this.pageSize() || 1)
-  );
+  protected readonly totalPages = computed(() => Math.ceil(this.totalCount() / this.pageSize() || 1));
 
   protected login(): void {
     this.authService.login(window.location.pathname);
@@ -114,14 +114,14 @@ export class MovieReviewsComponents {
   protected onWriteReview(): void {
     if (!this.ensureAuthenticated('rédiger une critique')) return;
 
-    this.dialogRef = this.dialogService.open(ReviewFormModalComponent, {
+    this.reviewDialogRef = this.dialogService.open(ReviewFormModalComponent, {
       header: 'Rédiger une critique',
       width: '800px',
       data: { movieId: this.movieId()}
     });
 
-    if (this.dialogRef) {
-      this.dialogRef?.onClose.subscribe((success: boolean) => {
+    if (this.reviewDialogRef) {
+      this.reviewDialogRef.onClose.subscribe((success: boolean) => {
         if (success) {
           this.notificationService.success('Critique publiée avec succès !');
           this.currentPage.set(1);
@@ -134,7 +134,7 @@ export class MovieReviewsComponents {
   protected onEdit(review: ReviewListItem): void {
     if (!this.ensureAuthenticated('mettre à jour une critique')) return;
 
-    this.dialogRef = this.dialogService.open(ReviewFormModalComponent, {
+    this.reviewDialogRef = this.dialogService.open(ReviewFormModalComponent, {
       header: 'Modifier ma critique',
       width: '800px',
       data: { 
@@ -143,8 +143,8 @@ export class MovieReviewsComponents {
       }
     });
 
-    if (this.dialogRef) {
-      this.dialogRef?.onClose.subscribe((success: boolean) => {
+    if (this.reviewDialogRef) {
+      this.reviewDialogRef.onClose.subscribe((success: boolean) => {
         if (success) {
           this.notificationService.success('Critique modifiée avec succès !');
           this.currentPage.set(1);
@@ -157,9 +157,7 @@ export class MovieReviewsComponents {
   protected onDelete(reviewId: string): void {
     if (!this.ensureAuthenticated('supprimer une critique')) return;
 
-    if (!confirm('Êtes-vous certain de vouloir supprimer cette critique ?')) {
-      return;
-    }
+    if (!confirm('Êtes-vous certain de vouloir supprimer cette critique ?')) return;
 
     this.reviewService.deleteReview(reviewId).subscribe({
       next: () => {
@@ -173,8 +171,28 @@ export class MovieReviewsComponents {
   }
 
   protected onComments(review: ReviewListItem): void {
-    // TODO: Open comments modal
-    console.log('Open comments for review:', review.id);
+    this.commentsDialogRef = this.dialogService.open(CommentsModalComponent, {
+      width: '800px',
+      data: { 
+        reviewId: review.id,
+        reviewAuthor: review.userName
+      }
+    });
+
+    if (this.commentsDialogRef) {
+      this.commentsDialogRef.onClose.subscribe((updatedCommentsCount?: number) => {
+        if (updatedCommentsCount !== undefined) {
+          this.reviews.update(reviews => 
+            reviews.map(r => 
+              r.id === review.id
+                ? { ...r, commentsCount: updatedCommentsCount }
+                : r
+            )
+          );
+          this.reloadKey.update(x => x + 1);
+        }
+      });
+    }
   }
 
   private updateReviewLikes(reviewId: string): void {

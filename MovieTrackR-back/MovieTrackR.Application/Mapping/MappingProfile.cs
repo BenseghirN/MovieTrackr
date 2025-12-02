@@ -72,7 +72,8 @@ public class MappingProfile : Profile
             .ForMember(d => d.ReviewedAt, opt => opt.Ignore())
             .ForMember(d => d.ProposedByUser, opt => opt.Ignore());
 
-        CreateMap<ReviewComment, CommentDto>();
+        CreateMap<ReviewComment, CommentDto>()
+            .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.User.Pseudo));
 
         // DB -> DTO
         CreateMap<Movie, SearchMovieResultDto>(MemberList.Source)

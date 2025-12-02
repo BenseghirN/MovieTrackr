@@ -1,12 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, inject, OnInit, signal } from '@angular/core';
+import { Component, effect, inject, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
 import { MenubarModule } from 'primeng/menubar';
 import { AuthService } from '../../../../core/auth/auth-service';
-import { environment } from '../../../../../environments/environment';
-import { ConfigService } from '../../../../core/services/config.service';
 
 @Component({
   selector: 'app-header',
@@ -17,7 +15,7 @@ import { ConfigService } from '../../../../core/services/config.service';
 })
 export class Header implements OnInit {
   readonly authService = inject(AuthService);
-  private readonly config = inject(ConfigService);
+  // private readonly config = inject(ConfigService);
 
   constructor() {    
     effect(() => {

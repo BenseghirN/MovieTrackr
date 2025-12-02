@@ -30,6 +30,7 @@ export interface ReviewComment {
   id: string
   reviewId: string
   userId: string
+  userName: string
   content: string
   createdAt: string
 }
