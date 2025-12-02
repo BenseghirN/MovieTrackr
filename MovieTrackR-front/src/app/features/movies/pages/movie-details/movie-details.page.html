@@ -163,7 +163,14 @@
             @if (movie.voteAverage) {
               <span class="meta-pill rating-pill">
                 <i class="pi pi-star-fill"></i>
-                {{ movie.voteAverage | number: '1.1-1' }}/10
+                TMDB: {{ movie.voteAverage | number: '1.1-1' }}/10 
+              </span>
+            }
+            
+            @if (movie.averageRating) {
+              <span class="meta-pill rating-pill">
+                <i class="pi pi-star-fill"></i>
+                MovieTrackR: {{ movie.averageRating | number: '1.1-1' }}/5
               </span>
             }
           </div>
@@ -264,28 +271,15 @@
                   }
                 </div>
               </p-card>
-              <!-- <article class="cast-card">
-                <div class="cast-photo">
-                  <img
-                    [src]="imageService.getPosterUrl(actor.profilePath, 'w185')"
-                    [alt]="actor.name"
-                  />
-                </div>
-                <div class="cast-info">
-                  <p class="cast-name">{{ actor.name }}</p>
-                  @if (actor.character) {
-                    <p class="cast-character">{{ actor.character }}</p>
-                  }
-                </div>
-              </article> -->
             </ng-template>
           </p-carousel>
         </div>
       }
     </div>
-    <div>
+    <div class="reviews-section">
       <app-movie-reviews
         [movieId]="movie.id"
+        [averageRating]="movie.averageRating"
       />
     </div>
   }

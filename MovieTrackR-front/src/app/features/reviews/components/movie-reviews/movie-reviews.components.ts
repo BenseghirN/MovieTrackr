@@ -29,6 +29,7 @@ export class MovieReviewsComponents {
   private readonly notificationService = inject(NotificationService);
   private readonly dialogService = inject(DialogService);
   private dialogRef: DynamicDialogRef<ReviewFormModalComponent> | null = null;
+  protected readonly isAuthenticated = this.authService.isAuthenticated;
 
   protected readonly reviews = signal<ReviewListItem[]>([]);
   protected readonly totalCount = signal(0);
@@ -42,7 +43,6 @@ export class MovieReviewsComponents {
   protected readonly totalPages = computed(() => 
     Math.ceil(this.totalCount() / this.pageSize() || 1)
   );
-  protected readonly isAuthenticated = this.authService.isAuthenticated;
 
   protected login(): void {
     this.authService.login(window.location.pathname);

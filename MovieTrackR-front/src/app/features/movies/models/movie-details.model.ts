@@ -14,6 +14,8 @@ export interface MovieDetails {
   overview: string | null;
   releaseDate: string | null;
   voteAverage: number | null;
+  averageRating: number | null;
+  reviewCount: number;  
   createdAt: string;
   genres: Genre[];
   cast: CastMember[];

@@ -15,7 +15,7 @@ public class MappingProfile : Profile
         CreateMap<User, UserDto>();
         CreateMap<Movie, MovieDetailsDto>()
             .ForMember(d => d.Genres, m => m.MapFrom(s => s.MovieGenres.Select(mg => mg.Genre)))
-            .ForMember(d => d.Cast, m => m.MapFrom(s => s.Cast.OrderBy(c => c.Order).Take(15)))
+            .ForMember(d => d.Cast, m => m.MapFrom(s => s.Cast.OrderBy(c => c.Order).Take(20)))
             .ForMember(d => d.Crew, m => m.MapFrom(s =>
                 s.Crew
                     .Where(c => CrewHelpers.IsImportantJob(c.Job))
@@ -47,11 +47,14 @@ public class MappingProfile : Profile
             .ForMember(d => d.CreatedAt, opt => opt.MapFrom(s => s.CreatedAt))
             .ForMember(d => d.LikesCount, opt => opt.MapFrom(s => s.Likes.Count))
             .ForMember(d => d.CommentsCount, opt => opt.MapFrom(s => s.Comments.Count))
-            .ForMember(d => d.HasLiked, opt => opt.MapFrom((src, dest, _, ctx) =>
-                ctx.Items.TryGetValue("CurrentUserId", out var obj) && obj is Guid userId
-                    ? src.Likes.Any(l => l.UserId == userId)
-                    : false
-            ));
+            .ForMember(d => d.HasLiked, opt => opt.Ignore())
+            .AfterMap((src, dest, context) =>
+            {
+                if (context.Items.TryGetValue("CurrentUserId", out object? userIdObj) && userIdObj is Guid userId)
+                {
+                    dest.HasLiked = src.Likes.Any(l => l.UserId == userId);
+                }
+            });
 
         // Review -> Details
         CreateMap<Review, ReviewDetailsDto>()

@@ -30,9 +30,9 @@ export class ReviewCardComponent {
   protected readonly stars = computed(() => {
     const rating = this.review().rating;
     return {
-      full: Math.floor(rating / 2),
-      half: rating % 2 >= 1,
-      empty: 5 - Math.ceil(rating / 2)
+      full: rating,
+      half: 0,
+      empty: 5 - rating
     }
   });
   

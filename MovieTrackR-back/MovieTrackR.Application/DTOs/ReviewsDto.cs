@@ -20,7 +20,7 @@ public sealed class CreateReviewDto
 /// <summary>Modèle de mise à jour d'une critique (review).</summary>
 public sealed class UpdateReviewDto
 {
-    /// <summary>Nouvelle note attribuée (0 à 10).</summary>
+    /// <summary>Nouvelle note attribuée (0 à 5).</summary>
     public float Rating { get; set; }
     /// <summary>Nouveau contenu textuel de la critique (optionnel).</summary>
     public string? Content { get; set; }

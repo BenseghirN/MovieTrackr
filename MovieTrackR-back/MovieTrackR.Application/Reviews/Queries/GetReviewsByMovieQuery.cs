@@ -32,15 +32,16 @@ public sealed class GetReviewsByMovieHandler(IMovieTrackRDbContext dbContext, IM
 
         int total = await baseSql.CountAsync(cancellationToken);
 
-        List<ReviewListItemDto> items = await baseSql
+        List<Review> reviews = await baseSql
             .OrderByDescending(r => r.CreatedAt)
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)
-            .ProjectTo<ReviewListItemDto>(
-                mapper.ConfigurationProvider,
-                new { CurrentUserId = userId }
-            )
             .ToListAsync(cancellationToken);
+
+        List<ReviewListItemDto> items = mapper.Map<List<Review>, List<ReviewListItemDto>>(
+            reviews,
+            opts => opts.Items["CurrentUserId"] = userId
+        );
 
         return new PagedResult<ReviewListItemDto>(items, total, query.Page, query.PageSize);
     }

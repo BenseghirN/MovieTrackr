@@ -36,8 +36,8 @@ export class ReviewFormModalComponent implements OnInit {
   
   private readonly formBuilder = inject(FormBuilder);
   protected readonly reviewForm = this.formBuilder.nonNullable.group({
-    rating: this.formBuilder.nonNullable.control<number>(1, {
-      validators: [Validators.required, Validators.min(1), Validators.max(10)],
+    rating: this.formBuilder.nonNullable.control<number>(0, {
+      validators: [Validators.required, Validators.min(1), Validators.max(5)],
     }),
     content: this.formBuilder.nonNullable.control<string>('', {
       validators: [Validators.required, Validators.minLength(10), Validators.maxLength(2000)],

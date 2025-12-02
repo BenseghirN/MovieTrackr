@@ -8,7 +8,7 @@ public sealed class CreateReviewDtoValidator : AbstractValidator<CreateReviewDto
     public CreateReviewDtoValidator()
     {
         RuleFor(x => x.MovieId).NotEmpty();
-        RuleFor(x => x.Rating).InclusiveBetween(0, 10);
+        RuleFor(x => x.Rating).InclusiveBetween(0, 5);
         RuleFor(x => x.Content).MaximumLength(2000);
     }
 }

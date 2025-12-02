@@ -21,7 +21,22 @@ public sealed class GetMovieByIdHandler(IMovieTrackRDbContext dbContext, IMapper
             .AsNoTracking()
             .FirstOrDefaultAsync(m => m.Id == query.Id, cancellationToken);
 
-        return movie is null ? null : mapper.Map<MovieDetailsDto>(movie);
+        if (movie is null) return null;
+
+        var reviewStats = await dbContext.Reviews
+            .Where(r => r.MovieId == query.Id)
+            .GroupBy(r => r.MovieId)
+            .Select(g => new
+            {
+                AverageRating = (float?)g.Average(r => r.Rating),
+                Count = g.Count()
+            })
+            .FirstOrDefaultAsync(cancellationToken);
+
+        MovieDetailsDto dto = mapper.Map<MovieDetailsDto>(movie);
+        dto.AverageRating = reviewStats?.AverageRating;
+        dto.ReviewCount = reviewStats?.Count ?? 0;
+        return dto;
     }
 }
 

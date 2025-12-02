@@ -16,14 +16,14 @@
           @for (_ of [].constructor(stars().full); track $index) {
             <i class="pi pi-star-fill star-full"></i>
           }
-          @if (stars().half) {
+          <!-- @if (stars().half) {
             <i class="pi pi-star-half-fill star-half"></i>
-          }
+          } -->
           @for (_ of [].constructor(stars().empty); track $index) {
             <i class="pi pi-star star-empty"></i>
           }
         </div>
-        <span class="rating-value">{{ review().rating }}/10</span>
+        <span class="rating-value">{{ review().rating }}/5</span>
       </div>
     </div>
   </ng-template>

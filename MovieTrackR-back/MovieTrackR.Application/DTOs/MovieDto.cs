@@ -44,8 +44,14 @@ public class MovieDetailsDto
     /// <summary>Date et heure de création de l'entrée en base.</summary>
     public DateTime CreatedAt { get; set; }
 
-    /// <summary>Vote average du film.</summary>
+    /// <summary>Vote average du film sur TMDB.</summary>
     public double? VoteAverage { get; set; }
+
+    /// <summary>Note moyenne des reviews des utilisateurs (0-5).</summary>
+    public float? AverageRating { get; set; }
+
+    /// <summary>Nombre total de reviews des utilisateurs.</summary>
+    public int ReviewCount { get; set; }
 
     /// <summary>Liste des genres associés au film.</summary>
     public IReadOnlyList<GenreDto> Genres { get; set; } = [];

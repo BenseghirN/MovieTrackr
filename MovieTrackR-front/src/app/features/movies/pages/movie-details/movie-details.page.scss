@@ -403,3 +403,15 @@
   font-style: italic;
   opacity: 0.8;
 }
+
+.reviews-section {
+  background: var(--surface-section);
+  border-top: 1px solid var(--surface-border);
+
+  app-movie-reviews {
+    display: block;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+}
