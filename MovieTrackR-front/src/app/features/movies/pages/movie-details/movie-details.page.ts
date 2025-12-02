@@ -14,6 +14,7 @@ import { CardModule } from 'primeng/card';
 import { SafeUrlPipe } from '../../../../shared/pipes/safe-url.pipe';
 import { DialogModule } from 'primeng/dialog';
 import { MovieStreamingOffers } from '../../models/streaming-offers.model';
+import { AddToListPopoverComponent } from '../../../user-lists/components/add-to-list-popover/add-to-list-popover.component';
 
 @Component({
   selector: 'app-movie-details-page',
@@ -26,7 +27,8 @@ import { MovieStreamingOffers } from '../../models/streaming-offers.model';
     MovieReviewsComponents, 
     CardModule, 
     DialogModule, 
-    SafeUrlPipe
+    SafeUrlPipe,
+    AddToListPopoverComponent
   ],
   templateUrl: './movie-details.page.html',
   styleUrl: './movie-details.page.scss',

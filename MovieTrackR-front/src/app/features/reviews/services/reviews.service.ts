@@ -36,20 +36,18 @@ export class ReviewService {
         );
     }
 
-    createReview(review: CreateReviewModel): Observable<void> {
-        console.log('Creating review with data:', review);
+    createReview(newReview: CreateReviewModel): Observable<void> {
         return this.api.post<void>(
             `${this.config.apiUrl}/reviews`,
-            review,
+            newReview,
             { withCredentials: true }
         );
     }
 
-    updateReview(reviewId: string, dto: UpdateReviewModel): Observable<void> {
-        console.log('Updating review with ID:', reviewId, 'with data:', dto);
+    updateReview(reviewId: string, updatedReview: UpdateReviewModel): Observable<void> {
         return this.api.put<void>(
             `${this.config.apiUrl}/reviews/${reviewId}`,
-            dto,
+            updatedReview,
             { withCredentials: true }
         );
     }

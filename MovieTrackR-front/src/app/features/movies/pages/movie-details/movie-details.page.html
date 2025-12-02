@@ -197,17 +197,22 @@
           }
 
           <div class="actions">
-            <p-button
+            <!-- <p-button
               label="Ajouter à ma watchlist"
               icon="pi pi-bookmark"
               [outlined]="true"
+              severity="secondary"
               styleClass="action-button primary"
-            ></p-button>
+            ></p-button> -->
+            <app-add-to-list-popover 
+              [movieId]="movie.id"
+              [tmdbId]="movie.tmdbId"
+            />
 
             @if (movie.trailerUrl) {
               <p-button
                 label="Voir la bande-annonce"
-                icon="pi pi-play"
+                icon="pi pi-youtube"
                 severity="secondary"
                 styleClass="action-button secondary"
                 (onClick)="openTrailer(movie.trailerUrl)"

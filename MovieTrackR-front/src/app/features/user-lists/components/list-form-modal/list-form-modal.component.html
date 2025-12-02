@@ -1,0 +1,100 @@
+<div class="list-form-modal">
+  <form [formGroup]="listForm" (ngSubmit)="onSubmit()">
+
+    <div class="form-section">
+      <label class="form-label">
+        Titre de la liste
+        <span class="char-count" [class.error]="titleLength() < 3 || titleLength() > 100">
+          {{ titleLength() }}/100
+        </span>
+      </label>
+      
+      <p-floatlabel variant="on">
+        <input
+          pInputText
+          id="list_title"
+          formControlName="title"
+          [style]="{ width: '100%' }"
+        />
+        <label for="list_title">Ex: Mes films d'action préférés</label>
+      </p-floatlabel>
+
+      @if (isInvalid('title')) {
+        <div class="error-message">
+          @if (listForm.get('title')?.hasError('required')) {
+            <small>Le titre est obligatoire</small>
+          }
+          @if (listForm.get('title')?.hasError('minlength')) {
+            <small>Le titre doit contenir au moins 3 caractères</small>
+          }
+          @if (listForm.get('title')?.hasError('maxlength')) {
+            <small>Le titre ne peut pas dépasser 100 caractères</small>
+          }
+        </div>
+      }
+
+      @if (validationErrors()['Title']) {
+        <div class="error-message">
+          @for (error of validationErrors()['Title']; track error) {
+            <small>{{ error }}</small>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="form-section">
+      <label class="form-label">
+        Description (optionnel)
+        <span class="char-count" [class.error]="descriptionLength() > 500">
+          {{ descriptionLength() }}/500
+        </span>
+      </label>
+      
+      <p-floatlabel variant="on">
+        <textarea
+          pTextarea
+          id="list_description"
+          formControlName="description"
+          rows="4"
+          [style]="{ resize: 'vertical', width: '100%' }"
+        ></textarea>
+        <label for="list_description">Décrivez votre liste...</label>
+      </p-floatlabel>
+
+      @if (isInvalid('description')) {
+        <div class="error-message">
+          @if (listForm.get('description')?.hasError('maxlength')) {
+            <small>La description ne peut pas dépasser 500 caractères</small>
+          }
+        </div>
+      }
+
+      @if (validationErrors()['Description']) {
+        <div class="error-message">
+          @for (error of validationErrors()['Description']; track error) {
+            <small>{{ error }}</small>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="form-actions">
+      <p-button
+        label="Annuler"
+        severity="secondary"
+        [outlined]="true"
+        type="button"
+        (onClick)="onCancel()"
+        [disabled]="loading()"
+      />
+      
+      <p-button
+        [label]="isEditMode() ? 'Modifier' : 'Créer'"
+        icon="pi pi-check"
+        type="submit"
+        [disabled]="!canSubmit()"
+        [loading]="loading()"
+      />
+    </div>
+  </form>
+</div>
