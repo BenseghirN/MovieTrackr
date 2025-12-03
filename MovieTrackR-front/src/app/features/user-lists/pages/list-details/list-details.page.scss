@@ -124,8 +124,8 @@
 
 .movie-position {
   position: absolute;
-  top: -8px;
-  left: -8px;
+  top: -3x;
+  left: -3px;
   z-index: 10;
   width: 32px;
   height: 32px;
@@ -137,7 +137,7 @@
   justify-content: center;
   font-weight: 700;
   font-size: 0.875rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  opacity: 1;
 }
 
 .movie-actions {

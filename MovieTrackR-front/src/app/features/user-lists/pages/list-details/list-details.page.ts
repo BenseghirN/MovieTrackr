@@ -107,7 +107,7 @@ export class ListDetailsPage {
     this.listService.deleteList(list.id).subscribe({
       next: () => {
         this.notificationService.success('Liste supprimée');
-        this.router.navigate(['/lists']);
+        this.router.navigate(['/my-lists']);
       },
       error: () => {
         this.notificationService.error('Impossible de supprimer la liste');
@@ -120,7 +120,7 @@ export class ListDetailsPage {
   }
 
   public onBack(): void {
-    this.router.navigate(['/lists']);
+    this.router.navigate(['/my-lists']);
   }
 
   public onReload(): void {
