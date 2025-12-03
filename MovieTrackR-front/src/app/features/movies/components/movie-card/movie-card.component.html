@@ -5,20 +5,20 @@
 >
   <div class="movie-poster">
     <img
-      [src]="imageService.getPosterUrl(movie.posterPath, 'w342')"
-      [alt]="movie.title"
+      [src]="imageService.getPosterUrl(posterPath(), 'w342')"
+      [alt]="movie().title"
       loading="lazy"
     />
   </div>
   <div class="movie-info">
-    <h3 class="movie-title">{{ movie.title }}</h3>
-    @if (movie.year) {
-      <span class="movie-year">{{ movie.year }}</span>
+    <h3 class="movie-title">{{ movie().title }}</h3>
+    @if (movie().year) {
+      <span class="movie-year">{{ movie().year }}</span>
     }
-    @if (movie.voteAverage) {
+    @if (rating()) {
       <div class="movie-rating">
         <i class="pi pi-star-fill"></i>
-        {{ movie.voteAverage | number:'1.1-1' }}
+        {{ rating() | number:'1.1-1' }}
       </div>
     }
   </div>

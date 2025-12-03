@@ -3,7 +3,7 @@
     <div class="logo">
       <a routerLink="/">
         <img src="assets/images/logo.png" alt="MovieTrackR" class="logo-image">
-        <!-- <span class="logo-text">MovieTrackR</span> -->
+        <span class="logo-text">MovieTrackR</span>
       </a>
     </div>
     
@@ -16,16 +16,16 @@
         <i class="pi pi-search"></i>
         Films
       </a>
-      @if (authService.isAuthenticated()) {
-        <a routerLink="/watchlist" routerLinkActive="active">
+      <!-- @if (authService.isAuthenticated()) { -->
+        <a routerLink="/my-lists" routerLinkActive="active">
           <i class="pi pi-bookmark"></i>
-          Ma Watchlist
+          Mes listes
         </a>
 
         <a routerLink="/profile" routerLinkActive="active">
               Mon profil
         </a>
-      }
+      <!-- } -->
     </nav>
     
     <div class="auth-section">

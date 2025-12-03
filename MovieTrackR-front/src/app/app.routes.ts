@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { HomePageComponent } from './features/home/pages/home-page/home.page';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
     {
@@ -13,6 +14,16 @@ export const routes: Routes = [
     { 
         path: 'movies/:id', 
         loadComponent: () => import('./features/movies/pages/movie-details/movie-details.page').then(m => m.MovieDetailsPage)
+    },
+    {
+        path: 'my-lists',
+        canActivate: [authGuard],
+        loadComponent: () => import('./features/user-lists/pages/my-lists/my-lists.page').then(m => m.MyListsPage)
+    },
+    {
+        path: 'my-lists/:id',
+        canActivate: [authGuard],
+        loadComponent: () => import('./features/user-lists/pages/list-details/list-details.page').then(m => m.ListDetailsPage)
     },
 
     // {

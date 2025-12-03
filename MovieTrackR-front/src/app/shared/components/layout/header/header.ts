@@ -15,7 +15,6 @@ import { AuthService } from '../../../../core/auth/auth-service';
 })
 export class Header implements OnInit {
   readonly authService = inject(AuthService);
-  // private readonly config = inject(ConfigService);
 
   constructor() {    
     effect(() => {

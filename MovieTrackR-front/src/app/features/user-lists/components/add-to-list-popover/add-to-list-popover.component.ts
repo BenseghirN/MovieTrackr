@@ -45,7 +45,6 @@ export class AddToListPopoverComponent implements OnInit {
   protected toggle(event: Event, popover: Popover): void {
     if (!this.isAuthenticated) {
       this.notificationService.warning('Vous devez être connecté pour ajouter des films à vos listes');
-      this.authService.login(window.location.pathname);
       return;      
     }
     popover.toggle(event);
@@ -66,8 +65,7 @@ export class AddToListPopoverComponent implements OnInit {
 
   protected createNewList(popover: Popover): void {
     popover.hide();
-    console.log('Create new list');
-
+    
     this.dialogRef = this.dialogService.open(ListFormModalComponent, {
       header: 'Créer une nouvelle liste',
       width: '600px',
@@ -99,6 +97,4 @@ export class AddToListPopoverComponent implements OnInit {
       }
     });
   }
-
-
 }

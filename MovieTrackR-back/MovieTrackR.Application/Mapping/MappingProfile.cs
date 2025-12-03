@@ -36,6 +36,18 @@ public class MappingProfile : Profile
         CreateMap<UserList, UserListDetailsDto>()
             .ForMember(d => d.Movies, o => o.MapFrom(
                 s => s.Movies.OrderBy(m => m.Position)));
+
+        CreateMap<UserListMovie, UserListMovieDto>()
+            .ForMember(d => d.MovieId, o => o.MapFrom(s => s.MovieId))
+            .ForMember(d => d.Position, o => o.MapFrom(s => s.Position))
+            .ForMember(d => d.Movie, o => o.MapFrom(s => s.Movie));
+
+        CreateMap<Movie, MovieSummaryDto>()
+            .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
+            .ForMember(d => d.Title, o => o.MapFrom(s => s.Title))
+            .ForMember(d => d.Year, o => o.MapFrom(s => s.Year))
+            .ForMember(d => d.PosterUrl, o => o.MapFrom(s => s.PosterUrl));
+
         CreateMap<Genre, GenreDto>();
 
         // Review -> List item
