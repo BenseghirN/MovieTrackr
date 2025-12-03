@@ -16,16 +16,16 @@
         <i class="pi pi-search"></i>
         Films
       </a>
-      <!-- @if (authService.isAuthenticated()) { -->
-        <a routerLink="/my-lists" routerLinkActive="active">
-          <i class="pi pi-bookmark"></i>
-          Mes listes
-        </a>
-
+      <a routerLink="/my-lists" routerLinkActive="active">
+        <i class="pi pi-bookmark"></i>
+        Mes listes
+      </a>
+      
+      @if (authService.isAuthenticated()) {
         <a routerLink="/profile" routerLinkActive="active">
               Mon profil
         </a>
-      <!-- } -->
+      }
     </nav>
     
     <div class="auth-section">

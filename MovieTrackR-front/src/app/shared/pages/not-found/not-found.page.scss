@@ -4,6 +4,18 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
+  animation: fadeSlideIn .60s ease-out;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .not-found-card {
@@ -30,6 +42,8 @@
   background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
   padding: 2rem;
   text-align: center;
+  box-shadow: 0 0 18px rgba(140, 80, 255, 0.35);
+
 
   .error-code {
     font-size: 5rem;
@@ -43,6 +57,22 @@
     font-weight: 600;
     color: white;
     margin: 0.5rem 0 0 0;
+    animation: pulse 2.5s infinite ease-in-out;
+  }
+
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0px rgba(140, 80, 255, 0.0);
+      opacity: 1;
+    }
+    50% {
+      box-shadow: 0 0 22px rgba(140, 80, 255, 0.35);
+      opacity: .7;
+    }
+    100% {
+      box-shadow: 0 0 0px rgba(140, 80, 255, 0.0);
+      opacity: 1;
+    }
   }
 }
 

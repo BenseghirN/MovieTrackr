@@ -13,20 +13,56 @@ public static class QueryableExtensions
         if (string.IsNullOrWhiteSpace(search))
             return query;
 
-        bool isNpgsql = dbContext.Database.ProviderName?.Contains("Npgsql", StringComparison.OrdinalIgnoreCase) == true;
+        bool isNpgsql = dbContext.Database.ProviderName?
+            .Contains("Npgsql", StringComparison.OrdinalIgnoreCase) == true;
+
         string needle = search.Trim();
+        string withSpaces = needle.Replace("-", " ").Trim();
+        withSpaces = System.Text.RegularExpressions.Regex.Replace(withSpaces, @"\s+", " ");
+
+        string withHyphens = needle.Replace(" ", "-").Trim();
+        string noSeparator = needle.Replace(" ", "").Replace("-", "").Trim();
 
         if (isNpgsql)
         {
-            string pattern = $"%{needle.Replace("%", "\\%").Replace("_", "\\_")}%";
-            return query.Where(m =>
-                EF.Functions.ILike(m.Title!, pattern) ||
-                (m.OriginalTitle != null && EF.Functions.ILike(m.OriginalTitle!, pattern)));
-        }
+            static string EscapeLike(string s) =>
+                s.Replace("\\", "\\\\")
+                 .Replace("%", "\\%")
+                 .Replace("_", "\\_");
 
-        string lower = needle.ToLowerInvariant();
-        return query.Where(m =>
-            (m.Title != null && m.Title.ToLower().Contains(lower)) ||
-            (m.OriginalTitle != null && m.OriginalTitle.ToLower().Contains(lower)));
+            string patternSpace = $"%{EscapeLike(withSpaces)}%";
+            string patternHyphen = $"%{EscapeLike(withHyphens)}%";
+            string patternNoSep = $"%{EscapeLike(noSeparator)}%";
+
+            return query.Where(m =>
+                (m.Title != null && (
+                    EF.Functions.ILike(m.Title, patternSpace) ||
+                    EF.Functions.ILike(m.Title, patternHyphen) ||
+                    EF.Functions.ILike(m.Title.Replace(" ", "").Replace("-", ""), patternNoSep)
+                )) ||
+                (m.OriginalTitle != null && (
+                    EF.Functions.ILike(m.OriginalTitle!, patternSpace) ||
+                    EF.Functions.ILike(m.OriginalTitle!, patternHyphen) ||
+                    EF.Functions.ILike(m.OriginalTitle.Replace(" ", "").Replace("-", ""), patternNoSep)
+                )));
+        }
+        else
+        {
+            string lowerSpace = withSpaces.ToLowerInvariant();
+            string lowerHyphen = withHyphens.ToLowerInvariant();
+            string lowerNoSep = noSeparator.ToLowerInvariant();
+
+            return query.Where(m =>
+                (m.Title != null && (
+                    m.Title.ToLower().Contains(lowerSpace) ||
+                    m.Title.ToLower().Contains(lowerHyphen) ||
+                    m.Title.ToLower().Replace(" ", "").Replace("-", "").Contains(lowerNoSep)
+                )) ||
+                (m.OriginalTitle != null && (
+                    m.OriginalTitle.ToLower().Contains(lowerSpace) ||
+                    m.OriginalTitle.ToLower().Contains(lowerHyphen) ||
+                    m.OriginalTitle.ToLower().Replace(" ", "").Replace("-", "").Contains(lowerNoSep)
+                )));
+        }
     }
 }

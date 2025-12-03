@@ -52,8 +52,8 @@ export class MoviesPage {
   protected readonly pageSize = signal(20);
   protected readonly totalResults = signal(0);
 
-  protected readonly hasResults = computed(() => this.movies().length > 0);
-  protected readonly showNoResults = computed(() => 
+  public readonly hasResults = computed(() => this.movies().length > 0);
+  public readonly showNoResults = computed(() => 
     !this.loading() && this.searchQuery() && !this.hasResults()
   );
 
@@ -89,7 +89,7 @@ export class MoviesPage {
     });
   }
 
-  protected search(): void {
+  public search(): void {
     if (!this.searchQuery().trim()) return;
     this.currentPage.set(1);
 
@@ -100,7 +100,7 @@ export class MoviesPage {
     });
   }
 
-  protected onPageChange(event: PaginatorState): void {
+  public onPageChange(event: PaginatorState): void {
     const newPage = (event.page ?? 0) + 1;
     this.currentPage.set(newPage);
     this.pageSize.set(event.rows ?? 20);
@@ -139,26 +139,26 @@ export class MoviesPage {
       });
   }
 
-  protected onSearchKeyup(event: KeyboardEvent): void {
+  public onSearchKeyup(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
       this.currentPage.set(1);
       this.search();
     }
   }
 
-  protected onQueryChange(event: Event): void {
+  public onQueryChange(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
     this.searchQuery.set(value);
   }
 
-  protected onYearChange(value: number | null): void {
+  public onYearChange(value: number | null): void {
     this.yearFilter.set(value ?? null);
     if (this.searchQuery().trim()) {
       this.search();
     }
   }
 
-  protected onMovieClick(movie: MovieSearchResult): void {
+  public onMovieClick(movie: MovieSearchResult): void {
     const id = movie.isLocal && movie.localId 
       ? movie.localId 
       : movie.tmdbId?.toString();
@@ -174,12 +174,11 @@ export class MoviesPage {
 
     const params: MovieSearchParams = { 
       query,
-      page,
-      year: year ?? null,
+      page
     };
 
     if (year) {
-      params['year'] = year;
+      params.year = year;
     }
     return params;
   }

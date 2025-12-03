@@ -32,10 +32,15 @@ public class MappingProfile : Profile
             .ForMember(d => d.ProfilePath, m => m.MapFrom(s => s.Person.ProfilePictureUrl));
 
         CreateMap<UserList, UserListDto>()
-            .ForMember(d => d.MoviesCount, o => o.MapFrom(s => s.Movies.Count));
+            .ForMember(d => d.MoviesCount, o => o.MapFrom(s => s.Movies.Count))
+            .ForMember(d => d.Type, o => o.MapFrom(s => s.Type))
+            .ForMember(d => d.IsSystemList, o => o.MapFrom(s => s.IsSystemList));
+
         CreateMap<UserList, UserListDetailsDto>()
             .ForMember(d => d.Movies, o => o.MapFrom(
-                s => s.Movies.OrderBy(m => m.Position)));
+                s => s.Movies.OrderBy(m => m.Position)))
+            .ForMember(d => d.Type, o => o.MapFrom(s => s.Type))
+            .ForMember(d => d.IsSystemList, o => o.MapFrom(s => s.IsSystemList));
 
         CreateMap<UserListMovie, UserListMovieDto>()
             .ForMember(d => d.MovieId, o => o.MapFrom(s => s.MovieId))

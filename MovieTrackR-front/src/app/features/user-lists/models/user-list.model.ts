@@ -4,6 +4,8 @@ export interface UserListSummary {
   id: string;
   title: string;
   description?: string;
+  type: UserListType;
+  isSystemList: boolean;
   createdAt: string;
   moviesCount: number;
 }
@@ -27,6 +29,8 @@ export interface UserListDetails {
   id: string;
   title: string;
   description?: string;
+  type: UserListType;
+  isSystemList: boolean;
   createdAt: string;
   movies: UserListMovie[];
 }
@@ -53,4 +57,10 @@ export interface AddMovieToListModel {
 export interface UpdateMoviePositionModel {
   movieId: string;
   newPosition: number;
+}
+
+export enum UserListType {
+  Custom = 'Custom',
+  Watchlist = 'Watchlist',
+  Favorites = 'Favorites'
 }

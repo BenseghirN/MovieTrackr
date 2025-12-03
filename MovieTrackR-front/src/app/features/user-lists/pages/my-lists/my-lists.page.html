@@ -56,15 +56,17 @@
                     (onClick)="onEditList(list, $event)"
                     pTooltip="Modifier"
                   />
-                  <p-button
-                    icon="pi pi-trash"
-                    [text]="true"
-                    [rounded]="true"
-                    severity="danger"
-                    size="small"
-                    (onClick)="onDeleteList(list, $event)"
-                    pTooltip="Supprimer"
-                  />
+                  @if (!list.isSystemList) {
+                    <p-button
+                      icon="pi pi-trash"
+                      [text]="true"
+                      [rounded]="true"
+                      severity="danger"
+                      size="small"
+                      (onClick)="onDeleteList(list, $event)"
+                      pTooltip="Supprimer"
+                    />
+                  }                                    
                 </div>
               </div>
             </ng-template>

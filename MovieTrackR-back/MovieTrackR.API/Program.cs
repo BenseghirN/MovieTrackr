@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using FluentValidation;
+using Microsoft.Extensions.FileProviders;
 using MovieTrackR.api.middleware;
 using MovieTrackR.API.Configuration;
 using MovieTrackR.API.Endpoints.Auth;
@@ -50,6 +51,11 @@ if (app.Environment.IsDevelopment()) app.UseSwaggerConfiguration();
 if (!app.Environment.IsDevelopment()) app.UseHttpsRedirection();
 app.UseGlobalExceptionHandler();
 
+app.UseCorsConfiguration(app.Environment);
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseRateLimitingConfiguration();
+
 // Map endpoints
 app
 .MapAuthEndpoints()
@@ -61,27 +67,55 @@ app
 .MapUsersEndpoints()
 .MapGenresEndpoints();
 
-app.UseRateLimitingConfiguration();
-app.UseCorsConfiguration(app.Environment);
-app.UseAuthentication();
-app.UseAuthorization();
-
-
-// Static files server for static frontend
-app.UseDefaultFiles(); // Automaticaly serve index.html if exists
-app.UseStaticFiles(new StaticFileOptions // Serve  static files (CSS, JS, images, etc.)
+// Sert index.html dans /browser comme page par défaut
+string browserRoot = Path.Combine(builder.Environment.WebRootPath, "browser");
+if (Directory.Exists(browserRoot))
 {
-    OnPrepareResponse = ctx =>
+    PhysicalFileProvider browserFileProvider = new PhysicalFileProvider(browserRoot);
+
+    app.UseDefaultFiles(new DefaultFilesOptions
     {
-        string path = ctx.File.PhysicalPath ?? string.Empty;
-        if (path.EndsWith(".json") || path.EndsWith(".js") || path.EndsWith(".css"))
-        {
-            ctx.Context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
-            ctx.Context.Response.Headers["Pragma"] = "no-cache";
-            ctx.Context.Response.Headers["Expires"] = "0";
-        }
-    }
-});
-app.MapFallbackToFile("index.html");
+        FileProvider = browserFileProvider,
+        RequestPath = ""
+    });
+
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = browserFileProvider,
+        RequestPath = ""
+    });
+
+    app.MapFallback(async context =>
+    {
+        context.Response.ContentType = "text/html";
+        await context.Response.SendFileAsync(Path.Combine(browserRoot, "index.html"));
+    });
+}
+else Console.WriteLine("⚠️ Angular app not found in wwwroot/browser. Run 'npm run build' in the frontend project.");
+
+// Sert tous les fichiers statiques depuis /wwwroot/browser
+// app.UseStaticFiles(new StaticFileOptions
+// {
+//     FileProvider = new PhysicalFileProvider(
+//         Path.Combine(builder.Environment.WebRootPath, "browser")),
+//     RequestPath = "",
+//     OnPrepareResponse = ctx =>
+//     {
+//         var path = ctx.File.PhysicalPath ?? string.Empty;
+//         if (path.EndsWith(".json") || path.EndsWith(".js") || path.EndsWith(".css"))
+//         {
+//             ctx.Context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+//             ctx.Context.Response.Headers["Pragma"] = "no-cache";
+//             ctx.Context.Response.Headers["Expires"] = "0";
+//         }
+//     }
+// });
+
+// Fallback SPA : toutes les routes non trouvées renvoient browser/index.html
+// app.MapFallback(async context =>
+// {
+//     context.Response.ContentType = "text/html";
+//     await context.Response.SendFileAsync(Path.Combine(builder.Environment.WebRootPath, "browser", "index.html"));
+// });
 
 app.Run();

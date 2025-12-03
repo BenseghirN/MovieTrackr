@@ -10,14 +10,14 @@
           pInputText 
           placeholder="Rechercher un film..." 
           class="search-input"
-          [value]="searchQuery()"
-          (input)="searchQuery.set($any($event.target).value)"
+          (input)="onQueryChange($event)"
+          (keyup)="onSearchKeyup($event)"
         />
         <p-button 
           label="Rechercher" 
           icon="pi pi-search"
-          routerLink="/movies"
-          [queryParams]="{q: searchQuery()}">
+          (click)="onSearch()"
+          >
         </p-button>
       </div>
     </p-card>

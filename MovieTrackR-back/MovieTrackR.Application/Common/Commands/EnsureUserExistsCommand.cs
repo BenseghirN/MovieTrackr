@@ -35,8 +35,13 @@ public sealed class EnsureUserExistsHandler(IMovieTrackRDbContext dbContext)
 
         dbContext.Users.Add(user);
 
+
         try
         {
+            // save User
+            await dbContext.SaveChangesAsync(cancellationToken);
+            createDefaultSystemLists(user);
+            // save lists who neede user to be created
             await dbContext.SaveChangesAsync(cancellationToken);
             return user.Id;
         }
@@ -50,5 +55,12 @@ public sealed class EnsureUserExistsHandler(IMovieTrackRDbContext dbContext)
                             .FirstOrDefaultAsync(cancellationToken);
             throw;
         }
+    }
+
+    private void createDefaultSystemLists(User user)
+    {
+        UserList watchListDefault = UserList.CreateWatchlist(user.Id);
+        UserList favoritesDefault = UserList.CreateFavorites(user.Id);
+        dbContext.UserLists.AddRange(watchListDefault, favoritesDefault);
     }
 }

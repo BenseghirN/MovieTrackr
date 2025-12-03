@@ -69,13 +69,15 @@
             severity="secondary"
             (onClick)="onEditList()"
           />
-          <p-button
-            icon="pi pi-trash"
-            label="Supprimer"
-            [outlined]="true"
-            severity="danger"
-            (onClick)="onDeleteList()"
-          />
+          @if (!list.isSystemList) {
+            <p-button
+              icon="pi pi-trash"
+              label="Supprimer"
+              [outlined]="true"
+              severity="danger"
+              (onClick)="onDeleteList()"
+            />
+          }
         </div>
       }
     </div>
