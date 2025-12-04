@@ -1,270 +1,552 @@
-.person-details-page {
+// ============================================
+// PERSON DETAILS PAGE - CINEMATIC DESIGN
+// ============================================
+
+// Variables (same as movie-details)
+$color-background: #0a0a0f;
+$color-surface: rgba(18, 18, 24, 0.85);
+$color-surface-solid: #12121a;
+$color-accent: #e4b45f;
+$color-accent-light: #f5d190;
+$color-text-primary: #ffffff;
+$color-text-secondary: rgba(255, 255, 255, 0.7);
+$color-text-muted: rgba(255, 255, 255, 0.5);
+$color-border: rgba(255, 255, 255, 0.1);
+
+$font-display: 'Playfair Display', Georgia, serif;
+$font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+$shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.3);
+$shadow-heavy: 0 8px 40px rgba(0, 0, 0, 0.5);
+$shadow-glow: 0 0 30px rgba(228, 180, 95, 0.2);
+
+$transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+$breakpoint-xl: 1400px;
+$breakpoint-lg: 1200px;
+$breakpoint-md: 992px;
+$breakpoint-sm: 768px;
+$breakpoint-xs: 576px;
+
+// ============================================
+// BASE STYLES
+// ============================================
+
+:host {
+  display: block;
+  min-height: 100vh;
+  background: $color-background;
+  color: $color-text-primary;
+  font-family: $font-body;
+}
+
+// ============================================
+// LOADING & ERROR STATES
+// ============================================
+
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 1.5rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+.error-container {
+  i {
+    font-size: 4rem;
+    color: $color-accent;
+    opacity: 0.6;
+  }
+
+  p {
+    font-size: 1.125rem;
+    color: $color-text-secondary;
+    max-width: 400px;
+  }
+}
+
+// ============================================
+// PERSON DETAILS ARTICLE
+// ============================================
+
+.person-details {
+  position: relative;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 2rem;
+}
 
-  .header-actions {
-    margin-bottom: 2rem;
+// ============================================
+// HERO SECTION
+// ============================================
+
+.hero-section {
+  position: relative;
+  padding: 2rem 3rem 4rem;
+
+  @media (max-width: $breakpoint-md) {
+    padding: 1.5rem 1.5rem 3rem;
   }
 
-  .loading-container {
+  @media (max-width: $breakpoint-xs) {
+    padding: 1rem 1rem 2rem;
+  }
+}
+
+// Background
+.hero-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 400px;
+  background: linear-gradient(
+    180deg,
+    rgba(228, 180, 95, 0.08) 0%,
+    rgba(228, 180, 95, 0.03) 50%,
+    transparent 100%
+  );
+  z-index: 0;
+  pointer-events: none;
+
+  @media (max-width: $breakpoint-md) {
+    height: 300px;
+  }
+}
+
+// Header Actions
+.header-actions {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 2rem;
+
+  ::ng-deep .back-btn {
+    color: $color-text-secondary;
+    transition: $transition-smooth;
+
+    &:hover {
+      color: $color-accent;
+      background: rgba(228, 180, 95, 0.1);
+    }
+
+    .p-button-icon {
+      font-size: 0.875rem;
+    }
+  }
+}
+
+// Hero Content Grid
+.hero-content {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 3rem;
+
+  @media (max-width: $breakpoint-lg) {
+    grid-template-columns: 250px 1fr;
+    gap: 2.5rem;
+  }
+
+  @media (max-width: $breakpoint-md) {
+    grid-template-columns: 200px 1fr;
+    gap: 2rem;
+  }
+
+  @media (max-width: $breakpoint-sm) {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+// ============================================
+// PROFILE COLUMN
+// ============================================
+
+.profile-column {
+  @media (max-width: $breakpoint-sm) {
     display: flex;
     justify-content: center;
+  }
+}
+
+.profile-card {
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: $shadow-heavy;
+  background: $color-surface-solid;
+
+  @media (max-width: $breakpoint-sm) {
+    max-width: 220px;
+  }
+}
+
+.profile-image {
+  width: 100%;
+  aspect-ratio: 2/3;
+  object-fit: cover;
+  display: block;
+}
+
+.profile-placeholder {
+  width: 100%;
+  aspect-ratio: 2/3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, $color-surface-solid, darken($color-surface-solid, 3%));
+
+  i {
+    font-size: 5rem;
+    color: $color-text-muted;
+    opacity: 0.4;
+  }
+}
+
+// ============================================
+// INFO COLUMN
+// ============================================
+
+.info-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-top: 1rem;
+
+  @media (max-width: $breakpoint-sm) {
+    padding-top: 0;
+  }
+}
+
+.info-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  @media (max-width: $breakpoint-sm) {
+    text-align: center;
     align-items: center;
-    min-height: 400px;
+  }
+}
+
+// Name
+.person-name {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  line-height: 1.1;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+// Known For Department
+.known-for {
+  display: inline-block;
+  padding: 0.375rem 1rem;
+  background: rgba(228, 180, 95, 0.15);
+  border: 1px solid rgba(228, 180, 95, 0.3);
+  border-radius: 20px;
+  color: $color-accent-light;
+  font-size: 0.875rem;
+  font-weight: 500;
+  width: fit-content;
+}
+
+// Meta Info
+.meta-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+
+  @media (max-width: $breakpoint-sm) {
+    align-items: center;
+  }
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.9375rem;
+  color: $color-text-secondary;
+
+  i {
+    font-size: 1rem;
+    color: $color-accent;
+    opacity: 0.8;
+    width: 18px;
+    text-align: center;
   }
 
-  .error-message {
+  .age {
+    color: $color-text-muted;
+    margin-left: 0.25rem;
+  }
+
+  &.deceased {
+    color: $color-text-muted;
+
+    i {
+      opacity: 0.6;
+    }
+  }
+}
+
+// Biography
+.biography {
+  margin-top: 1.5rem;
+  max-width: 700px;
+
+  @media (max-width: $breakpoint-sm) {
+    text-align: left;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 0.75rem;
+    color: $color-text-primary;
+  }
+
+  p {
+    font-size: 0.9375rem;
+    line-height: 1.75;
+    color: $color-text-secondary;
+    margin: 0;
+  }
+}
+
+// ============================================
+// CREDITS SECTIONS
+// ============================================
+
+.credits-section {
+  padding: 2rem 3rem;
+  max-width: 80rem;
+  margin: 0 auto;
+
+  @media (max-width: $breakpoint-md) {
+    padding: 2rem 1.5rem;
+  }
+
+  @media (max-width: $breakpoint-xs) {
+    padding: 1.5rem 1rem;
+  }
+}
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 1rem 1.5rem;
-    background: var(--red-50);
-    border: 1px solid var(--red-200);
-    border-radius: 8px;
-    color: var(--red-700);
-    margin-bottom: 2rem;
 
     i {
+      color: $color-accent;
       font-size: 1.25rem;
     }
   }
 
-  .person-header {
-    display: grid;
-    grid-template-columns: 300px 1fr;
-    gap: 3rem;
-    margin-bottom: 3rem;
-    background: var(--surface-card);
-    border-radius: 16px;
-    padding: 2rem;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  .credits-count {
+    font-size: 0.875rem;
+    color: $color-text-muted;
+  }
+}
 
-    @media (max-width: 768px) {
-      grid-template-columns: 1fr;
-      gap: 2rem;
+// Skeleton Loading
+.skeleton-carousel {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $color-border;
+    border-radius: 2px;
+  }
+}
+
+// Credits Carousel
+::ng-deep .credits-carousel {
+  .p-carousel-content {
+    padding: 0.5rem 0;
+  }
+
+  .p-carousel-prev,
+  .p-carousel-next {
+    background: $color-surface;
+    border: 1px solid $color-border;
+    color: $color-text-primary;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    transition: $transition-smooth;
+
+    &:hover:not(:disabled) {
+      background: $color-accent;
+      border-color: $color-accent;
+      color: $color-background;
     }
 
-    .person-profile {
-      .profile-image {
-        width: 100%;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      }
-
-      .no-profile-image {
-        width: 100%;
-        padding-top: 150%; // Ratio 2:3
-        position: relative;
-        background: linear-gradient(135deg, var(--primary-100), var(--primary-200));
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        i {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          font-size: 6rem;
-          color: var(--primary-600);
-          opacity: 0.3;
-        }
-      }
-    }
-
-    .person-info {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-
-      .person-name {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: var(--text-color);
-        margin: 0 0 1rem 0;
-
-        @media (max-width: 768px) {
-          font-size: 2rem;
-        }
-      }
-
-      .info-item {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        color: var(--text-color-secondary);
-        font-size: 1rem;
-
-        i {
-          color: var(--primary-color);
-          font-size: 1.1rem;
-        }
-      }
-
-      .biography {
-        margin-top: 1.5rem;
-
-        h3 {
-          font-size: 1.25rem;
-          font-weight: 600;
-          color: var(--text-color);
-          margin-bottom: 0.75rem;
-        }
-
-        p {
-          color: var(--text-color-secondary);
-          line-height: 1.7;
-          text-align: justify;
-        }
-      }
+    &:disabled {
+      opacity: 0.3;
     }
   }
 
-  .credits-section {
-    margin-bottom: 3rem;
-
-    h2 {
-      font-size: 1.75rem;
-      font-weight: 600;
-      color: var(--text-color);
-      margin-bottom: 1.5rem;
-    }
-
-    .skeleton-carousel {
-      display: flex;
-      gap: 1rem;
-      overflow-x: auto;
-      padding-bottom: 1rem;
-    }
-
-    .movie-credit-card {
-      cursor: pointer;
-      border-radius: 12px;
-      overflow: hidden;
-      background: var(--surface-card);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s ease;
-      margin: 0.5rem;
-      max-width: 200px;
-
-      &:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-      }
-
-      .movie-poster {
-        position: relative;
-        width: 100%;
-        padding-top: 150%; // Ratio 2:3
-        overflow: hidden;
-        background: var(--surface-ground);
-
-        img {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-
-        .no-poster {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: linear-gradient(135deg, var(--surface-100), var(--surface-200));
-
-          i {
-            font-size: 3rem;
-            color: var(--text-color-secondary);
-            opacity: 0.3;
-          }
-        }
-      }
-
-      .movie-info {
-        padding: 1rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-
-        .movie-title {
-          font-size: 0.95rem;
-          font-weight: 600;
-          color: var(--text-color);
-          margin: 0;
-          line-height: 1.3;
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-
-        .movie-year {
-          font-size: 0.875rem;
-          color: var(--text-color-secondary);
-          font-weight: 500;
-        }
-
-        .movie-character,
-        .movie-job {
-          font-size: 0.875rem;
-          color: var(--primary-color);
-          font-style: italic;
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-      }
-    }
+  .p-carousel-items-content {
+    align-items: flex-start;
   }
 
-  // Override PrimeNG Carousel styles
-  ::ng-deep .p-carousel {
-    .p-carousel-content {
-      .p-carousel-prev,
-      .p-carousel-next {
-        background: var(--surface-card);
-        color: var(--text-color);
-        border-radius: 50%;
-        width: 3rem;
-        height: 3rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        transition: all 0.3s ease;
+  .p-carousel-item {
+    padding: 0 0.375rem;
+  }
+}
 
-        &:hover {
-          background: var(--primary-color);
-          color: white;
-        }
-      }
+// Movie Card
+.movie-card {
+  display: flex;
+  flex-direction: column;
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: $transition-smooth;
+  width: 160px;
+  height: 310px;
+
+  &:hover {
+    transform: translateY(-4px);
+    border-color: rgba(228, 180, 95, 0.3);
+    box-shadow: $shadow-soft, $shadow-glow;
+
+    .movie-poster img {
+      transform: scale(1.05);
     }
+  }
+}
 
-    .p-carousel-indicators {
-      .p-carousel-indicator {
-        button {
-          background: var(--surface-300);
-          width: 1rem;
-          height: 1rem;
-          border-radius: 50%;
-          transition: all 0.3s ease;
+.movie-poster {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2/3;
+  overflow: hidden;
+  background: linear-gradient(145deg, $color-surface-solid, darken($color-surface-solid, 5%));
+  flex-shrink: 0;
 
-          &:hover {
-            background: var(--primary-color);
-          }
-        }
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+}
 
-        &.p-highlight button {
-          background: var(--primary-color);
-        }
-      }
-    }
+.poster-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    font-size: 2.5rem;
+    color: $color-text-muted;
+    opacity: 0.4;
+  }
+}
+
+.movie-year-badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: $color-text-primary;
+}
+
+.movie-info {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.movie-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin: 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.movie-role {
+  font-size: 0.75rem;
+  color: $color-accent;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+
+  &.crew {
+    color: $color-text-muted;
+    font-style: italic;
+  }
+}
+
+// ============================================
+// NO CREDITS MESSAGE
+// ============================================
+
+.no-credits {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+
+  i {
+    font-size: 4rem;
+    color: $color-accent;
+    opacity: 0.4;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    font-size: 1.125rem;
+    color: $color-text-muted;
+    margin: 0;
   }
 }

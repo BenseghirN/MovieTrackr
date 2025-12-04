@@ -15,6 +15,7 @@ import { SafeUrlPipe } from '../../../../shared/pipes/safe-url.pipe';
 import { DialogModule } from 'primeng/dialog';
 import { MovieStreamingOffers } from '../../models/streaming-offers.model';
 import { AddToListPopoverComponent } from '../../../user-lists/components/add-to-list-popover/add-to-list-popover.component';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-movie-details-page',
@@ -28,7 +29,8 @@ import { AddToListPopoverComponent } from '../../../user-lists/components/add-to
     CardModule, 
     DialogModule, 
     SafeUrlPipe,
-    AddToListPopoverComponent
+    AddToListPopoverComponent,
+    TooltipModule
   ],
   templateUrl: './movie-details.page.html',
   styleUrl: './movie-details.page.scss',
@@ -90,6 +92,50 @@ export class MovieDetailsPage {
     if (!m) return null;
     return m.crew.find(c => c.job === 'Director') ?? null;
   });
+  
+  protected readonly crewByDepartment = computed(() => {
+    const movie = this.movie();
+    if (!movie?.crew) return {};
+
+    const deptMap: Record<string, string> = {
+      'Directing': 'Réalisation',
+      'Writing': 'Scénario',
+      'Production': 'Production',
+      'Camera': 'Photographie',
+      'Editing': 'Montage',
+      'Sound': 'Musique & Son',
+      'Art': 'Direction artistique',
+      'Costume & Make-Up': 'Costumes & Maquillage'
+    };
+
+    const grouped: Record<string, Array<{ personId: string; name: string; job: string }>> = {};
+
+    movie.crew.forEach(member => {
+      const frenchDept = deptMap[member.department!];
+      if (!frenchDept) return;
+
+      if (!grouped[frenchDept]) {
+        grouped[frenchDept] = [];
+      }
+
+      // Éviter les doublons (même personne avec plusieurs jobs dans le même département)
+      const exists = grouped[frenchDept].some(m => m.personId === member.personId);
+      if (!exists) {
+        grouped[frenchDept].push({
+          personId: member.personId,
+          name: member.name,
+          job: member.job
+        });
+      }
+    });
+
+    return grouped;
+  });
+
+  // ✅ Méthode pour obtenir les clés du dictionnaire (pour le template)
+  protected getDepartmentKeys(): string[] {
+    return Object.keys(this.crewByDepartment());
+  }
 
   public readonly carouselResponsiveOptions = [
     { breakpoint: '1400px', numVisible: 6, numScroll: 6 },
@@ -150,6 +196,16 @@ export class MovieDetailsPage {
 
   public goBack(): void {
     this.location.back()
+  }
+
+  public formatDate(dateString?: string | null): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('fr-FR', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
   }
 
   private buildEmbedUrl(rawUrl: string): string {

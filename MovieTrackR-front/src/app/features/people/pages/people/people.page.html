@@ -1,4 +1,4 @@
-<div class="people-page">
+<!-- <div class="people-page">
   <h1>🔍 Recherche de personnes</h1>
   <div class="search-panel">
     <div class="search-bar">
@@ -61,4 +61,104 @@
       (onPageChange)="onPageChange($event)"
     ></p-paginator>
   }
-</div>
+</div> -->
+
+
+<article class="people-page">
+  <!-- Hero / Header -->
+  <section class="hero-section people-hero">
+    <div class="hero-background"></div>
+
+    <div class="hero-content">
+      <!-- Titre + sous-titre -->
+      <div class="hero-text">
+        <h1 class="page-title">Recherche de personnes</h1>
+        <p class="page-subtitle">
+          Explore le casting, les équipes techniques et les visages derrière les films.
+        </p>
+      </div>
+
+      <!-- Carte de recherche -->
+      <div class="search-panel">
+        <div class="search-bar">
+          <input
+            type="text"
+            pInputText
+            placeholder="Rechercher une personne…"
+            (input)="onQueryChange($event)"
+            (keyup)="onSearchKeyUp($event)"
+            class="search-input"
+          />
+          <p-button
+            label="Rechercher"
+            icon="pi pi-search"
+            (click)="currentPage.set(1); search()"
+            [loading]="loading()"
+            styleClass="search-button"
+          ></p-button>
+        </div>
+
+        <p class="search-hint">
+          Tape un nom, puis valide avec Entrée ou clique sur « Rechercher ».
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contenu / Résultats -->
+  <section class="results-section">
+    <!-- Loading -->
+    @if (loading()) {
+      <div class="loading-container">
+        <p-progressSpinner strokeWidth="3" animationDuration="1s"></p-progressSpinner>
+      </div>
+    }
+
+    <!-- Erreur -->
+    @if (error()) {
+      <div class="state-card error-message">
+        <i class="pi pi-exclamation-triangle"></i>
+        <span>{{ error() }}</span>
+      </div>
+    }
+
+    <!-- Aucun résultat -->
+    @if (showNoResults()) {
+      <div class="state-card no-results">
+        <i class="pi pi-info-circle"></i>
+        <span>
+          Aucune personne trouvée pour
+          <strong>"{{ searchQuery() }}"</strong>
+        </span>
+      </div>
+    }
+
+    <!-- Résultats -->
+    @if (hasResults()) {
+      <div class="results-header">
+        <div class="results-info">
+          <span>{{ totalResults() }} résultat(s) trouvé(s)</span>
+        </div>
+      </div>
+
+      <div class="people-grid">
+        @for (person of people(); track person.tmdbId) {
+          <app-person-card
+            [person]="person"
+            (personClick)="onPersonClick(person)"
+          />
+        }
+      </div>
+
+      <div class="paginator-wrapper">
+        <p-paginator
+          [rows]="pageSize()"
+          [totalRecords]="totalResults()"
+          [first]="(currentPage() - 1) * pageSize()"
+          [rowsPerPageOptions]="[10, 20, 50]"
+          (onPageChange)="onPageChange($event)"
+        ></p-paginator>
+      </div>
+    }
+  </section>
+</article>
