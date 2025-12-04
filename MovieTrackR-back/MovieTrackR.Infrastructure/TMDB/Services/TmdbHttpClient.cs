@@ -73,6 +73,29 @@ public sealed class TmdbHttpClient(HttpClient httpClient, IOptions<TmdbOptions> 
         return await GetFromTmdbAsync<TmdbSearchMoviesResponse>(relative, cancellationToken);
     }
 
+    public async Task<TmdbSearchPeopleResponse> SearchPeopleAsync(string query, int page, string? language, CancellationToken cancellationToken = default)
+    {
+        string lang = string.IsNullOrWhiteSpace(language) ? "fr-FR" : language;
+        int safePage = page <= 0 ? 1 : page;
+        string q = Uri.EscapeDataString(query);
+        string relative = $"search/person?query={q}&page={safePage}&language={Uri.EscapeDataString(lang)}&include_adult=false";
+        return await GetFromTmdbAsync<TmdbSearchPeopleResponse>(relative, cancellationToken);
+    }
+
+    public async Task<TmdbPersonDetails?> GetPersonDetailsAsync(int tmdbId, string? language, CancellationToken cancellationToken = default)
+    {
+        string lang = string.IsNullOrWhiteSpace(language) ? "fr-FR" : language;
+        string relative = $"person/{tmdbId}?language={Uri.EscapeDataString(lang)}";
+        return await GetFromTmdbAsync<TmdbPersonDetails>(relative, cancellationToken);
+    }
+
+    public async Task<TmdbPersonMovieCredits?> GetPersonMovieCreditsAsync(int tmdbId, string? language, CancellationToken cancellationToken = default)
+    {
+        string lang = string.IsNullOrWhiteSpace(language) ? "fr-FR" : language;
+        string relative = $"person/{tmdbId}/movie_credits?language={Uri.EscapeDataString(lang)}";
+        return await GetFromTmdbAsync<TmdbPersonMovieCredits>(relative, cancellationToken);
+    }
+
     private async Task<T> GetFromTmdbAsync<T>(string relativeUrl, CancellationToken cancellationToken)
     {
         string url = relativeUrl.StartsWith("/") ? relativeUrl[1..] : relativeUrl;
@@ -96,5 +119,4 @@ public sealed class TmdbHttpClient(HttpClient httpClient, IOptions<TmdbOptions> 
         T? data = await JsonSerializer.DeserializeAsync<T>(stream, _json, cancellationToken);
         return data ?? throw new InvalidOperationException($"Empty TMDb payload for '{relativeUrl}'.");
     }
-
 }

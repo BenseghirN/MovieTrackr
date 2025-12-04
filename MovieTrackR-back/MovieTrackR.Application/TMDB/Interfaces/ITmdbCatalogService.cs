@@ -10,4 +10,6 @@ public interface ITmdbCatalogService
     Task EnrichMovieAsync(Guid movieId, CancellationToken cancellationToken);
     /// <summary>Récupère la liste des plateformes et offres de streaming d'un film depuis TMDB.</summary> 
     Task<StreamingOfferDto?> GetMovieStreamingOffersAsync(int tmdbId, string countryCode = "BE", CancellationToken cancellationToken = default);
+    /// <summary>Vérifie que la personne existe localement, sinon import TMDB</summary>
+    Task<Guid> EnsurePersonExistsAsync(int tmdbId, CancellationToken cancellationToken);
 }

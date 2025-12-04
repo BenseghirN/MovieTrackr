@@ -2,7 +2,6 @@ using Asp.Versioning;
 using Asp.Versioning.Builder;
 using MovieTrackR.API.Configuration;
 using MovieTrackR.API.Filters;
-using MovieTrackR.API.Validators.Movies;
 using MovieTrackR.Application.DTOs;
 
 namespace MovieTrackR.API.Endpoints.Movies;
@@ -22,12 +21,14 @@ public static class MoviesEndpoints
             .WithOpenApi();
 
         group.MapGet("/{id:guid}", MoviesHandlers.GetById)
+            .AllowAnonymous()
             .WithName("Movies_GetById")
             .WithSummary("Get a movie by id")
             .Produces<MovieDetailsDto>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapGet("/tmdb/{tmdbId:int}", MoviesHandlers.GetByTmdbId)
+            .AllowAnonymous()
             .WithName("Movies_GetByTmdbId")
             .WithSummary("Get movie details from TMDB by TMDB id")
             .Produces<MovieDetailsDto>(StatusCodes.Status200OK)

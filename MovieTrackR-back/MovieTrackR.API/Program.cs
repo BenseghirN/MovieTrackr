@@ -6,6 +6,7 @@ using MovieTrackR.API.Configuration;
 using MovieTrackR.API.Endpoints.Auth;
 using MovieTrackR.API.Endpoints.Genres;
 using MovieTrackR.API.Endpoints.Movies;
+using MovieTrackR.API.Endpoints.People;
 using MovieTrackR.API.Endpoints.ReviewComments;
 using MovieTrackR.API.Endpoints.ReviewLikes;
 using MovieTrackR.API.Endpoints.Reviews;
@@ -65,7 +66,8 @@ app
 .MapReviewsEndpoints()
 .MapUserListsEndpoints()
 .MapUsersEndpoints()
-.MapGenresEndpoints();
+.MapGenresEndpoints()
+.MapPeopleEndpoints();
 
 // Sert index.html dans /browser comme page par défaut
 app.ConfigureStaticFiles(builder.Environment);

@@ -1,4 +1,3 @@
-using System.Collections.Specialized;
 using System.Text.Json.Serialization;
 
 namespace MovieTrackR.Application.TMDB;
@@ -162,4 +161,101 @@ public sealed record TmdbProvider(
     string ProviderName,
     [property: JsonPropertyName("display_priority")]
     int DisplayPriority
+);
+
+public sealed record TmdbSearchPeopleResponse(
+    [property: JsonPropertyName("page")]
+    int Page,
+    [property: JsonPropertyName("total_results")]
+    int TotalResults,
+    [property: JsonPropertyName("total_pages")]
+    int TotalPages,
+    [property: JsonPropertyName("results")]
+    IReadOnlyList<TmdbPerson> Results
+);
+
+public sealed record TmdbPerson(
+    [property: JsonPropertyName("id")]
+    int Id,
+    [property: JsonPropertyName("name")]
+    string Name,
+    [property: JsonPropertyName("original_name")]
+    string OriginalName,
+    [property: JsonPropertyName("profile_path")]
+    string? ProfilePath,
+    [property: JsonPropertyName("known_for_department")]
+    string? KnownForDepartment,
+    [property: JsonPropertyName("popularity")]
+    double Popularity,
+    [property: JsonPropertyName("adult")]
+    bool Adult,
+    [property: JsonPropertyName("gender")]
+    int Gender
+);
+
+public sealed record TmdbPersonDetails(
+    [property: JsonPropertyName("id")]
+    int Id,
+    [property: JsonPropertyName("name")]
+    string Name,
+    [property: JsonPropertyName("profile_path")]
+    string? ProfilePath,
+    [property: JsonPropertyName("biography")]
+    string? Biography,
+    [property: JsonPropertyName("birthday")]
+    string? Birthday,
+    [property: JsonPropertyName("deathday")]
+    string? Deathday,
+    [property: JsonPropertyName("place_of_birth")]
+    string? PlaceOfBirth,
+    [property: JsonPropertyName("known_for_department")]
+    string? KnownForDepartment,
+    [property: JsonPropertyName("popularity")]
+    double Popularity,
+    [property: JsonPropertyName("adult")]
+    bool Adult,
+    [property: JsonPropertyName("gender")]
+    int Gender
+);
+
+// Crédits films d'une personne
+public sealed record TmdbPersonMovieCredits(
+    [property: JsonPropertyName("id")]
+    int Id,
+    [property: JsonPropertyName("cast")]
+    IReadOnlyList<TmdbPersonCastCredit> Cast,
+    [property: JsonPropertyName("crew")]
+    IReadOnlyList<TmdbPersonCrewCredit> Crew
+);
+
+// Film dans lequel la personne a joué (cast)
+public sealed record TmdbPersonCastCredit(
+    [property: JsonPropertyName("id")]
+    int Id,
+    [property: JsonPropertyName("title")]
+    string Title,
+    [property: JsonPropertyName("poster_path")]
+    string? PosterPath,
+    [property: JsonPropertyName("release_date")]
+    string? ReleaseDate,
+    [property: JsonPropertyName("character")]
+    string? Character,
+    [property: JsonPropertyName("order")]
+    int Order
+);
+
+// Film dans lequel la personne a travaillé (crew)
+public sealed record TmdbPersonCrewCredit(
+    [property: JsonPropertyName("id")]
+    int Id,
+    [property: JsonPropertyName("title")]
+    string Title,
+    [property: JsonPropertyName("poster_path")]
+    string? PosterPath,
+    [property: JsonPropertyName("release_date")]
+    string? ReleaseDate,
+    [property: JsonPropertyName("job")]
+    string? Job,
+    [property: JsonPropertyName("department")]
+    string? Department
 );

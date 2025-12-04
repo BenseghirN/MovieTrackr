@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MovieTrackR.Application.Common.Exceptions;
 using MovieTrackR.Application.DTOs;
 using MovieTrackR.Application.Interfaces;
 using MovieTrackR.Application.TMDB;
@@ -276,6 +277,45 @@ public sealed class TmdbCatalogService(
                 LogoPath = $"{baseUrl}{p.LogoPath}"
             })
             .ToList();
+    }
+
+    #endregion
+
+    #region People & Crew
+
+    public async Task<Guid> EnsurePersonExistsAsync(int tmdbId, CancellationToken cancellationToken)
+    {
+        // 1. déjà en DB?
+        Person? person = await dbContext.People
+        .FirstOrDefaultAsync(p => p.TmdbId == tmdbId, cancellationToken);
+
+        if (person != null && !string.IsNullOrWhiteSpace(person.Biography))
+            return person.Id;
+
+        // 2. Fetch détails TMDB
+        string lang = TmdbOptions.DefaultLanguage ?? "fr-FR";
+        var details = await tmdbClient.GetPersonDetailsAsync(tmdbId, lang, cancellationToken);
+        if (details == null)
+            throw new NotFoundException("Person", tmdbId);
+
+        // 4. Si n'existe pas → créer
+        if (person == null)
+        {
+            person = Person.Create(details.Name, tmdbId, details.ProfilePath);
+            dbContext.People.Add(person);
+        }
+        person.UpdateDetails(
+            name: details.Name,
+            profilePath: details.ProfilePath,
+            birth: ParseDate(details.Birthday),
+            death: ParseDate(details.Deathday),
+            bio: details.Biography,
+            placeOfBirth: details.PlaceOfBirth,
+            knownForDepartment: details.KnownForDepartment
+        );
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+        return person.Id;
     }
 
     #endregion
