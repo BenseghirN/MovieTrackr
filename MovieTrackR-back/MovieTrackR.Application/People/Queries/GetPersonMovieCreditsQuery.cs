@@ -29,7 +29,9 @@ public sealed class GetPersonMovieCreditsHandler(IMovieTrackRDbContext dbContext
         // 1. Crédits locaux
         List<PersonMovieCreditDto> localCredits = GetLocalCredits(person);
 
-        if (localCredits.Count() < 10 && person.TmdbId.HasValue)
+        // 2. Compléter avec TMDB
+
+        if (person.TmdbId.HasValue)
         {
             List<PersonMovieCreditDto> tmdbCredits = await GetTmdbCreditsAsync(person.TmdbId.Value, cancellationToken);
 
@@ -46,11 +48,12 @@ public sealed class GetPersonMovieCreditsHandler(IMovieTrackRDbContext dbContext
             return localCredits
                 .Concat(uniqueTmdbCredits)
                 .OrderByDescending(c => c.Year ?? 0)
-                .Take(20)
                 .ToList();
         }
 
-        return localCredits;
+        return localCredits
+                .OrderByDescending(c => c.Year ?? 0)
+                .ToList();
     }
 
     private List<PersonMovieCreditDto> GetLocalCredits(Person person)
@@ -67,7 +70,6 @@ public sealed class GetPersonMovieCreditsHandler(IMovieTrackRDbContext dbContext
             .ToList();
 
         return castCredits.Concat(crewCredits)
-            .OrderByDescending(c => c.Year ?? 0)
             .ToList();
     }
 
@@ -87,7 +89,6 @@ public sealed class GetPersonMovieCreditsHandler(IMovieTrackRDbContext dbContext
             List<PersonMovieCreditDto> crewCredits = mapper.Map<List<PersonMovieCreditDto>>(importantCrew);
 
             return castCredits.Concat(crewCredits)
-                .OrderByDescending(c => c.Year ?? 0)
                 .ToList();
         }
         catch

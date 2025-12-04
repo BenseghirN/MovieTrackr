@@ -8,21 +8,17 @@ import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { MovieService } from '../../services/movie.service';
 import { TmdbImageService } from '../../../../core/services/tmdb-image.service';
-import { MovieSearchResponse, MovieSearchResult } from '../../models/movie.model';
+import { SearchMovieParams, SearchMovieResponse, SearchMovieResult } from '../../models/movie.model';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { MovieCardComponent } from '../../components/movie-card/movie-card.component';
 import { toSignal } from '@angular/core/rxjs-interop';
-
-interface MovieSearchParams {
-  query: string;
-  page: number;
-  year?: number | null;
-}
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-movies-page',
   standalone: true,
   imports: [
+    CommonModule,
     FormsModule, 
     CardModule, 
     ButtonModule, 
@@ -44,7 +40,7 @@ export class MoviesPage {
   protected readonly searchQuery = signal('');
   protected readonly yearFilter = signal<number | null>(null);
 
-  protected readonly movies = signal<MovieSearchResult[]>([]);
+  protected readonly movies = signal<SearchMovieResult[]>([]);
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
 
@@ -125,16 +121,15 @@ export class MoviesPage {
         pageSize: this.pageSize(),
       })
       .subscribe({
-        next: (result: MovieSearchResponse) => {
+        next: (result: SearchMovieResponse) => {
           this.movies.set(result.items);
           this.totalResults.set(result.meta.totalResults);
           this.loading.set(false);
         },
-        error: (err) => {
+        error: () => {
           this.loading.set(false);
           this.movies.set([]);
           this.error.set('Impossible de charger les films');
-          console.log(err);
         },
       });
   }
@@ -158,23 +153,22 @@ export class MoviesPage {
     }
   }
 
-  public onMovieClick(movie: MovieSearchResult): void {
+  public onMovieClick(movie: SearchMovieResult): void {
     const id = movie.isLocal && movie.localId 
       ? movie.localId 
       : movie.tmdbId?.toString();
     
-    if (id) {
-      this.router.navigate(['/movies', id]);
-    }
+    if (id) this.router.navigate(['/movies', id]);
   }
 
-  private buildQueryParams(page: number = 1): MovieSearchParams {
+  private buildQueryParams(page: number = 1): SearchMovieParams {
     const query = this.searchQuery().trim();
     const year = this.yearFilter();
 
-    const params: MovieSearchParams = { 
-      query,
-      page
+    const params: SearchMovieParams = { 
+      query: query,
+      page: page,
+      pageSize: this.pageSize()
     };
 
     if (year) {

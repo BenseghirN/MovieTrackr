@@ -102,13 +102,13 @@ public static class MoviesHandlers
     /// <param name="country">Code pays pour les offres</param>
     /// <param name="mediator">Médiateur applicatif.</param>
     /// <param name="cancellationToken">Token d'annulation.</param>
-    /// <returns>La liste des offres si trouvé, 404 sinon.</returns>
+    /// <returns>La liste des offres si trouvé, ou une liste vide.</returns>
     public static async Task<IResult> GetMovieStreamingOffers(int tmdbId, string? country, IMediator mediator, CancellationToken cancellationToken)
     {
         string countryCode = string.IsNullOrWhiteSpace(country)
             ? "BE"
             : country.ToUpperInvariant();
         StreamingOfferDto? dto = await mediator.Send(new GetStreamingOffersForMovieQuery(tmdbId, countryCode), cancellationToken);
-        return dto is null ? Results.NotFound() : Results.Ok(dto);
+        return Results.Ok(dto);
     }
 }

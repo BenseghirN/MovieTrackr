@@ -1,4 +1,4 @@
-export interface MovieSearchResult {
+export interface SearchMovieResult {
   localId: string | null;
   tmdbId: number;
   title: string;
@@ -21,16 +21,14 @@ export interface PageMeta {
   hasMore: boolean;
 }
 
-export interface MovieSearchResponse {
-  items: MovieSearchResult[];
+export interface SearchMovieResponse {
+  items: SearchMovieResult[];
   meta: PageMeta;
 }
 
-export interface MovieSearchParams {
+export interface SearchMovieParams {
 	query?: string | null;
 	year?: number | null;
-	genreId?: string | null;
 	page?: number;
 	pageSize?: number;
-	sort?: string | null;
 }

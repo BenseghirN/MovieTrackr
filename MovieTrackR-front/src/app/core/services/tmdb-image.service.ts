@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 type PosterSize = 'w92' | 'w154' | 'w185' | 'w342' | 'w500' | 'w780' | 'w1280' | 'original';
 type BackdropSize = 'w300' | 'w780' | 'w1280' | 'original';
-type ProfileSize = 'w45' | 'w185' | 'h632' | 'original';
+type ProfileSize = 'w45' | 'w185' | 'w342' | 'w500' | 'h632' | 'original';
 
 @Injectable({ providedIn: 'root' })
 export class TmdbImageService {

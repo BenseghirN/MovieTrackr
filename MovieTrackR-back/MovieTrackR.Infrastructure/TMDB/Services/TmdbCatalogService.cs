@@ -138,6 +138,7 @@ public sealed class TmdbCatalogService(
         await EnrichMovieCast(movie, castRows, cancellationToken);
         await EnrichMovieCrew(movie, crewRows, cancellationToken);
     }
+
     public async Task<StreamingOfferDto?> GetMovieStreamingOffersAsync(int tmdbId, string countryCode = "BE", CancellationToken cancellationToken = default)
     {
         TmdbWatchProvidersResponse? providers = await tmdbClient.GetMovieWatchProvidersAsync(tmdbId, cancellationToken);

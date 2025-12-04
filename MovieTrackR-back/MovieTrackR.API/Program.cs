@@ -35,7 +35,11 @@ builder.Services
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    });
+    })
+    .Services
+    .AddHealthChecks()
+    .AddNpgSql(builder.Configuration.GetConnectionString("MovieTrackRDatabase")
+        ?? throw new InvalidOperationException("Connection string 'MovieTrackRDatabase' not found."));
 
 WebApplication app = builder.Build();
 
@@ -67,7 +71,8 @@ app
 .MapUserListsEndpoints()
 .MapUsersEndpoints()
 .MapGenresEndpoints()
-.MapPeopleEndpoints();
+.MapPeopleEndpoints()
+.MapHealthChecks("/health");
 
 // Sert index.html dans /browser comme page par défaut
 app.ConfigureStaticFiles(builder.Environment);

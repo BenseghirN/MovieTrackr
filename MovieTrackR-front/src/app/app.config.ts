@@ -27,8 +27,16 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {
-        preset: isDarkMode ? Aura : Lara
-      }
+                preset: Aura,
+                options: {
+                    prefix: 'p',
+                    darkModeSelector: 'system',
+                    cssLayer: false
+                }
+            }
+      // theme: {
+      //   preset: isDarkMode ? Aura : Lara
+      // }
     }),
     DialogService,
   ],

@@ -1,6 +1,6 @@
 import { Component, computed, EventEmitter, inject, input, Input, output, Output } from '@angular/core';
 import { TmdbImageService } from '../../../../core/services/tmdb-image.service';
-import { MovieSearchResult } from '../../models/movie.model';
+import { SearchMovieResult } from '../../models/movie.model';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { CardModule } from 'primeng/card';
 import { MovieSummary } from '../../../user-lists/models/user-list.model';
@@ -12,8 +12,8 @@ import { MovieSummary } from '../../../user-lists/models/user-list.model';
   styleUrl: './movie-card.component.scss',
 })
 export class MovieCardComponent {
-  public movie = input.required<MovieSearchResult | MovieSummary>();
-  public movieClick = output<MovieSearchResult | MovieSummary>();
+  public movie = input.required<SearchMovieResult | MovieSummary>();
+  public movieClick = output<SearchMovieResult | MovieSummary>();
   public readonly imageService = inject(TmdbImageService);
 
   public readonly posterPath = computed(() => {

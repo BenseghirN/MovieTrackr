@@ -1,6 +1,6 @@
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, Location } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Button } from 'primeng/button';
 import { Chip } from 'primeng/chip';
 import { ProgressSpinner } from 'primeng/progressspinner';
@@ -35,17 +35,20 @@ import { AddToListPopoverComponent } from '../../../user-lists/components/add-to
 })
 export class MovieDetailsPage {
   private readonly route = inject(ActivatedRoute);
-  private readonly moviesService = inject(MovieService);
-  protected readonly imageService = inject(TmdbImageService);
+  private readonly location = inject(Location);
+  private readonly router = inject(Router);
 
-  protected readonly movieId = toSignal(
+  private readonly moviesService = inject(MovieService);
+  public readonly imageService = inject(TmdbImageService);
+
+  public readonly movieId = toSignal(
     this.route.paramMap,
     { initialValue: null }
   );
   
-  protected readonly loading = signal(true);
-  protected readonly error = signal<string | null>(null);
-  protected readonly movie = toSignal(
+  public readonly loading = signal(true);
+  public readonly error = signal<string | null>(null);
+  public readonly movie = toSignal(
     this.route.paramMap.pipe(
       map(p => p.get('id')),
       switchMap(id => {
@@ -71,52 +74,51 @@ export class MovieDetailsPage {
     ),
     { initialValue: null }
   );
-  protected readonly streamingOffers = signal<MovieStreamingOffers | null>(null);
-  protected readonly streamingLoading = signal(false);
-  protected readonly streamingError = signal<string | null>(null);
+  public readonly streamingOffers = signal<MovieStreamingOffers | null>(null);
+  public readonly streamingLoading = signal(false);
+  public readonly streamingError = signal<string | null>(null);
 
-  protected readonly posterFlipped = signal(false);
+  public readonly posterFlipped = signal(false);
 
-  protected trailerDialogVisible = signal(false);
-  protected currentTrailerUrl = signal<string>('');
+  public trailerDialogVisible = signal(false);
+  public currentTrailerUrl = signal<string>('');
 
-  protected readonly hasCast = computed(() => !!this.movie()?.cast?.length);
-  protected readonly hasCrew = computed(() => !!this.movie()?.crew?.length);
-  protected readonly director = computed(() => {
+  public readonly hasCast = computed(() => !!this.movie()?.cast?.length);
+  public readonly hasCrew = computed(() => !!this.movie()?.crew?.length);
+  public readonly director = computed(() => {
     const m = this.movie();
     if (!m) return null;
-    return m.crew.find(c => c.job === 'Director')?.name ?? null;
+    return m.crew.find(c => c.job === 'Director') ?? null;
   });
 
-  protected readonly carouselResponsiveOptions = [
-    { breakpoint: '1400px', numVisible: 6, numScroll: 3 },
-    { breakpoint: '1200px', numVisible: 5, numScroll: 2 },
-    { breakpoint: '992px', numVisible: 4, numScroll: 2 },
-    { breakpoint: '768px', numVisible: 3, numScroll: 1 },
-    { breakpoint: '576px', numVisible: 2, numScroll: 1 }
+  public readonly carouselResponsiveOptions = [
+    { breakpoint: '1400px', numVisible: 6, numScroll: 6 },
+    { breakpoint: '1200px', numVisible: 5, numScroll: 5 },
+    { breakpoint: '992px', numVisible: 4, numScroll: 4 },
+    { breakpoint: '768px', numVisible: 3, numScroll: 3 },
+    { breakpoint: '576px', numVisible: 2, numScroll: 2 }
   ];
 
-  protected formatDuration(minutes: number | null): string {
+  public formatDuration(minutes: number | null): string {
     if (!minutes) return 'N/A';
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     return `${hours}h ${mins}min`;
   }
 
-  protected openTrailer(rawUrl: string): void {
+  public openTrailer(rawUrl: string): void {
     this.currentTrailerUrl.set(this.buildEmbedUrl(rawUrl));
     this.trailerDialogVisible.set(true);
   }
 
-  protected onTrailerDialogVisibleChange(visible: boolean): void {
+  public onTrailerDialogVisibleChange(visible: boolean): void {
     this.trailerDialogVisible.set(visible);
     if (!visible) {
       this.currentTrailerUrl.set('');
     }
   }
 
-  protected togglePosterFlip(): void {
-    if (!this.streamingOffers()) return;
+  public togglePosterFlip(): void {
     this.posterFlipped.update(v => !v);
   }
 
@@ -138,6 +140,16 @@ export class MovieDetailsPage {
       this.loadStreamingOffers(m.tmdbId);
     });
     
+  }
+
+  public onPersonClick(personId: string): void {
+    if (personId) {
+      this.router.navigate(['/people', personId]);
+    }
+  }
+
+  public goBack(): void {
+    this.location.back()
   }
 
   private buildEmbedUrl(rawUrl: string): string {

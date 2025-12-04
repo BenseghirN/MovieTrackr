@@ -93,7 +93,7 @@ export class AddToListPopoverComponent implements OnInit {
       error: () => {
         this.loading.set(false);
         this.lists.set([]);
-        this.notificationService.error("Erreur lors du chargement de vos listes.");
+        this.notificationService.error('Erreur lors du chargement de vos listes.');
       }
     });
   }

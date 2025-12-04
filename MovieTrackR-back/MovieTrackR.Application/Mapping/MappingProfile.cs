@@ -23,11 +23,13 @@ public class MappingProfile : Profile
                     .Take(10)));
 
         CreateMap<MovieCast, CastMemberDto>()
+            .ForMember(d => d.PersonId, opt => opt.MapFrom(s => s.Person.Id))
             .ForMember(d => d.Name, opt => opt.MapFrom(s => s.Person.Name))
             .ForMember(d => d.Character, opt => opt.MapFrom(s => s.CharacterName))
             .ForMember(d => d.ProfilePath, opt => opt.MapFrom(s => s.Person.ProfilePictureUrl));
 
         CreateMap<MovieCrew, CrewMemberDto>()
+            .ForMember(d => d.PersonId, opt => opt.MapFrom(s => s.Person.Id))
             .ForMember(d => d.Name, opt => opt.MapFrom(s => s.Person.Name))
             .ForMember(d => d.ProfilePath, opt => opt.MapFrom(s => s.Person.ProfilePictureUrl));
 

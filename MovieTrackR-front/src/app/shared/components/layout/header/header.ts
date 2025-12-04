@@ -5,11 +5,12 @@ import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
 import { MenubarModule } from 'primeng/menubar';
 import { AuthService } from '../../../../core/auth/auth-service';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, ButtonModule, MenubarModule, AvatarModule, CommonModule],
+  imports: [RouterLink, RouterLinkActive, ButtonModule, MenubarModule, AvatarModule, CommonModule, TooltipModule],
   templateUrl: './header.html',
   styleUrl: './header.scss',
 })

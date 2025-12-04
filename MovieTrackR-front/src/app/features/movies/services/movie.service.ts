@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
-import { MovieSearchParams, MovieSearchResponse, MovieSearchResult } from '../models/movie.model';
+import { SearchMovieParams, SearchMovieResponse, SearchMovieResult } from '../models/movie.model';
 import { MovieDetails } from '../models/movie-details.model';
 import { ConfigService } from '../../../core/services/config.service';
 import { MovieStreamingOffers } from '../models/streaming-offers.model';
@@ -12,7 +12,7 @@ export class MovieService {
     private readonly api = inject(ApiService);
     private readonly config = inject(ConfigService);
 
-	search(params: MovieSearchParams): Observable<MovieSearchResponse> {
+	search(params: SearchMovieParams): Observable<SearchMovieResponse> {
         const queryParams: Record<string, string | number> = {
             Page: params.page ?? 1,
             PageSize: params.pageSize ?? 20
@@ -20,11 +20,8 @@ export class MovieService {
 
         if (params.query) queryParams['Query'] = params.query;
         if (params.year) queryParams['Year'] = params.year;
-        if (params.genreId) queryParams['GenreId'] = params.genreId;
-        if (params.sort) queryParams['Sort'] = params.sort;
 
-
-		return this.api.get<MovieSearchResponse>(
+		return this.api.get<SearchMovieResponse>(
             `${this.config.apiUrl}/movies/search`,
             { params: queryParams, withCredentials: false }
         );
@@ -41,7 +38,7 @@ export class MovieService {
             : this.getTmdbMovie(Number(rawId));
     }
 
-    getMovieDetails(result: MovieSearchResult): Observable<MovieDetails> {
+    getMovieDetails(result: SearchMovieResult): Observable<MovieDetails> {
         if (result.isLocal && result.localId) {
         return this.getLocalMovie(result.localId);
         } else if (result.tmdbId) {

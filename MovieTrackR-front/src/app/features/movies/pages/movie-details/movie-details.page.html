@@ -13,6 +13,14 @@
   }
 
   @if (movie(); as movie) {
+    <div class="header-actions">
+      <p-button
+        icon="pi pi-arrow-left"
+        label="Retour"
+        [text]="true"
+        (onClick)="goBack()"
+      ></p-button>
+    </div>
     @if (movie.backdropPath) {
       <div class="backdrop">
         <img
@@ -185,7 +193,13 @@
 
           @if (director(); as director) {
             <p class="director">
-              <strong>Réalisateur :</strong> {{ director }}
+              <strong>Réalisateur :</strong>
+              <span 
+                class="director-name clickable" 
+                (click)="onPersonClick(director.personId)"
+              >
+                {{ director.name }}
+              </span>
             </p>
           }
 
@@ -197,13 +211,6 @@
           }
 
           <div class="actions">
-            <!-- <p-button
-              label="Ajouter à ma watchlist"
-              icon="pi pi-bookmark"
-              [outlined]="true"
-              severity="secondary"
-              styleClass="action-button primary"
-            ></p-button> -->
             <app-add-to-list-popover 
               [movieId]="movie.id"
               [tmdbId]="movie.tmdbId"
@@ -259,7 +266,7 @@
             styleClass="cast-carousel"
           >
             <ng-template pTemplate="item" let-actor>
-              <p-card styleClass="cast-card">
+              <p-card styleClass="cast-card clickable-card" (click)="onPersonClick(actor.personId)">
                 <ng-template pTemplate="header">
                   <div class="cast-photo">
                     <img

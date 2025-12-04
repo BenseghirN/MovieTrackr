@@ -153,6 +153,8 @@ public sealed record UpdateMovieDto
 /// <summary>Membre de la distribution.</summary>
 public sealed class CastMemberDto
 {
+    /// <summary>Identifiant unique de l'acteur/actrice.</summary>
+    public required Guid PersonId { get; init; }
     /// <summary>Nom de l'acteur/actrice.</summary>
     public required string Name { get; init; }
     /// <summary>Nom du personnage interprété.</summary>
@@ -166,6 +168,8 @@ public sealed class CastMemberDto
 /// <summary>Membre de l'équipe technique.</summary>
 public sealed class CrewMemberDto
 {
+    /// <summary>Identifiant unique du membre dans l'équipe.</summary>
+    public required Guid PersonId { get; init; }
     /// <summary>Nom du membre de l'équipe.</summary>
     public required string Name { get; init; }
     /// <summary>Rôle ou fonction du membre dans l'équipe.</summary>

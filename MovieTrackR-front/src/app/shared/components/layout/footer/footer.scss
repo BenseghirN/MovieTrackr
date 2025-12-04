@@ -1,8 +1,14 @@
 .footer {
-  background-color: var(--surface-card);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  
+  background-color: var(--p-content-background);
   border-top: 1px solid var(--surface-border);
   padding: 1rem 1.5rem;
-  margin-top: auto;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .footer-content {

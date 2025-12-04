@@ -1,0 +1,177 @@
+<div class="person-details-page">
+  <div class="header-actions">
+    <p-button
+      icon="pi pi-arrow-left"
+      label="Retour"
+      [text]="true"
+      (onClick)="goBack()"
+    ></p-button>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <p-progressSpinner></p-progressSpinner>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="error-message">
+      <i class="pi pi-exclamation-triangle"></i>
+      {{ error() }}
+    </div>
+  }
+
+  @if (personDetails(); as person) {
+    <div class="person-header">
+      <div class="person-profile">
+        @if (person.profilePath) {
+          <img
+            [src]="imageService.getProfileUrl(person.profilePath, 'w500')"
+            [alt]="person.name"
+            class="profile-image"
+          />
+        } @else {
+          <div class="no-profile-image">
+            <i class="pi pi-user"></i>
+          </div>
+        }
+      </div>
+
+      <div class="person-info">
+        <h1 class="person-name">{{ person.name }}</h1>
+
+        @if (person.knownForDepartment) {
+          <div class="info-item">
+            <i class="pi pi-briefcase"></i>
+            <span>{{ person.knownForDepartment }}</span>
+          </div>
+        }
+
+        @if (person.birthDate) {
+          <div class="info-item">
+            <i class="pi pi-calendar"></i>
+            <span>
+              Né le {{ formatDate(person.birthDate) }}
+              {{ calculateAge(person.birthDate, person.deathDate) }}
+            </span>
+          </div>
+        }
+
+        @if (person.deathDate) {
+          <div class="info-item">
+            <i class="pi pi-calendar-times"></i>
+            <span>Décédé le {{ formatDate(person.deathDate) }}</span>
+          </div>
+        }
+
+        @if (person.placeOfBirth) {
+          <div class="info-item">
+            <i class="pi pi-map-marker"></i>
+            <span>{{ person.placeOfBirth }}</span>
+          </div>
+        }
+
+        @if (person.biography) {
+          <div class="biography">
+            <h3>Biographie</h3>
+            <p>{{ person.biography }}</p>
+          </div>
+        }
+      </div>
+    </div>
+
+    @if (castCredits().length > 0) {
+      <div class="credits-section">
+        <h2>🎬 A joué dans ({{ castCredits().length }} films)</h2>
+
+        @if (loadingCredits()) {
+          <div class="skeleton-carousel">
+            @for (i of [1, 2, 3, 4, 5]; track i) {
+              <p-skeleton width="200px" height="300px"></p-skeleton>
+            }
+          </div>
+        } @else {
+          <p-carousel
+            [value]="castCredits()"
+            [numVisible]="5"
+            [numScroll]="5"
+            [responsiveOptions]="carouselResponsiveOptions"
+            [circular]="false"
+          >
+            <ng-template let-credit pTemplate="item">
+              <div class="movie-credit-card" (click)="onMovieClick(credit)">
+                <div class="movie-poster">
+                  @if (credit.posterPath) {
+                    <img
+                      [src]="imageService.getPosterUrl(credit.posterPath, 'w342')"
+                      [alt]="credit.title"
+                    />
+                  } @else {
+                    <div class="no-poster">
+                      <i class="pi pi-image"></i>
+                    </div>
+                  }
+                </div>
+                <div class="movie-info">
+                  <h4 class="movie-title">{{ credit.title }}</h4>
+                  @if (credit.year) {
+                    <span class="movie-year">{{ credit.year }}</span>
+                  }
+                  @if (credit.character) {
+                    <span class="movie-character">{{ credit.character }}</span>
+                  }
+                </div>
+              </div>
+            </ng-template>
+          </p-carousel>
+        }
+      </div>
+    }
+
+    @if (crewCredits().length > 0) {
+      <div class="credits-section">
+        <h2>🎥 A participé à ({{ crewCredits().length }} films)</h2>
+
+        @if (loadingCredits()) {
+          <div class="skeleton-carousel">
+            @for (i of [1, 2, 3, 4, 5]; track i) {
+              <p-skeleton width="200px" height="300px"></p-skeleton>
+            }
+          </div>
+        } @else {
+          <p-carousel
+            [value]="groupedCrewCredits()"
+            [numVisible]="5"
+            [numScroll]="5"
+            [responsiveOptions]="carouselResponsiveOptions"
+            [circular]="false"
+          >
+            <ng-template let-item pTemplate="item">
+              <div class="movie-credit-card" (click)="onMovieClick(item.credit)">
+                <div class="movie-poster">
+                  @if (item.credit.posterPath) {
+                    <img
+                      [src]="imageService.getPosterUrl(item.credit.posterPath, 'w342')"
+                      [alt]="item.title"
+                    />
+                  } @else {
+                    <div class="no-poster">
+                      <i class="pi pi-image"></i>
+                    </div>
+                  }
+                </div>
+                <div class="movie-info">
+                  <h4 class="movie-title">{{ item.credit.title }}</h4>
+                  @if (item.credit.year) {
+                    <span class="movie-year">{{ item.credit.year }}</span>
+                  }
+                  <span class="movie-job" [pTooltip]="item.jobs.join(', ')" tooltipPosition="bottom">{{ item.jobs.join(', ') }}</span>
+                </div>
+              </div>
+            </ng-template>
+          </p-carousel>
+        }
+      </div>
+    }
+  }
+</div>

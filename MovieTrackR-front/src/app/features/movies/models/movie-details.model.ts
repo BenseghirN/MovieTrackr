@@ -23,6 +23,7 @@ export interface MovieDetails {
 }
 
 export interface CastMember {
+  personId: string;
   name: string;
   character: string | null;
   profilePath: string | null;
@@ -30,6 +31,7 @@ export interface CastMember {
 }
 
 export interface CrewMember {
+  personId: string;
   name: string;
   job: string;
   department: string | null;
