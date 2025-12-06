@@ -41,16 +41,16 @@ export class MovieDetailsPage {
   private readonly router = inject(Router);
 
   private readonly moviesService = inject(MovieService);
-  public readonly imageService = inject(TmdbImageService);
+  readonly imageService = inject(TmdbImageService);
 
-  public readonly movieId = toSignal(
+  readonly movieId = toSignal(
     this.route.paramMap,
     { initialValue: null }
   );
   
-  public readonly loading = signal(true);
-  public readonly error = signal<string | null>(null);
-  public readonly movie = toSignal(
+  readonly loading = signal(true);
+  readonly error = signal<string | null>(null);
+  readonly movie = toSignal(
     this.route.paramMap.pipe(
       map(p => p.get('id')),
       switchMap(id => {
@@ -76,24 +76,24 @@ export class MovieDetailsPage {
     ),
     { initialValue: null }
   );
-  public readonly streamingOffers = signal<MovieStreamingOffers | null>(null);
-  public readonly streamingLoading = signal(false);
-  public readonly streamingError = signal<string | null>(null);
+  readonly streamingOffers = signal<MovieStreamingOffers | null>(null);
+  readonly streamingLoading = signal(false);
+  readonly streamingError = signal<string | null>(null);
 
-  public readonly posterFlipped = signal(false);
+  readonly posterFlipped = signal(false);
 
-  public trailerDialogVisible = signal(false);
-  public currentTrailerUrl = signal<string>('');
+  readonly trailerDialogVisible = signal(false);
+  readonly currentTrailerUrl = signal<string>('');
 
-  public readonly hasCast = computed(() => !!this.movie()?.cast?.length);
-  public readonly hasCrew = computed(() => !!this.movie()?.crew?.length);
-  public readonly director = computed(() => {
+  readonly hasCast = computed(() => !!this.movie()?.cast?.length);
+  readonly hasCrew = computed(() => !!this.movie()?.crew?.length);
+  readonly director = computed(() => {
     const m = this.movie();
     if (!m) return null;
     return m.crew.find(c => c.job === 'Director') ?? null;
   });
   
-  protected readonly crewByDepartment = computed(() => {
+  readonly crewByDepartment = computed(() => {
     const movie = this.movie();
     if (!movie?.crew) return {};
 
@@ -132,12 +132,11 @@ export class MovieDetailsPage {
     return grouped;
   });
 
-  // ✅ Méthode pour obtenir les clés du dictionnaire (pour le template)
-  protected getDepartmentKeys(): string[] {
+  getDepartmentKeys(): string[] {
     return Object.keys(this.crewByDepartment());
   }
 
-  public readonly carouselResponsiveOptions = [
+  readonly carouselResponsiveOptions = [
     { breakpoint: '1400px', numVisible: 6, numScroll: 6 },
     { breakpoint: '1200px', numVisible: 5, numScroll: 5 },
     { breakpoint: '992px', numVisible: 4, numScroll: 4 },
@@ -145,30 +144,30 @@ export class MovieDetailsPage {
     { breakpoint: '576px', numVisible: 2, numScroll: 2 }
   ];
 
-  public formatDuration(minutes: number | null): string {
+  formatDuration(minutes: number | null): string {
     if (!minutes) return 'N/A';
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     return `${hours}h ${mins}min`;
   }
 
-  public openTrailer(rawUrl: string): void {
+  openTrailer(rawUrl: string): void {
     this.currentTrailerUrl.set(this.buildEmbedUrl(rawUrl));
     this.trailerDialogVisible.set(true);
   }
 
-  public onTrailerDialogVisibleChange(visible: boolean): void {
+  onTrailerDialogVisibleChange(visible: boolean): void {
     this.trailerDialogVisible.set(visible);
     if (!visible) {
       this.currentTrailerUrl.set('');
     }
   }
 
-  public togglePosterFlip(): void {
+  togglePosterFlip(): void {
     this.posterFlipped.update(v => !v);
   }
 
-  protected openStreamingLink(url: string | null, event: MouseEvent): void {
+  openStreamingLink(url: string | null, event: MouseEvent): void {
     event.stopPropagation();
     if (!url) return;
     window.open(url, '_blank');
@@ -188,17 +187,17 @@ export class MovieDetailsPage {
     
   }
 
-  public onPersonClick(personId: string): void {
+  onPersonClick(personId: string): void {
     if (personId) {
       this.router.navigate(['/people', personId]);
     }
   }
 
-  public goBack(): void {
+  goBack(): void {
     this.location.back()
   }
 
-  public formatDate(dateString?: string | null): string {
+  formatDate(dateString?: string | null): string {
     if (!dateString) return '';
     const date = new Date(dateString);
     return date.toLocaleDateString('fr-FR', {

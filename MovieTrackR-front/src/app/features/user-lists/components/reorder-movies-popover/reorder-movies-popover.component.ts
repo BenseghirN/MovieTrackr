@@ -7,7 +7,6 @@ import { UserListMovie } from '../../models/user-list.model';
 import { UserListService } from '../../services/user-list.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { TmdbImageService } from '../../../../core/services/tmdb-image.service';
-import { retry } from 'rxjs';
 
 @Component({
   selector: 'app-reorder-movies-popover',
@@ -17,35 +16,35 @@ import { retry } from 'rxjs';
   styleUrl: './reorder-movies-popover.component.scss',
 })
 export class ReorderMoviesPopoverComponent {
-  public listId = input.required<string>();
-  public movies = input.required<UserListMovie[]>();
-  public reordered = output<void>();
+  readonly listId = input.required<string>();
+  readonly movies = input.required<UserListMovie[]>();
+  readonly reordered = output<void>();
 
   private readonly listService = inject(UserListService);
   private readonly notificationService = inject(NotificationService);
-  public readonly imageService = inject(TmdbImageService);
+  readonly imageService = inject(TmdbImageService);
 
-  public readonly localMovies = signal<UserListMovie[]>([]);
-  public readonly saving = signal(false);
+  readonly localMovies = signal<UserListMovie[]>([]);
+  readonly saving = signal(false);
 
-  public readonly hasChanges = computed(() => {
+  readonly hasChanges = computed(() => {
     const original = this.movies()
     const current = this.localMovies();
     const changed = current.some((movie, index) => movie.movieId !== original[index]?.movieId);
     return changed;
   });
 
-  public toggle(event: Event, popover: Popover): void {
+  toggle(event: Event, popover: Popover): void {
     this.localMovies.set([...this.movies()]);
     popover.toggle(event);
   }
 
-  public onReorder(event: any): void {
+  onReorder(event: any): void {
     const current = this.localMovies();
     this.localMovies.set([...current]);
   }
 
-  public onSave(popover: Popover): void {
+  onSave(popover: Popover): void {
     if (!this.hasChanges()) {
       popover.hide();
       return;
@@ -62,7 +61,7 @@ export class ReorderMoviesPopoverComponent {
     this.updatePosition(updates, 0, popover);
   }
 
-  public onCancel(popover: Popover): void {
+  onCancel(popover: Popover): void {
     popover.hide();
   }
   

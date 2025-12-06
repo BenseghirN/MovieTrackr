@@ -5,6 +5,7 @@ using MovieTrackR.API.Middleware;
 using MovieTrackR.Application.DTOs;
 using MovieTrackR.Application.Reviews.Commands;
 using MovieTrackR.Application.Reviews.Queries;
+using MovieTrackR.Domain.Enums;
 
 namespace MovieTrackR.API.Endpoints.Reviews;
 
@@ -33,21 +34,36 @@ public static class ReviewsHandlers
     /// <summary>
     /// Liste paginée des reviews pour un film.
     /// </summary>
-    public static async Task<Ok<PagedResult<ReviewListItemDto>>> GetByMovie(Guid movieId, ClaimsPrincipal user, int page, int pageSize, ISender sender, CancellationToken cancellationToken)
+    public static async Task<Ok<PagedResult<ReviewListItemDto>>> GetByMovie(
+            Guid movieId,
+            ClaimsPrincipal user,
+            int page,
+            int pageSize,
+            MovieReviewSortOption sort,
+            int? ratinFilter,
+            ISender sender,
+            CancellationToken cancellationToken)
     {
         CurrentUserDto? currentUser = user.Identity?.IsAuthenticated == true
             ? user.ToCurrentUserDto()
             : null;
-        PagedResult<ReviewListItemDto> result = await sender.Send(new GetReviewsByMovieQuery(movieId, currentUser, page, pageSize), cancellationToken);
+        PagedResult<ReviewListItemDto> result = await sender.Send(new GetReviewsByMovieQuery(movieId, currentUser, page, pageSize, sort, ratinFilter), cancellationToken);
         return TypedResults.Ok(result);
     }
 
     /// <summary>
     /// Liste paginée des reviews d'un utilisateur.
     /// </summary>
-    public static async Task<Ok<PagedResult<ReviewListItemDto>>> GetByUser(Guid userId, int page, int pageSize, ISender sender, CancellationToken cancellationToken)
+    public static async Task<Ok<PagedResult<ReviewListItemDto>>> GetByUser(
+            Guid userId,
+            int page,
+            int pageSize,
+            UserReviewSortOption sort,
+            int? ratingFilter,
+            ISender sender,
+            CancellationToken cancellationToken)
     {
-        PagedResult<ReviewListItemDto> result = await sender.Send(new GetReviewsByUserQuery(userId, page, pageSize), cancellationToken);
+        PagedResult<ReviewListItemDto> result = await sender.Send(new GetReviewsByUserQuery(userId, page, pageSize, sort, ratingFilter), cancellationToken);
         return TypedResults.Ok(result);
     }
 

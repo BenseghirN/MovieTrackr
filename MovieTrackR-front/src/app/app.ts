@@ -12,5 +12,5 @@ import { ToastComponent } from './shared/components/toast/toast.component';
   styleUrl: './app.scss',
 })
 export class App {
-  protected readonly title = signal('MovieTrackR');
+  readonly title = signal('MovieTrackR');
 }

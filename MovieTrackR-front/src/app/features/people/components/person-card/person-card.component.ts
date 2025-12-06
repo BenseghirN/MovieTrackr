@@ -14,17 +14,17 @@ import { SearchPeopleResult } from '../../models/people.model';
 export class PersonCardComponent {
   private readonly imageService = inject(TmdbImageService);
 
-  public person = input.required<SearchPeopleResult>();
-  public personClick = output<SearchPeopleResult>();
+  readonly person = input.required<SearchPeopleResult>();
+  readonly personClick = output<SearchPeopleResult>();
 
-  public readonly profileUrl = computed(() => {
+  readonly profileUrl = computed(() => {
     const profilePath = this.person().profilePath;
     return profilePath
       ? this.imageService.getProfileUrl(profilePath, 'w342')
       : null;
   });
 
-  public onClick(): void {
+  onClick(): void {
     this.personClick.emit(this.person());
   }
 }

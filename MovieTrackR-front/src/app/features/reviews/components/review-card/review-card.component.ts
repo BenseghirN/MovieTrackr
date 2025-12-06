@@ -14,20 +14,21 @@ import { AuthService } from '../../../../core/auth/auth-service';
   styleUrl: './review-card.component.scss',
 })
 export class ReviewCardComponent {
-  review = input.required<ReviewListItem>();
+  readonly review = input.required<ReviewListItem>();
 
-  like = output<void>();
-  edit = output<void>();
-  delete = output<void>();
-  comments = output<void>();
+  readonly like = output<void>();
+  readonly edit = output<void>();
+  readonly delete = output<void>();
+  readonly comments = output<void>();
 
   private readonly authService = inject(AuthService);
   
-  protected readonly isMyReview = computed(() => {
+  readonly isMyReview = computed(() => {
     const currentUser = this.authService.currentUser();
     return currentUser?.id === this.review().userId;
   });
-  protected readonly stars = computed(() => {
+
+  readonly stars = computed(() => {
     const rating = this.review().rating;
     return {
       full: rating,
@@ -36,19 +37,19 @@ export class ReviewCardComponent {
     }
   });
   
-  protected onLike(): void {
+  onLike(): void {
     this.like.emit();
   }
 
-  protected onEdit(): void {
+  onEdit(): void {
     this.edit.emit();
   }
 
-  protected onDelete(): void {
+  onDelete(): void {
     this.delete.emit();
   }
 
-  protected onComments(): void {
+  onComments(): void {
     this.comments.emit();
   }
 }

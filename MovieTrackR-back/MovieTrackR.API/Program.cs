@@ -72,6 +72,7 @@ app
 .MapUsersEndpoints()
 .MapGenresEndpoints()
 .MapPeopleEndpoints()
+.MapUserProfilesEndpoints()
 .MapHealthChecks("/health");
 
 // Sert index.html dans /browser comme page par défaut

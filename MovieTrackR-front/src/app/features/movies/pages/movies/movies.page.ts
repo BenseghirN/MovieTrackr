@@ -35,21 +35,21 @@ export class MoviesPage {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly moviesService = inject(MovieService);
-  protected readonly imageService = inject(TmdbImageService);
+  readonly imageService = inject(TmdbImageService);
 
-  protected readonly searchQuery = signal('');
-  protected readonly yearFilter = signal<number | null>(null);
+  readonly searchQuery = signal('');
+  readonly yearFilter = signal<number | null>(null);
 
-  protected readonly movies = signal<SearchMovieResult[]>([]);
-  protected readonly loading = signal(false);
-  protected readonly error = signal<string | null>(null);
+  readonly movies = signal<SearchMovieResult[]>([]);
+  readonly loading = signal(false);
+  readonly error = signal<string | null>(null);
 
-  protected readonly currentPage = signal(1);
-  protected readonly pageSize = signal(20);
-  protected readonly totalResults = signal(0);
+  readonly currentPage = signal(1);
+  readonly pageSize = signal(20);
+  readonly totalResults = signal(0);
 
-  public readonly hasResults = computed(() => this.movies().length > 0);
-  public readonly showNoResults = computed(() => 
+  readonly hasResults = computed(() => this.movies().length > 0);
+  readonly showNoResults = computed(() => 
     !this.loading() && this.searchQuery() && !this.hasResults()
   );
 
@@ -85,7 +85,7 @@ export class MoviesPage {
     });
   }
 
-  public search(): void {
+  search(): void {
     if (!this.searchQuery().trim()) return;
     this.currentPage.set(1);
 
@@ -96,7 +96,7 @@ export class MoviesPage {
     });
   }
 
-  public onPageChange(event: PaginatorState): void {
+  onPageChange(event: PaginatorState): void {
     const newPage = (event.page ?? 0) + 1;
     this.currentPage.set(newPage);
     this.pageSize.set(event.rows ?? 20);
@@ -107,6 +107,49 @@ export class MoviesPage {
       queryParams: this.buildQueryParams(newPage), 
       queryParamsHandling: 'merge' 
     });
+  }
+
+  onSearchKeyup(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      this.currentPage.set(1);
+      this.search();
+    }
+  }
+
+  onQueryChange(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.searchQuery.set(value);
+  }
+
+  onYearChange(value: number | null): void {
+    this.yearFilter.set(value ?? null);
+    if (this.searchQuery().trim()) {
+      this.search();
+    }
+  }
+
+  onMovieClick(movie: SearchMovieResult): void {
+    const id = movie.isLocal && movie.localId 
+      ? movie.localId 
+      : movie.tmdbId?.toString();
+    
+    if (id) this.router.navigate(['/movies', id]);
+  }
+
+  private buildQueryParams(page: number = 1): SearchMovieParams {
+    const query = this.searchQuery().trim();
+    const year = this.yearFilter();
+
+    const params: SearchMovieParams = { 
+      query: query,
+      page: page,
+      pageSize: this.pageSize()
+    };
+
+    if (year) {
+      params.year = year;
+    }
+    return params;
   }
 
   private fetchMovies(query: string, page: number): void {
@@ -132,48 +175,5 @@ export class MoviesPage {
           this.error.set('Impossible de charger les films');
         },
       });
-  }
-
-  public onSearchKeyup(event: KeyboardEvent): void {
-    if (event.key === 'Enter') {
-      this.currentPage.set(1);
-      this.search();
-    }
-  }
-
-  public onQueryChange(event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
-    this.searchQuery.set(value);
-  }
-
-  public onYearChange(value: number | null): void {
-    this.yearFilter.set(value ?? null);
-    if (this.searchQuery().trim()) {
-      this.search();
-    }
-  }
-
-  public onMovieClick(movie: SearchMovieResult): void {
-    const id = movie.isLocal && movie.localId 
-      ? movie.localId 
-      : movie.tmdbId?.toString();
-    
-    if (id) this.router.navigate(['/movies', id]);
-  }
-
-  private buildQueryParams(page: number = 1): SearchMovieParams {
-    const query = this.searchQuery().trim();
-    const year = this.yearFilter();
-
-    const params: SearchMovieParams = { 
-      query: query,
-      page: page,
-      pageSize: this.pageSize()
-    };
-
-    if (year) {
-      params.year = year;
-    }
-    return params;
   }
 }

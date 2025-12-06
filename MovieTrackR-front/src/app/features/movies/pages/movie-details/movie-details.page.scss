@@ -3,6 +3,7 @@
 // ============================================
 
 // Variables
+@use "sass:color";
 $color-background: #0a0a0f;
 $color-surface: rgba(18, 18, 24, 0.85);
 $color-surface-solid: #12121a;
@@ -261,7 +262,8 @@ $breakpoint-xs: 576px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(145deg, $color-surface-solid, darken($color-surface-solid, 5%));
+  background: linear-gradient(145deg, $color-surface-solid, color.adjust($color-surface-solid, $lightness: -5%));
+  
   
   i {
     font-size: 4rem;
@@ -821,7 +823,7 @@ $breakpoint-xs: 576px;
   width: 100%;
   aspect-ratio: 2/3;
   overflow: hidden;
-  background: linear-gradient(145deg, $color-surface-solid, darken($color-surface-solid, 5%));
+  background: linear-gradient(145deg, $color-surface-solid, color.adjust($color-surface-solid, $lightness: -5%));
 
   img {
     width: 100%;

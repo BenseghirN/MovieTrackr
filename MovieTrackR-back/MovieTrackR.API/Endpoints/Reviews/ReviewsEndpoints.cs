@@ -30,13 +30,13 @@ public static class ReviewsEndpoints
     group.MapGet("by-movie/{movieId:guid}", ReviewsHandlers.GetByMovie)
       .AllowAnonymous()
       .WithSummary("List reviews for a movie")
-      .WithDescription("Returns a paginated list of reviews for the given movie.")
+      .WithDescription("Returns a paginated, sortable and filterable list of reviews for the given movie.")
       .Produces<PagedResult<ReviewListItemDto>>(StatusCodes.Status200OK);
 
     group.MapGet("by-user/{userId:guid}", ReviewsHandlers.GetByUser)
       .AllowAnonymous()
       .WithSummary("List reviews by user")
-      .WithDescription("Returns a paginated list of reviews created by the given user.")
+      .WithDescription("Returns a paginated, sortable and filterable list of reviews for the given user.")
       .Produces<PagedResult<ReviewListItemDto>>(StatusCodes.Status200OK);
 
     group.MapPost("", ReviewsHandlers.Create)

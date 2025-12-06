@@ -23,7 +23,7 @@ public static class PeopleHandlers
         response.Headers["X-Total-Local"] = result.Meta.TotalLocal.ToString();
         response.Headers["X-Total-Tmdb"] = result.Meta.TotalTmdb.ToString();
         response.Headers["X-Total"] = result.Meta.TotalResults.ToString();
-        return Results.Ok(result);
+        return TypedResults.Ok(result);
     }
 
     /// <summary>Récupère une personne par son identifiant local.</summary>
@@ -34,7 +34,7 @@ public static class PeopleHandlers
     public static async Task<IResult> GetById(Guid id, IMediator mediator, CancellationToken cancellationToken)
     {
         PersonDetailsDto? dto = await mediator.Send(new GetPersonByIdQuery(id), cancellationToken);
-        return dto is null ? Results.NotFound() : Results.Ok(dto);
+        return dto is null ? TypedResults.NotFound() : TypedResults.Ok(dto);
     }
 
     /// <summary>Récupère une personne TMDB (l'importe si nécessaire).</summary>
@@ -58,11 +58,11 @@ public static class PeopleHandlers
                 new GetPersonByIdQuery(localId),
                 cancellationToken);
 
-            return dto is null ? Results.NotFound() : Results.Ok(dto);
+            return dto is null ? TypedResults.NotFound() : TypedResults.Ok(dto);
         }
         catch (NotFoundException)
         {
-            return Results.NotFound(new { error = $"Person TMDB {tmdbId} introuvable" });
+            return TypedResults.NotFound(new { error = $"Person TMDB {tmdbId} introuvable" });
         }
     }
 
@@ -78,6 +78,6 @@ public static class PeopleHandlers
     public static async Task<IResult> GetPersonMovieCredits(Guid id, IMediator mediator, CancellationToken cancellationToken)
     {
         List<PersonMovieCreditDto>? dto = await mediator.Send(new GetPersonMovieCreditsQuery(id), cancellationToken);
-        return dto is null ? Results.NotFound() : Results.Ok(dto);
+        return TypedResults.Ok(dto);
     }
 }

@@ -15,7 +15,7 @@ public static class UsersHandlers
     public static async Task<IResult> GetAll(IMediator mediator, CancellationToken cancellationToken)
     {
         List<UserDto> list = await mediator.Send(new GetAllUsersQuery(), cancellationToken);
-        return Results.Ok(list);
+        return TypedResults.Ok(list);
     }
 
     /// <summary>Récupère un utilisateur par son identifiant.</summary>
@@ -26,7 +26,7 @@ public static class UsersHandlers
     public static async Task<IResult> GetById(Guid id, IMediator mediator, CancellationToken cancellationToken)
     {
         UserDto? dto = await mediator.Send(new GetUserByIdQuery(id), cancellationToken);
-        return dto is null ? Results.NotFound() : Results.Ok(dto);
+        return dto is null ? TypedResults.NotFound() : TypedResults.Ok(dto);
     }
 
     /// <summary>Promeut un utilisateur au rôle administrateur.</summary>
@@ -37,7 +37,7 @@ public static class UsersHandlers
     public static async Task<IResult> PromoteToAdmin(Guid id, IMediator mediator, CancellationToken cancellationToken)
     {
         UserDto dto = await mediator.Send(new PromoteToAdminCommand(id), cancellationToken);
-        return Results.Ok(dto);
+        return TypedResults.Ok(dto);
     }
 
     /// <summary>Rétrograde un administrateur vers le rôle utilisateur.</summary>
@@ -48,6 +48,6 @@ public static class UsersHandlers
     public static async Task<IResult> DemoteToUser(Guid id, IMediator mediator, CancellationToken cancellationToken)
     {
         UserDto dto = await mediator.Send(new DemoteToUserCommand(id), cancellationToken);
-        return Results.Ok(dto);
+        return TypedResults.Ok(dto);
     }
 }

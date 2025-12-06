@@ -1,0 +1,58 @@
+<section class="user-reviews-section">
+  <div class="section-header">
+    <h2>Critiques</h2>
+
+    <div class="section-filters">
+      <p-floatlabel class="w-full md:w-56" variant="on">
+        <p-select
+          [options]="sortOptions"
+          optionLabel="label"
+          optionValue="value"
+          [ngModel]="sort()"
+          (onChange)="onSortChange($event.value)"
+         />
+         <label for="on_label">Trier par:</label>
+      </p-floatlabel>
+
+      <p-select
+        [options]="ratingOptions"
+        optionLabel="label"
+        optionValue="value"
+        [ngModel]="ratingFilter()"
+        (onChange)="onRatingFilterChange($event.value)"
+        placeholder="Filtrer par note"
+      />
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="section-loading">
+      <p-progressSpinner />
+    </div>
+  } @else {
+    @if (error()) {
+      <p class="error">{{ error() }}</p>
+    }
+
+    @if (!error() && reviews().length === 0) {
+      <p>Aucune critique pour le moment.</p>
+    } @else if (!error() && reviews().length > 0) {
+      <div class="reviews-list">
+        @for (review of reviews(); track review.id) {
+          <app-review-card
+            [review]="review"
+          ></app-review-card>
+        }
+      </div>
+
+      <p-paginator
+        *ngIf="totalCount() > pageSize()"
+        [rows]="pageSize()"
+        [totalRecords]="totalCount()"
+        [first]="(currentPage() - 1) * pageSize()"
+        [rowsPerPageOptions]="[5, 10, 20]"
+        (onPageChange)="onPageChange($event)"
+      />
+    }
+  }
+</section>

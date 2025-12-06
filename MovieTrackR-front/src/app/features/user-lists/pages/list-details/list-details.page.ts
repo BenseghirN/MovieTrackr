@@ -29,21 +29,22 @@ export class ListDetailsPage {
   private readonly authService = inject(AuthService);
   private readonly dialogService = inject(DialogService);
 
-  public readonly loading = signal(false);
-  protected readonly error = signal<string | null>(null);
-  protected readonly reloadKey = signal(0);
+  readonly loading = signal(false);
+  readonly error = signal<string | null>(null);
+  readonly reloadKey = signal(0);
 
-  protected readonly listDetails = signal<UserListDetails | null>(null);
+  readonly listDetails = signal<UserListDetails | null>(null);
+
   private readonly listId = toSignal(
     this.route.paramMap.pipe(map((params) => params.get('id'))),
     { initialValue: null }
   );
 
-  protected readonly hasMovies = computed(() => 
+  readonly hasMovies = computed(() => 
     (this.listDetails()?.movies.length ?? 0) > 0
   );
 
-  public readonly isAuthenticated = this.authService.isAuthenticated;
+  readonly isAuthenticated = this.authService.isAuthenticated;
   private dialogRef: DynamicDialogRef | null = null;
 
   constructor() {
@@ -60,7 +61,7 @@ export class ListDetailsPage {
     });
   }
 
-  public onRemoveMovie(movieId: string): void {
+  onRemoveMovie(movieId: string): void {
     const list = this.listDetails();
     if (!list) return;
 
@@ -75,7 +76,7 @@ export class ListDetailsPage {
     });
   }
 
-  public onEditList(): void {
+  onEditList(): void {
     const list = this.listDetails();
     if (!list) return;
 
@@ -98,7 +99,7 @@ export class ListDetailsPage {
     });
   }
 
-  public onDeleteList(): void {
+  onDeleteList(): void {
     const list = this.listDetails();
     if (!list) return;
     
@@ -115,27 +116,27 @@ export class ListDetailsPage {
     });
   }
 
-  public onViewMovie(movieId : string): void {
+  onViewMovie(movieId : string): void {
     this.router.navigate(['/movies', movieId]);
   }
 
-  public onBack(): void {
+  onBack(): void {
     this.router.navigate(['/my-lists']);
   }
 
-  public onReload(): void {
+  onReload(): void {
     this.reloadKey.update((x) => x + 1);
   }
 
-  public onReordered(): void {
-  this.reloadKey.update(x => x + 1);
-}
+  onReordered(): void {
+    this.reloadKey.update(x => x + 1);
+  }
 
   private loadList(id: string) {
     this.loading.set(true);
     this.error.set(null);
 
-     this.listService.getListDetails(id).subscribe({
+    this.listService.getListDetails(id).subscribe({
       next: (details) => {
         this.listDetails.set(details);
         this.loading.set(false);
@@ -144,6 +145,6 @@ export class ListDetailsPage {
         this.loading.set(false);
         this.notificationService.error('Impossible de charger les détails de la liste.')
       }
-     });
+    });
   }
 }

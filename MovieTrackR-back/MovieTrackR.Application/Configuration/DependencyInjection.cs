@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MovieTrackR.Application.behaviors;
+using MovieTrackR.Application.Interfaces;
 using MovieTrackR.Application.Mapping;
 
 namespace MovieTrackR.Application.Configuration;
@@ -24,6 +25,8 @@ public static class DependencyInjection
 
         // Return validation errors as ValidationException 
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+        services.AddScoped<IReviewContentSanitizer, ReviewContentSanitizer>();
 
         return services;
     }

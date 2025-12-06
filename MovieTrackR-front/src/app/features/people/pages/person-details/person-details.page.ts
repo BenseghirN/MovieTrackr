@@ -26,24 +26,24 @@ export class PersonDetailsPage {
   private readonly router = inject(Router);
   private readonly peopleService = inject(PeopleService);
   private readonly notificationService = inject(NotificationService);
-  public readonly imageService = inject(TmdbImageService);
+  readonly imageService = inject(TmdbImageService);
 
-  public readonly personDetails = signal<PersonDetails | null>(null);
-  public readonly movieCredits = signal<MovieCredit[]>([]);
+  readonly personDetails = signal<PersonDetails | null>(null);
+  readonly movieCredits = signal<MovieCredit[]>([]);
 
-  public readonly loading = signal(false);
-  public readonly loadingCredits = signal(false);
-  public readonly error = signal<string | null>(null);
+  readonly loading = signal(false);
+  readonly loadingCredits = signal(false);
+  readonly error = signal<string | null>(null);
 
-  public readonly castCredits = computed(() =>
+  readonly castCredits = computed(() =>
     this.movieCredits().filter(c => c.creditType === 'cast')
   );
 
-  public readonly crewCredits = computed(() =>
+  readonly crewCredits = computed(() =>
     this.movieCredits().filter(c => c.creditType === 'crew')
   );
 
-  public readonly groupedCrewCredits = computed(() => {
+  readonly groupedCrewCredits = computed(() => {
     const crew = this.crewCredits();
     const grouped = new Map<string, {
       credit: MovieCredit;
@@ -67,7 +67,7 @@ export class PersonDetailsPage {
       .sort((a, b) => (b.credit.year || 0) - (a.credit.year || 0));
   });
 
-  public readonly carouselResponsiveOptions = [
+  readonly carouselResponsiveOptions = [
     { breakpoint: '1400px', numVisible: 5, numScroll: 5 },
     { breakpoint: '1200px', numVisible: 4, numScroll: 4 },
     { breakpoint: '992px', numVisible: 3, numScroll: 3 },
@@ -91,30 +91,12 @@ export class PersonDetailsPage {
     });
   
   }
-  
-  private loadPersonDetails(personId: string): void {
-    this.loading.set(true);
-    this.error.set(null);
 
-    this.peopleService.getPersonByRouteId(personId).subscribe({
-      next: (person: PersonDetails) => {
-        this.personDetails.set(person);
-        this.loading.set(false);
-
-        this.loadMovieCredits(person.id);
-      },
-      error: () => {
-        this.loading.set(false);
-        this.error.set('Impossible de charger les détails de la personne.');
-      }
-    });
-  }
-
-  public goBack(): void {
+  goBack(): void {
     this.location.back()
   }
   
-  public onMovieClick(credit: MovieCredit): void {
+  onMovieClick(credit: MovieCredit): void {
     console.log(credit);
     const isValidGuid = credit.movieId && 
       credit.movieId !== '00000000-0000-0000-0000-000000000000';
@@ -126,7 +108,7 @@ export class PersonDetailsPage {
     }
   }
   
-  public formatDate(dateString?: string | null): string {
+  formatDate(dateString?: string | null): string {
     if (!dateString) return '';
     const date = new Date(dateString);
     return date.toLocaleDateString('fr-FR', {
@@ -136,7 +118,7 @@ export class PersonDetailsPage {
     });
   }
 
-  public calculateAge(birthDate?: string | null, deathDate?: string | null): string {
+  calculateAge(birthDate?: string | null, deathDate?: string | null): string {
     if (!birthDate) return '';
 
     const birth = new Date(birthDate);
@@ -146,8 +128,26 @@ export class PersonDetailsPage {
     return deathDate
       ? `(décédé à ${age} ans)`
       : `(${age} ans)`;
+    }
+        
+  private loadPersonDetails(personId: string): void {
+    this.loading.set(true);
+    this.error.set(null);
+    
+    this.peopleService.getPersonByRouteId(personId).subscribe({
+      next: (person: PersonDetails) => {
+        this.personDetails.set(person);
+        this.loading.set(false);
+        
+        this.loadMovieCredits(person.id);
+      },
+      error: () => {
+        this.loading.set(false);
+        this.error.set('Impossible de charger les détails de la personne.');
+      }
+    });
   }
-  
+
   private loadMovieCredits(personId: string): void {
     this.loadingCredits.set(true);
   

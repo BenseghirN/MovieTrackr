@@ -31,12 +31,12 @@ export class ListFormModalComponent implements OnInit {
   private readonly listService = inject(UserListService);
   private readonly notificationService = inject(NotificationService);
 
-  protected existingList?: UserListSummary;
-  protected movieId?: string;
-  protected addMovieAfterCreation = false;
+  existingList?: UserListSummary;
+  movieId?: string;
+  addMovieAfterCreation = false;
 
   private readonly formBuilder = inject(FormBuilder);
-  protected readonly listForm = this.formBuilder.nonNullable.group({
+  readonly listForm = this.formBuilder.nonNullable.group({
     title: this.formBuilder.nonNullable.control<string>('', {
       validators: [Validators.required, Validators.minLength(3), Validators.maxLength(100)]
     }),
@@ -44,24 +44,24 @@ export class ListFormModalComponent implements OnInit {
       validators: [Validators.maxLength(500)]
     })
   });
-  protected readonly title = toSignal(
+  readonly title = toSignal(
     this.listForm.controls.title.valueChanges,
     { initialValue: this.listForm.controls.title.value }
   );
   
-  protected readonly description = toSignal(
+  readonly description = toSignal(
     this.listForm.controls.description.valueChanges,
     { initialValue: this.listForm.controls.description.value }
   );
 
-  protected readonly loading = signal(false);
-  protected readonly validationErrors = signal<Partial<Record<string, string[]>>>({});
+  readonly loading = signal(false);
+  readonly validationErrors = signal<Partial<Record<string, string[]>>>({});
 
-  protected readonly isEditMode = computed(() => !!this.existingList);
-  protected readonly titleLength = computed(() => (this.title() ?? '').length);
-  protected readonly descriptionLength = computed(() => (this.description() ?? '').length);
+  readonly isEditMode = computed(() => !!this.existingList);
+  readonly titleLength = computed(() => (this.title() ?? '').length);
+  readonly descriptionLength = computed(() => (this.description() ?? '').length);
   
-  protected readonly canSubmit = computed(() => {
+  readonly canSubmit = computed(() => {
     const title = (this.title() ?? '').trim();
     return title.length >= 3 && title.length <= 100 && !this.loading();
   });
@@ -79,7 +79,7 @@ export class ListFormModalComponent implements OnInit {
     }
   }
 
-  protected onSubmit(): void {
+  onSubmit(): void {
     if (!this.canSubmit) {
       this.listForm.markAllAsTouched();
       return;
@@ -120,11 +120,11 @@ export class ListFormModalComponent implements OnInit {
 
   }
 
-  protected onCancel(): void {
+  onCancel(): void {
     this.dialogRef.close(false);
   }
 
-  protected isInvalid(fieldName: 'title' | 'description'): boolean {
+  isInvalid(fieldName: 'title' | 'description'): boolean {
     const field = this.listForm.controls[fieldName];
     return field.invalid && field.touched;
   }

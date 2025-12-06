@@ -21,7 +21,7 @@ public static class UserListsHandlers
     {
         CurrentUserDto currentUser = user.ToCurrentUserDto();
         IReadOnlyList<UserListDto> result = await sender.Send(new GetMyListsQuery(currentUser), cancellationToken);
-        return Results.Ok(result);
+        return TypedResults.Ok(result);
     }
 
     /// <summary>Récupère le détail d'une liste appartenant à l'utilisateur courant.</summary>
@@ -36,7 +36,7 @@ public static class UserListsHandlers
     {
         CurrentUserDto currentUser = user.ToCurrentUserDto();
         UserListDetailsDto? userList = await sender.Send(new GetListByIdQuery(currentUser, listId), cancellationToken);
-        return userList is null ? Results.NotFound() : Results.Ok(userList);
+        return userList is null ? TypedResults.NotFound() : TypedResults.Ok(userList);
     }
 
     /// <summary>Crée une nouvelle liste pour l'utilisateur courant.</summary>
@@ -51,7 +51,7 @@ public static class UserListsHandlers
     {
         CurrentUserDto currentUser = user.ToCurrentUserDto();
         Guid id = await sender.Send(new CreateListCommand(currentUser, newList.Title, newList.Description ?? string.Empty), cancellationToken);
-        return Results.Created($"/lists/{id}", new { id });
+        return TypedResults.Created($"/lists/{id}", new { id });
     }
 
     /// <summary>Met à jour le titre/description d’une liste de l'utilisateur courant.</summary>
@@ -67,7 +67,7 @@ public static class UserListsHandlers
     {
         CurrentUserDto currentUser = user.ToCurrentUserDto();
         await sender.Send(new UpdateListCommand(currentUser, listId, updatedList.Title, updatedList.Description ?? string.Empty), cancellationToken);
-        return Results.NoContent();
+        return TypedResults.NoContent();
     }
 
     /// <summary>Supprime une liste de l'utilisateur courant.</summary>
@@ -82,7 +82,7 @@ public static class UserListsHandlers
     {
         CurrentUserDto currentUser = user.ToCurrentUserDto();
         await sender.Send(new DeleteListCommand(currentUser, listId), cancellationToken);
-        return Results.NoContent();
+        return TypedResults.NoContent();
     }
 
     /// <summary>Retire un film d’une liste de l'utilisateur courant.</summary>
@@ -98,7 +98,7 @@ public static class UserListsHandlers
     {
         CurrentUserDto currentUser = user.ToCurrentUserDto();
         await sender.Send(new RemoveMovieFromListCommand(currentUser, listId, movieId), cancellationToken);
-        return Results.NoContent();
+        return TypedResults.NoContent();
     }
 
     /// <summary>Ajoute un film à une liste (import TMDb au besoin).</summary>
@@ -114,7 +114,7 @@ public static class UserListsHandlers
     {
         CurrentUserDto currentUser = user.ToCurrentUserDto();
         await sender.Send(new AddMovieToListCommand(currentUser, listId, movieToAdd.MovieId, movieToAdd.TmdbId, movieToAdd.Position), cancellationToken);
-        return Results.NoContent();
+        return TypedResults.NoContent();
     }
 
     /// <summary>Modifie la position d’un film dans une liste.</summary>
@@ -130,6 +130,6 @@ public static class UserListsHandlers
     {
         CurrentUserDto currentUser = user.ToCurrentUserDto();
         await sender.Send(new ReorderListItemCommand(currentUser, listId, movie.MovieId, movie.NewPosition), cancellationToken);
-        return Results.NoContent();
+        return TypedResults.NoContent();
     }
 }

@@ -28,10 +28,8 @@
     </div>
   </ng-template>
 
-  <div class="review-content">
-    <p>{{ review().content }}</p>
-  </div>
-
+  <div class="review-content" [innerHTML]="review().content"></div>
+  
   <ng-template pTemplate="footer">
     <div class="review-footer">
       <div class="review-actions">

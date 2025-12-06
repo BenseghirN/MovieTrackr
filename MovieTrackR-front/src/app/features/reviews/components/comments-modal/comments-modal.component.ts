@@ -41,41 +41,41 @@ export class CommentsModalComponent implements OnInit {
   private readonly notificationService = inject(NotificationService);
   private readonly authService = inject(AuthService);
 
-  protected reviewId!: string;
-  protected reviewAuthor!: string;
+  reviewId!: string;
+  reviewAuthor!: string;
 
   private readonly formBuilder = inject(FormBuilder);
-  protected readonly commentForm = this.formBuilder.nonNullable.group({
+  readonly commentForm = this.formBuilder.nonNullable.group({
     content: this.formBuilder.nonNullable.control<string>('', {
       validators: [Validators.required, Validators.minLength(5), Validators.maxLength(500)]
     })
   });
-  protected readonly content = toSignal(
+  readonly content = toSignal(
     this.commentForm.controls.content.valueChanges,
     { initialValue: this.commentForm.controls.content.value }
   );
 
-  protected readonly comments = signal<ReviewComment[]>([]);
-  protected readonly totalCount = signal(0);
-  protected readonly currentPage = signal(1);
-  protected readonly pageSize = signal(20);
-  protected readonly loading = signal(false);
-  protected readonly submitting = signal(false);
-  protected readonly editingCommentId = signal<string | null>(null);
+  readonly comments = signal<ReviewComment[]>([]);
+  readonly totalCount = signal(0);
+  readonly currentPage = signal(1);
+  readonly pageSize = signal(20);
+  readonly loading = signal(false);
+  readonly submitting = signal(false);
+  readonly editingCommentId = signal<string | null>(null);
 
-  protected readonly currentUser = this.authService.currentUser;
-  protected readonly isAuthenticated = this.authService.isAuthenticated;
+  readonly currentUser = this.authService.currentUser;
+  readonly isAuthenticated = this.authService.isAuthenticated;
 
-  protected readonly hasComments = computed(() => this.comments().length > 0);
-  protected readonly totalPages = computed(() => Math.ceil(this.totalCount() / this.pageSize() || 1));
-  protected readonly contentLength = computed(() => (this.content() ?? '').length);
+  readonly hasComments = computed(() => this.comments().length > 0);
+  readonly totalPages = computed(() => Math.ceil(this.totalCount() / this.pageSize() || 1));
+  readonly contentLength = computed(() => (this.content() ?? '').length);
   
-  protected readonly canSubmit = computed(() => {
+  readonly canSubmit = computed(() => {
     const content = (this.content() ?? '').trim();
     return content.length >= 5 && content.length <= 500 && !this.submitting();
   });
 
-  protected login(): void {
+  login(): void {
     this.authService.login(window.location.pathname);
   }
 
@@ -108,13 +108,13 @@ export class CommentsModalComponent implements OnInit {
       });
   }
 
-  protected onPageChange(event: PaginatorState): void {
+  onPageChange(event: PaginatorState): void {
     this.currentPage.set((event.page ?? 0) + 1);
     this.pageSize.set(event.rows ?? 20);
     this.loadComments();
   }
 
-  protected onSubmit(): void {
+  onSubmit(): void {
     if (!this.canSubmit()) {
       this.commentForm.markAllAsTouched();
       return;
@@ -150,17 +150,17 @@ export class CommentsModalComponent implements OnInit {
     });
   }
 
-  protected onEdit(comment: ReviewComment): void {
+  onEdit(comment: ReviewComment): void {
     this.editingCommentId.set(comment.id);
     this.commentForm.patchValue({ content: comment.content});
   }
 
-  protected onCancelEdit(): void {
+  onCancelEdit(): void {
     this.editingCommentId.set(null);
     this.commentForm.reset();
   }
 
-  protected onDelete(commentId: string): void {
+  onDelete(commentId: string): void {
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?')) return;
 
     this.commentService.deleteComment(this.reviewId, commentId).subscribe({
@@ -172,11 +172,11 @@ export class CommentsModalComponent implements OnInit {
     });
   }
 
-  protected isMyComment(comment: ReviewComment): boolean {
+  isMyComment(comment: ReviewComment): boolean {
     return this.currentUser()?.id === comment.userId;
   }
 
-  protected onClose(): void {
+  onClose(): void {
     this.dialogRef.close(this.totalCount());
   }
 }

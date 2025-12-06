@@ -37,18 +37,18 @@ export class PeoplePage {
   private readonly peopleService = inject(PeopleService);
   private readonly imageService = inject(TmdbImageService);
 
-  public readonly searchQuery = signal('');
+  readonly searchQuery = signal('');
 
-  public readonly people = signal<SearchPeopleResult[]>([]);
-  public readonly loading = signal(false);
-  public readonly error = signal<string | null>(null);
+  readonly people = signal<SearchPeopleResult[]>([]);
+  readonly loading = signal(false);
+  readonly error = signal<string | null>(null);
 
-  public readonly currentPage = signal(1);
-  public readonly pageSize = signal(20);
-  public readonly totalResults = signal(0);
+  readonly currentPage = signal(1);
+  readonly pageSize = signal(20);
+  readonly totalResults = signal(0);
 
-  public readonly hasResults = computed(() => this.people().length > 0);
-  public readonly showNoResults = computed(() =>
+  readonly hasResults = computed(() => this.people().length > 0);
+  readonly showNoResults = computed(() =>
     !this.loading() && this.searchQuery() && !this.hasResults()
   );
   private readonly queryParamsSignal = toSignal(
@@ -78,7 +78,7 @@ export class PeoplePage {
     });
   }
 
-  public search(): void {
+  search(): void {
     if (!this.searchQuery().trim()) return;
     this.currentPage.set(1);
 
@@ -89,7 +89,7 @@ export class PeoplePage {
     });
   }
 
-  public onPageChange(event: PaginatorState): void {
+  onPageChange(event: PaginatorState): void {
     const newPage = (event.page ?? 0) + 1;
     this.currentPage.set(newPage);
     this.pageSize.set(event.rows ?? 20);
@@ -102,19 +102,19 @@ export class PeoplePage {
     });
   }
 
-  public onSearchKeyUp(event: KeyboardEvent): void {
+  onSearchKeyUp(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
       this.currentPage.set(1);
       this.search();
     }
   }
 
-  public onQueryChange(event: Event): void {
+  onQueryChange(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
     this.searchQuery.set(value);
   }
 
-  public onPersonClick(person: SearchPeopleResult): void {
+  onPersonClick(person: SearchPeopleResult): void {
     const id = person.isLocal && person.id
       ? person.id
       : person.tmdbId?.toString();

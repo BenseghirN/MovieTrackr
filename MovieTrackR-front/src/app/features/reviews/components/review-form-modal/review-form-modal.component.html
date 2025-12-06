@@ -35,27 +35,26 @@
         </span>
       </label>
       
-      <p-floatlabel variant="on">
-        <textarea
-          pTextarea
-          id="review_content"
-          formControlName="content"
-          rows="8"
-          [style]="{ resize: 'vertical', width: '100%' }"
-        ></textarea>
-        <label for="review_content">Partagez votre avis sur ce film...</label>
-      </p-floatlabel>
-
+      <p-editor 
+        id="review_content" 
+        formControlName="content" 
+        [invalid]="isInvalid('content')" 
+        rows="8" 
+        [style]="{ resize: 'vertical', width: '100%' }" 
+        (onTextChange)="onEditorTextChange($event)"
+      />
+      <p-message severity="info">Text length: {{ contentLength() }}</p-message>
+      <p-message severity="info">HTML length: {{ contentHTMLLength() }}</p-message>
       @if (isInvalid('content')) {
         <div class="error-message">
           @if (reviewForm.get('content')?.hasError('required')) {
-            <p>Le contenu est obligatoire</p>
+            <p-message severity="error" variant="simple">Le contenu est obligatoire</p-message>
           }
           @if (reviewForm.get('content')?.hasError('minlength')) {
-            <p>Le contenu doit contenir au moins 10 caractères</p>
+            <p-message severity="error" variant="simple">Le contenu doit contenir au moins 10 caractères</p-message>
           }
           @if (reviewForm.get('content')?.hasError('maxlength')) {
-            <p>Le contenu ne peut pas dépasser 2000 caractères</p>
+            <p-message severity="error" variant="simple">Le contenu ne peut pas dépasser 2000 caractères</p-message>
           }
         </div>
       }
@@ -63,7 +62,7 @@
       @if (validationErrors()['Content']) {
         <div class="error-message">
           @for (error of validationErrors()['Content']; track error) {
-            <p>{{ error }}</p>
+            <p-message severity="error" variant="simple"></p-message>{{ error }}</p-message>
           }
         </div>
       }

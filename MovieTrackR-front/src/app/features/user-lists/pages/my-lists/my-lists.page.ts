@@ -25,12 +25,12 @@ export class MyListsPage implements OnInit {
   private readonly dialogService = inject(DialogService);
   private readonly router = inject(Router);
 
-  protected readonly lists = signal<UserLists>([]);
-  public readonly loading = signal(false);
-  protected readonly error = signal<string | null>(null);
+  readonly lists = signal<UserLists>([]);
+  readonly loading = signal(false);
+  readonly error = signal<string | null>(null);
 
-  public readonly hasLists = computed(() => this.lists().length > 0);
-  public readonly isAuthenticated = this.authService.isAuthenticated;
+  readonly hasLists = computed(() => this.lists().length > 0);
+  readonly isAuthenticated = this.authService.isAuthenticated;
 
   private dialogRef: DynamicDialogRef | null = null;
 
@@ -38,7 +38,7 @@ export class MyListsPage implements OnInit {
     this.loadUserLists();
   }
 
-  public onCreateList(): void {
+  onCreateList(): void {
     this.dialogRef = this.dialogService.open(ListFormModalComponent, {
       header: 'Créer une nouvelle liste',
       width: '600px'
@@ -51,7 +51,7 @@ export class MyListsPage implements OnInit {
     });
   }
 
-  public onEditList(list: UserListSummary, event: Event): void {
+  onEditList(list: UserListSummary, event: Event): void {
     event.stopPropagation();
 
     this.dialogRef = this.dialogService.open(ListFormModalComponent, {
@@ -67,7 +67,7 @@ export class MyListsPage implements OnInit {
     });
   }
 
-  public onDeleteList(list: UserListSummary, event: Event): void {
+  onDeleteList(list: UserListSummary, event: Event): void {
     event.stopPropagation();
 
     if (!confirm(`Êtes-vous sûr de vouloir supprimer la liste "${list.title}" ?`)) return;
@@ -81,15 +81,15 @@ export class MyListsPage implements OnInit {
     });
   }
 
-  public onViewList(list: UserListSummary): void {
+  onViewList(list: UserListSummary): void {
     this.router.navigate(['/my-lists', list.id]);
   }
 
-  public onLogin(): void {
+  onLogin(): void {
     this.authService.login(window.location.pathname);
   }
 
-  public onLoadLists(): void {
+  onLoadLists(): void {
     this.loadUserLists();
   }
 

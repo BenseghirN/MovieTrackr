@@ -22,6 +22,10 @@ public class MappingProfile : Profile
                     .OrderBy(c => CrewHelpers.GetJobPriority(c.Job))
                     .Take(10)));
 
+        CreateMap<User, PublicUserProfileDto>()
+            .ForMember(dest => dest.ReviewsCount, opt => opt.MapFrom(src => src.Reviews.Count))
+            .ForMember(dest => dest.ListsCount, opt => opt.MapFrom(src => src.Lists.Count));
+
         CreateMap<MovieCast, CastMemberDto>()
             .ForMember(d => d.PersonId, opt => opt.MapFrom(s => s.Person.Id))
             .ForMember(d => d.Name, opt => opt.MapFrom(s => s.Person.Name))
@@ -59,6 +63,7 @@ public class MappingProfile : Profile
 
         // Review -> List item
         CreateMap<Review, ReviewListItemDto>()
+            .ForMember(d => d.MovieTitle, opt => opt.MapFrom(s => s.Movie.Title))
             .ForMember(d => d.UserId, opt => opt.MapFrom(s => s.UserId))
             .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.User.Pseudo))
             .ForMember(d => d.Rating, opt => opt.MapFrom(s => s.Rating))

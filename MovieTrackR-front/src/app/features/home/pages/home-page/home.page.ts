@@ -14,18 +14,18 @@ export class HomePageComponent {
   private readonly router = inject(Router);
   private readonly searchQuery = signal('');
 
-  public onQueryChange(event: Event): void {
+  onQueryChange(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
     this.searchQuery.set(value);
   }
 
-  public onSearchKeyup(event: KeyboardEvent): void {
+  onSearchKeyup(event: KeyboardEvent): void {
     if (event.key === 'Enter' &&  this.searchQuery().trim() !== '') {
       this.redirectToSearch();
     }
   }
   
-  public onSearch(): void {
+  onSearch(): void {
     if (this.searchQuery().trim() !== '') {
       this.redirectToSearch();
     }

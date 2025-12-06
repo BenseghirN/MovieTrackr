@@ -12,21 +12,21 @@ import { MovieSummary } from '../../../user-lists/models/user-list.model';
   styleUrl: './movie-card.component.scss',
 })
 export class MovieCardComponent {
-  public movie = input.required<SearchMovieResult | MovieSummary>();
-  public movieClick = output<SearchMovieResult | MovieSummary>();
-  public readonly imageService = inject(TmdbImageService);
+  readonly movie = input.required<SearchMovieResult | MovieSummary>();
+  readonly movieClick = output<SearchMovieResult | MovieSummary>();
+  readonly imageService = inject(TmdbImageService);
 
-  public readonly posterPath = computed(() => {
+  readonly posterPath = computed(() => {
     const m = this.movie();
     return 'posterPath' in m ? m.posterPath : m.posterUrl;
   });
 
-  public readonly rating = computed(() => {
+  readonly rating = computed(() => {
     const m = this.movie();
     return 'voteAverage' in m ? m.voteAverage : null;
   });
 
-  public onClick(): void {
+  onClick(): void {
     this.movieClick.emit(this.movie());
   }
 }

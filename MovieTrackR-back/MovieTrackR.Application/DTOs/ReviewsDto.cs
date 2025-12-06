@@ -14,7 +14,7 @@ public sealed class CreateReviewDto
     /// <summary>Note attribuée au film (0 à 5).</summary>
     public float Rating { get; set; }
     /// <summary>Contenu textuel de la critique (optionnel).</summary>
-    public string? Content { get; set; }
+    public string Content { get; set; } = string.Empty;
 }
 
 /// <summary>Modèle de mise à jour d'une critique (review).</summary>
@@ -34,6 +34,9 @@ public sealed class ReviewListItemDto
 
     /// <summary>Identifiant du film.</summary>
     public Guid MovieId { get; set; }
+
+    /// <summary>Titre du film.</summary>
+    public string MovieTitle { get; set; } = string.Empty;
 
     /// <summary>Identifiant de l'auteur de la critique.</summary>
     public Guid UserId { get; set; }

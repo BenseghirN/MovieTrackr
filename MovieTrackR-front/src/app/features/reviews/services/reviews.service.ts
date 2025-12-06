@@ -1,5 +1,5 @@
 import { inject, Injectable } from "@angular/core";
-import { CreateReviewModel, PagedReviews, ReviewDetails, UpdateReviewModel } from "../models/review.model";
+import { CreateReviewModel, MovieReviewsQueryParams, PagedReviews, ReviewDetails, UpdateReviewModel, UserReviewsQueryParams } from "../models/review.model";
 import { ApiService } from "../../../core/services/api.service";
 import { Observable } from "rxjs";
 import { ConfigService } from "../../../core/services/config.service";
@@ -9,11 +9,16 @@ export class ReviewService {
     private readonly api = inject(ApiService);
     private readonly config = inject(ConfigService);
 
-    getMovieReviews(movieId: string, page = 1, pageSize = 10): Observable<PagedReviews> {
-        const queryParams = {
-            page,
-            pageSize
+    getMovieReviews(movieId: string, params: MovieReviewsQueryParams): Observable<PagedReviews> {
+        const queryParams: Record<string, string | number> = {
+            Page: params.page ?? 1,
+            PageSize: params.pageSize ?? 20
         };
+
+        if (params.sort) queryParams['Sort'] = params.sort;
+        
+        if (params.ratingFilter !== null && params.ratingFilter !== undefined) 
+            queryParams['RatinFilter'] = params.ratingFilter;
 
         return this.api.get<PagedReviews>(
             `${this.config.apiUrl}/reviews/by-movie/${movieId}`,
@@ -28,8 +33,17 @@ export class ReviewService {
         );
     }
 
-    getUserReviews(userId: string, page = 1, pageSize = 10): Observable<PagedReviews> {
-        const queryParams = { page, pageSize };
+    getUserReviews(userId: string, params: UserReviewsQueryParams): Observable<PagedReviews> {
+        const queryParams: Record<string, string | number> = {
+            Page: params.page ?? 1,
+            PageSize: params.pageSize ?? 20
+        };
+
+        if (params.sort) queryParams['Sort'] = params.sort;
+
+        if (params.ratingFilter !== null && params.ratingFilter !== undefined) 
+            queryParams['RatingFilter'] = params.ratingFilter;
+
         return this.api.get<PagedReviews>(
             `${this.config.apiUrl}/reviews/by-user/${userId}`,
             { params: queryParams, withCredentials: true }

@@ -45,3 +45,29 @@ export interface UpdateReviewModel {
   rating: number;
   content: string;
 }
+
+export type MovieReviewSortOption =
+  | 'Newest' 
+  | 'Oldest' 
+  | 'HighestRating' 
+  | 'LowestRating' 
+  | 'MostLiked' 
+  | 'MostCommented';
+export interface MovieReviewsQueryParams {
+  page?: number;
+  pageSize?: number;
+  sort?: MovieReviewSortOption;
+  ratingFilter?: number | null;
+}
+
+export type UserReviewSortOption =
+  | 'Newest'
+  | 'Oldest'
+  | 'HighestRating'
+  | 'LowestRating';
+export interface UserReviewsQueryParams {
+  page?: number;
+  pageSize?: number;
+  sort?: UserReviewSortOption;
+  ratingFilter?: number | null;
+}

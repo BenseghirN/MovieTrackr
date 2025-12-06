@@ -17,7 +17,8 @@ public static class UsersEndpoints
             .WithApiVersionSet(vset)
             .MapToApiVersion(1, 0)
             .WithTags("Users")
-            .RequireAuthorization(AuthorizationConfiguration.AdminPolicy);
+            .RequireAuthorization(AuthorizationConfiguration.AdminPolicy)
+            .WithOpenApi();
 
         group.MapGet("/", UsersHandlers.GetAll)
             .WithName("Users_GetAll")
@@ -25,8 +26,7 @@ public static class UsersEndpoints
             .WithDescription("Réservé aux administrateurs.")
             .Produces<List<UserDto>>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status401Unauthorized)
-            .Produces(StatusCodes.Status403Forbidden)
-            .WithOpenApi();
+            .Produces(StatusCodes.Status403Forbidden);
 
         group.MapGet("/{id:guid}", UsersHandlers.GetById)
             .WithName("Users_GetById")
@@ -35,8 +35,7 @@ public static class UsersEndpoints
             .Produces<UserDto>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status401Unauthorized)
-            .Produces(StatusCodes.Status403Forbidden)
-            .WithOpenApi();
+            .Produces(StatusCodes.Status403Forbidden);
 
         group.MapPut("/{id:guid}/promote", UsersHandlers.PromoteToAdmin)
             .WithName("Users_PromoteToAdmin")
@@ -45,8 +44,7 @@ public static class UsersEndpoints
             .Produces<UserDto>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status401Unauthorized)
-            .Produces(StatusCodes.Status403Forbidden)
-            .WithOpenApi();
+            .Produces(StatusCodes.Status403Forbidden);
 
         group.MapPut("/{id:guid}/demote", UsersHandlers.DemoteToUser)
             .WithName("Users_DemoteToUser")
@@ -55,8 +53,7 @@ public static class UsersEndpoints
             .Produces<UserDto>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status401Unauthorized)
-            .Produces(StatusCodes.Status403Forbidden)
-            .WithOpenApi();
+            .Produces(StatusCodes.Status403Forbidden);
 
         return app;
     }

@@ -14,6 +14,6 @@ public static class GenresHandlers
     public static async Task<IResult> GetAll(IMediator mediator, CancellationToken cancellationToken)
     {
         IReadOnlyList<GenreDto> genres = await mediator.Send(new GetAllGenresQuery(), cancellationToken);
-        return Results.Ok(genres);
+        return TypedResults.Ok(genres);
     }
 }

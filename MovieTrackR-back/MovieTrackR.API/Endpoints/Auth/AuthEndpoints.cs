@@ -16,7 +16,8 @@ public static class AuthEndpoints
         RouteGroupBuilder group = app.MapGroup("/api/v{version:apiVersion}")
             .WithApiVersionSet(vset)
             .MapToApiVersion(1, 0)
-            .WithTags("Auth");
+            .WithTags("Auth")
+            .WithOpenApi();
 
         group.MapGet("/connect", AuthHandlers.Connect)
         .AllowAnonymous()
@@ -38,8 +39,7 @@ public static class AuthEndpoints
         .WithSummary("Retourne les claims de l’utilisateur authentifié.")
         .WithDescription("Nécessite une session valide. Retourne 200 avec la liste des claims ; 401 si non authentifié.")
         .Produces(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status401Unauthorized)
-        .WithOpenApi();
+        .Produces(StatusCodes.Status401Unauthorized);
 
         group.MapGet("/user-info", AuthHandlers.GetUserInfo)
         .RequireAuthorization()
@@ -48,8 +48,7 @@ public static class AuthEndpoints
         .WithDescription("Renvoie un objet UserDto. 404 si l’utilisateur n’existe pas côté application.")
         .Produces<UserDto>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status401Unauthorized)
-        .Produces(StatusCodes.Status404NotFound)
-        .WithOpenApi();
+        .Produces(StatusCodes.Status404NotFound);
 
         group.MapGet("/logout", AuthHandlers.Logout)
         .AllowAnonymous()

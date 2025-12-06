@@ -19,17 +19,17 @@ import { ListFormModalComponent } from '../list-form-modal/list-form-modal.compo
   styleUrl: './add-to-list-popover.component.scss',
 })
 export class AddToListPopoverComponent implements OnInit {
-  movieId = input.required<string>();
-  tmdbId = input<number | null>();
+  readonly movieId = input.required<string>();
+  readonly tmdbId = input<number | null>();
 
   private readonly listService = inject(UserListService);
   private readonly notificationService = inject(NotificationService);
   private readonly authService = inject(AuthService);
   private readonly dialogService = inject(DialogService);
 
-  protected readonly lists = signal<UserLists>([]);
-  protected readonly loading = signal(false);
-  protected readonly isAuthenticated = this.authService.isAuthenticated(); 
+  readonly lists = signal<UserLists>([]);
+  readonly loading = signal(false);
+  readonly isAuthenticated = this.authService.isAuthenticated(); 
 
   private dialogRef: DynamicDialogRef<ListFormModalComponent> | null = null;
   
@@ -42,7 +42,7 @@ export class AddToListPopoverComponent implements OnInit {
     this.loadUserLists();
   }
 
-  protected toggle(event: Event, popover: Popover): void {
+  toggle(event: Event, popover: Popover): void {
     if (!this.isAuthenticated) {
       this.notificationService.warning('Vous devez être connecté pour ajouter des films à vos listes');
       return;      
@@ -50,7 +50,7 @@ export class AddToListPopoverComponent implements OnInit {
     popover.toggle(event);
   }
 
-  protected addToList(list: UserListSummary, popover: Popover): void {
+  addToList(list: UserListSummary, popover: Popover): void {
     this.listService.addMovieToList(list.id, 
       { 
         movieId: this.movieId()
@@ -63,7 +63,7 @@ export class AddToListPopoverComponent implements OnInit {
       });
   }
 
-  protected createNewList(popover: Popover): void {
+  createNewList(popover: Popover): void {
     popover.hide();
     
     this.dialogRef = this.dialogService.open(ListFormModalComponent, {

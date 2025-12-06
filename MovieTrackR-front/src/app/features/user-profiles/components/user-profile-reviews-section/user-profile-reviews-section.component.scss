@@ -1,0 +1,40 @@
+.user-reviews-section {
+  margin-top: 2rem;
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+
+    h2 {
+      font-size: 1.4rem;
+      margin: 0;
+    }
+
+    .section-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+  }
+
+  .section-loading {
+    display: flex;
+    justify-content: center;
+    padding: 2rem 0;
+  }
+
+  .reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .error {
+    color: #f44336;
+    margin-bottom: 1rem;
+  }
+}

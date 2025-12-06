@@ -11,6 +11,7 @@ import { RatingModule } from 'primeng/rating';
 import { MessageModule } from 'primeng/message';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { EditorModule, EditorTextChangeEvent } from 'primeng/editor';
 
 interface ReviewFormDialogData {
   movieId: string;
@@ -20,7 +21,7 @@ interface ReviewFormDialogData {
 @Component({
   selector: 'app-review-form-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ButtonModule, TextareaModule, FloatLabelModule, RatingModule, MessageModule],
+  imports: [CommonModule, ReactiveFormsModule, ButtonModule, TextareaModule, FloatLabelModule, RatingModule, MessageModule, EditorModule],
   templateUrl: './review-form-modal.component.html',
   styleUrl: './review-form-modal.component.scss',
 })
@@ -30,11 +31,11 @@ export class ReviewFormModalComponent implements OnInit {
   private readonly reviewService = inject(ReviewService);
   private readonly notificationService = inject(NotificationService);
   
-  protected movieId!: string;
-  protected existingReview?: ReviewListItem;
+  movieId!: string;
+  existingReview?: ReviewListItem;
   
   private readonly formBuilder = inject(FormBuilder);
-  protected readonly reviewForm = this.formBuilder.nonNullable.group({
+  readonly reviewForm = this.formBuilder.nonNullable.group({
     rating: this.formBuilder.nonNullable.control<number>(0, {
       validators: [Validators.required, Validators.min(1), Validators.max(5)],
     }),
@@ -43,21 +44,22 @@ export class ReviewFormModalComponent implements OnInit {
     }),
   });
   
-  protected readonly loading = signal(false);
-  protected readonly validationErrors = signal<Partial<Record<string, string[]>>>({});
-  protected readonly rating = toSignal(
+  readonly loading = signal(false);
+  readonly validationErrors = signal<Partial<Record<string, string[]>>>({});
+  readonly rating = toSignal(
     this.reviewForm.controls.rating.valueChanges,
     { initialValue: this.reviewForm.controls.rating.value }
   );
 
-  protected readonly content = toSignal(
+  readonly content = toSignal(
     this.reviewForm.controls.content.valueChanges,
     { initialValue: this.reviewForm.controls.content.value }
   );
 
-  protected readonly isEditMode = computed(() => !!this.existingReview);
-  protected readonly contentLength = computed(() => (this.content() ?? '').length);
-  protected readonly canSubmit = computed(() => {
+  readonly isEditMode = computed(() => !!this.existingReview);
+  readonly contentLength = signal(0);
+  readonly contentHTMLLength = signal(0);
+  readonly canSubmit = computed(() => {
     const r = this.rating() ?? 0;
     const c = (this.content() ?? '').trim();
     return r > 0 && c.length >= 10 && !this.loading();
@@ -78,6 +80,11 @@ export class ReviewFormModalComponent implements OnInit {
         content: this.existingReview.content,
       });
     }
+  }
+
+  onEditorTextChange(event: EditorTextChangeEvent): void {
+    this.contentLength.set(event.textValue.length);
+    this.contentHTMLLength.set(event.htmlValue!.length);
   }
 
   onSubmit(): void {
@@ -112,6 +119,11 @@ export class ReviewFormModalComponent implements OnInit {
   onCancel(): void {
     this.dialogRef.close(false);
   }
+
+  isInvalid(fieldName: 'rating' | 'content'): boolean {
+    const field = this.reviewForm.controls[fieldName];
+    return field.invalid && field.touched;
+  }
   
   private handleError(err: any): void {
     this.loading.set(false);
@@ -126,10 +138,5 @@ export class ReviewFormModalComponent implements OnInit {
       );
       return;
     }
-  }
-
-  protected isInvalid(fieldName: 'rating' | 'content'): boolean {
-    const field = this.reviewForm.controls[fieldName];
-    return field.invalid && field.touched;
   }
 }

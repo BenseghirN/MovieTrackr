@@ -8,7 +8,7 @@ import { ReviewLikesService } from '../../services/review-likes.service';
 import { AuthService } from '../../../../core/auth/auth-service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { ReviewListItem } from '../../models/review.model';
+import { MovieReviewsQueryParams, ReviewListItem, UserReviewsQueryParams } from '../../models/review.model';
 import { ReviewCardComponent } from '../review-card/review-card.component';
 import { ReviewFormModalComponent } from '../review-form-modal/review-form-modal.component';
 import { CommentsModalComponent } from '../comments-modal/comments-modal.component';
@@ -21,8 +21,8 @@ import { CommentsModalComponent } from '../comments-modal/comments-modal.compone
   styleUrl: './movie-reviews.components.scss',
 })
 export class MovieReviewsComponents {
-  movieId = input.required<string>();
-  averageRating = input<number | null>();
+  readonly movieId = input.required<string>();
+  readonly averageRating = input<number | null>();
 
   private readonly reviewService = inject(ReviewService);
   private readonly likesService = inject(ReviewLikesService);
@@ -31,22 +31,18 @@ export class MovieReviewsComponents {
   private readonly dialogService = inject(DialogService);
   private reviewDialogRef: DynamicDialogRef<ReviewFormModalComponent> | null = null;
   private commentsDialogRef: DynamicDialogRef<CommentsModalComponent> | null = null;
-  protected readonly isAuthenticated = this.authService.isAuthenticated;
+  readonly isAuthenticated = this.authService.isAuthenticated;
 
-  protected readonly reviews = signal<ReviewListItem[]>([]);
-  protected readonly totalCount = signal(0);
-  protected readonly currentPage = signal(1);
-  protected readonly reloadKey = signal(0);
-  protected readonly pageSize = signal(10);
-  protected readonly loading = signal(false);
-  protected readonly error = signal<string | null>(null);
+  readonly reviews = signal<ReviewListItem[]>([]);
+  readonly totalCount = signal(0);
+  readonly currentPage = signal(1);
+  readonly reloadKey = signal(0);
+  readonly pageSize = signal(10);
+  readonly loading = signal(false);
+  readonly error = signal<string | null>(null);
 
-  protected readonly hasReviews = computed(() => this.reviews().length > 0);
-  protected readonly totalPages = computed(() => Math.ceil(this.totalCount() / this.pageSize() || 1));
-
-  protected login(): void {
-    this.authService.login(window.location.pathname);
-  }
+  readonly hasReviews = computed(() => this.reviews().length > 0);
+  readonly totalPages = computed(() => Math.ceil(this.totalCount() / this.pageSize() || 1));
 
   constructor() {
     effect(() => {
@@ -54,47 +50,28 @@ export class MovieReviewsComponents {
       const page = this.currentPage();
       const size = this.pageSize();
       const reload = this.reloadKey();
+      const params: MovieReviewsQueryParams = {
+          page: this.currentPage(),
+          pageSize: this.pageSize(),
+          // sort: this.sort(),
+          // ratingFilter: this.ratingFilter()
+        };
       if (!id) return;
 
-      this.loadReviews(id, page, size);
+      this.loadReviews(id, params);
     })
   }
 
-  private loadReviews(movieId: string, page: number, pageSize: number): void {
-    this.loading.set(true);
-    this.error.set(null);
-
-    this.reviewService.getMovieReviews(movieId, page, pageSize).subscribe({
-      next: (result) => {
-        this.reviews.set(result.items);
-        this.totalCount.set(result.totalCount);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.loading.set(false);
-        this.reviews.set([]);
-        this.error.set('Erreur lors de la récupération des critiques');
-      }
-    });
+  login(): void {
+    this.authService.login(window.location.pathname);
   }
 
-  protected onPageChange(event: PaginatorState): void {
+  onPageChange(event: PaginatorState): void {
     this.currentPage.set((event.page ?? 0) + 1);
     this.pageSize.set(event.rows ?? 10);
   }
 
-  private ensureAuthenticated(forAction: string): boolean {
-    if (!this.isAuthenticated()) {
-      this.notificationService.warning(
-        `Vous devez être connecté pour ${forAction}`
-      );
-      this.authService.login(window.location.pathname);
-      return false;
-    }
-    return true;
-  }
-
-  protected onLike(review: ReviewListItem): void {
+  onLike(review: ReviewListItem): void {
     if (!this.ensureAuthenticated('liker une critique')) return;
     
     this.updateReviewLikes(review.id);
@@ -111,7 +88,7 @@ export class MovieReviewsComponents {
     });
   }
 
-  protected onWriteReview(): void {
+  onWriteReview(): void {
     if (!this.ensureAuthenticated('rédiger une critique')) return;
 
     this.reviewDialogRef = this.dialogService.open(ReviewFormModalComponent, {
@@ -131,7 +108,7 @@ export class MovieReviewsComponents {
     }
   }
 
-  protected onEdit(review: ReviewListItem): void {
+  onEdit(review: ReviewListItem): void {
     if (!this.ensureAuthenticated('mettre à jour une critique')) return;
 
     this.reviewDialogRef = this.dialogService.open(ReviewFormModalComponent, {
@@ -154,7 +131,7 @@ export class MovieReviewsComponents {
     }
   }
 
-  protected onDelete(reviewId: string): void {
+  onDelete(reviewId: string): void {
     if (!this.ensureAuthenticated('supprimer une critique')) return;
 
     if (!confirm('Êtes-vous certain de vouloir supprimer cette critique ?')) return;
@@ -170,7 +147,7 @@ export class MovieReviewsComponents {
     });
   }
 
-  protected onComments(review: ReviewListItem): void {
+  onComments(review: ReviewListItem): void {
     this.commentsDialogRef = this.dialogService.open(CommentsModalComponent, {
       width: '800px',
       data: { 
@@ -193,6 +170,36 @@ export class MovieReviewsComponents {
         }
       });
     }
+  }
+
+  private ensureAuthenticated(forAction: string): boolean {
+    if (!this.isAuthenticated()) {
+      this.notificationService.warning(
+        `Vous devez être connecté pour ${forAction}`
+      );
+      this.authService.login(window.location.pathname);
+      return false;
+    }
+    return true;
+  }
+
+  private loadReviews(movieId: string, params: MovieReviewsQueryParams): void {
+    this.loading.set(true);
+    this.error.set(null);
+
+    this.reviewService.getMovieReviews(movieId, params).subscribe({
+      next: (result) => {
+        this.reviews.set(result.items);
+        this.totalCount.set(result.totalCount);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.loading.set(false);
+        this.reviews.set([]);
+        this.error.set('Erreur lors de la récupération des critiques');
+        this.notificationService.error("Impossible de charger les critiques du film.");
+      }
+    });
   }
 
   private updateReviewLikes(reviewId: string): void {
