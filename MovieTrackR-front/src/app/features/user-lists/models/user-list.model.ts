@@ -8,6 +8,7 @@ export interface UserListSummary {
   isSystemList: boolean;
   createdAt: string;
   moviesCount: number;
+  userId: string;
 }
 
 export interface CreateListModel {

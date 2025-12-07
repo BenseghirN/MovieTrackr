@@ -56,6 +56,7 @@ public static class ReviewsHandlers
     /// </summary>
     public static async Task<Ok<PagedResult<ReviewListItemDto>>> GetByUser(
             Guid userId,
+            ClaimsPrincipal user,
             int page,
             int pageSize,
             UserReviewSortOption sort,
@@ -63,7 +64,10 @@ public static class ReviewsHandlers
             ISender sender,
             CancellationToken cancellationToken)
     {
-        PagedResult<ReviewListItemDto> result = await sender.Send(new GetReviewsByUserQuery(userId, page, pageSize, sort, ratingFilter), cancellationToken);
+        CurrentUserDto? currentUser = user.Identity?.IsAuthenticated == true
+            ? user.ToCurrentUserDto()
+            : null;
+        PagedResult<ReviewListItemDto> result = await sender.Send(new GetReviewsByUserQuery(userId, currentUser, page, pageSize, sort, ratingFilter), cancellationToken);
         return TypedResults.Ok(result);
     }
 

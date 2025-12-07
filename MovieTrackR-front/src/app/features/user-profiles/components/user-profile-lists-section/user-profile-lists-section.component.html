@@ -1,0 +1,26 @@
+<section class="user-lists-section">
+  <div class="section-header">
+    <h2>Listes utilisateur</h2>
+  </div>
+    @if (loading()) {
+    <div class="section-loading">
+      <p-progressSpinner />
+    </div>
+  } @else {
+    @if (error()) {
+      <p class="error">{{ error() }}</p>
+    }
+
+    @if (!error() && userLists().length === 0) {
+      <p>Aucune listes pour le moment.</p>
+    } @else if (!error() && userLists().length > 0) {
+      <div class="lists-grid">
+        @for (list of userLists(); track list.id) {
+          <app-user-list-card
+            [list]="list"
+          />
+        }
+      </div>
+    }
+  }
+</section>

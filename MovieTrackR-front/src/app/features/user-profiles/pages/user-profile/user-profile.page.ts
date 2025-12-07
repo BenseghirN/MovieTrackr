@@ -10,11 +10,12 @@ import { map } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { UserProfileReviewsSectionComponent } from '../../components/user-profile-reviews-section/user-profile-reviews-section.component';
 import { TabsModule } from 'primeng/tabs';
+import { UserProfileListsSectionComponent } from '../../components/user-profile-lists-section/user-profile-lists-section.component';
 
 @Component({
   selector: 'app-user-profile-page',
   standalone: true,
-  imports: [CommonModule, ProgressSpinnerModule, ButtonModule, TabsModule, UserProfileReviewsSectionComponent],
+  imports: [CommonModule, ProgressSpinnerModule, ButtonModule, TabsModule, UserProfileReviewsSectionComponent, UserProfileListsSectionComponent],
   templateUrl: './user-profile.page.html',
   styleUrl: './user-profile.page.scss',
 })

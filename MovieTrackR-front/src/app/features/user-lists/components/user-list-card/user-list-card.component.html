@@ -1,32 +1,35 @@
 <p-card >
 <ng-template pTemplate="header">
     <div class="card-header">
-    <div class="list-icon">
-        <i class="pi pi-list"></i>
-    </div>
-    <div class="card-actions">
-        <p-button
-        icon="pi pi-pencil"
-        [text]="true"
-        [rounded]="true"
-        severity="secondary"
-        size="small"
-        (onClick)="onEditList(list(), $event)"
-        pTooltip="Modifier"
-        />
-        @if (!list().isSystemList) {
-        <p-confirmdialog />
-        <p-button
-            icon="pi pi-trash"
-            [text]="true"
-            [rounded]="true"
-            severity="danger"
-            size="small"
-            (onClick)="onDeleteList(list(), $event)"
-            pTooltip="Supprimer"
-        />
-        }                                    
-    </div>
+        <div class="list-icon">
+            <i class="pi pi-list"></i>
+        </div>
+        @if (isMyList()) {
+            <div class="card-actions">
+
+                <p-button
+                icon="pi pi-pencil"
+                [text]="true"
+                [rounded]="true"
+                severity="secondary"
+                size="small"
+                (onClick)="onEditList(list(), $event)"
+                pTooltip="Modifier"
+                />
+                @if (!list().isSystemList) {
+                <p-confirmdialog />
+                <p-button
+                    icon="pi pi-trash"
+                    [text]="true"
+                    [rounded]="true"
+                    severity="danger"
+                    size="small"
+                    (onClick)="onDeleteList(list(), $event)"
+                    pTooltip="Supprimer"
+                />
+                }                                    
+            </div>
+        }
     </div>
 </ng-template>
 

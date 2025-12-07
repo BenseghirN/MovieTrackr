@@ -21,7 +21,6 @@ import { UserListCardComponent } from '../../components/user-list-card/user-list
 })
 export class MyListsPage implements OnInit {
   private readonly listService = inject(UserListService);
-  private readonly notificationService = inject(NotificationService);
   private readonly authService = inject(AuthService);
   private readonly dialogService = inject(DialogService);
   private readonly router = inject(Router);
@@ -64,19 +63,14 @@ export class MyListsPage implements OnInit {
     this.loadUserLists();
   }
 
-  deleteList(list: UserListSummary): void {
+  onDeletedList(list: UserListSummary): void {
     this.lists.update((l) => l.filter(
       (x) => x.id !== list.id
     ));
   }
 
-  editList(list: UserListSummary): void {
-    this.lists.update((l) => l.map(
-      (x) => 
-        x.id === list.id 
-          ? { ...x, ...list } 
-          : x
-    ));
+  onEditedList(): void {
+    this.loadUserLists();
   }
 
   private loadUserLists(): void {

@@ -6,15 +6,15 @@ namespace MovieTrackR.API.Endpoints.Users;
 
 public static class UserProfilesHandlers
 {
-    // public static async Task<IResult> GetAll(IMediator mediator, CancellationToken cancellationToken)
-    // {
-    //     List<UserDto> list = await mediator.Send(new GetAllUsersQuery(), cancellationToken);
-    //     return TypedResults.Ok(list);
-    // }
-
     public static async Task<IResult> GetById(Guid id, IMediator mediator, CancellationToken cancellationToken)
     {
         PublicUserProfileDto? dto = await mediator.Send(new GetPublicUserProfileQuery(id), cancellationToken);
         return dto is null ? TypedResults.NotFound() : TypedResults.Ok(dto);
+    }
+
+    public static async Task<IResult> GetListsByUser(Guid id, ISender sender, CancellationToken cancellationToken)
+    {
+        IReadOnlyList<UserListDto> result = await sender.Send(new GetListsByUserIdQuery(id), cancellationToken);
+        return TypedResults.Ok(result);
     }
 }

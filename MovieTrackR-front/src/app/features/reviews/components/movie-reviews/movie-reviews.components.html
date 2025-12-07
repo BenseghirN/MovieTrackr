@@ -32,10 +32,8 @@
       @for (review of reviews(); track review.id) {
         <app-review-card
           [review]="review"
-          (like)="onLike(review)"
-          (edit)="onEdit(review)"
-          (delete)="onDelete(review.id)"
-          (comments)="onComments(review)"
+          (edit)="onEdit()"
+          (delete)="onDelete()"
         />
       }
     </div>

@@ -2,6 +2,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using MovieTrackR.Application.Common.Commands;
 using MovieTrackR.Application.DTOs;
 using MovieTrackR.Application.Interfaces;
 using MovieTrackR.Domain.Entities;
@@ -10,18 +11,30 @@ using MovieTrackR.Domain.Enums;
 namespace MovieTrackR.Application.Reviews.Queries;
 
 public sealed record GetReviewsByUserQuery(
-    Guid UserId, int Page = 1,
+    Guid UserId,
+    CurrentUserDto? CurrentUser,
+    int Page = 1,
     int PageSize = 20,
     UserReviewSortOption Sort = UserReviewSortOption.Newest,
     int? RatingFilter = null) : IRequest<PagedResult<ReviewListItemDto>>;
 
-public sealed class GetReviewsByUserHandler(IMovieTrackRDbContext dbContext, IMapper mapper)
+public sealed class GetReviewsByUserHandler(IMovieTrackRDbContext dbContext, IMapper mapper, ISender sender)
     : IRequestHandler<GetReviewsByUserQuery, PagedResult<ReviewListItemDto>>
 {
     public async Task<PagedResult<ReviewListItemDto>> Handle(GetReviewsByUserQuery query, CancellationToken cancellationToken)
     {
+        Guid? userId = null;
+        if (query.CurrentUser is not null)
+        {
+            userId = await sender.Send(new EnsureUserExistsCommand(query.CurrentUser), cancellationToken);
+        }
+
         IQueryable<Review> baseSql = dbContext.Reviews
             .AsNoTracking()
+            .Include(r => r.User)
+            .Include(r => r.Likes)
+            .Include(r => r.Comments)
+            .Include(r => r.Movie)
             .Where(r => r.UserId == query.UserId);
 
         if (query.RatingFilter is not null)
@@ -46,11 +59,16 @@ public sealed class GetReviewsByUserHandler(IMovieTrackRDbContext dbContext, IMa
 
         int total = await baseSql.CountAsync(cancellationToken);
 
-        List<ReviewListItemDto> items = await baseSql
-            .ProjectTo<ReviewListItemDto>(mapper.ConfigurationProvider)
+        List<Review> reviews = await baseSql
+            .OrderByDescending(r => r.CreatedAt)
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)
             .ToListAsync(cancellationToken);
+
+        List<ReviewListItemDto> items = mapper.Map<List<Review>, List<ReviewListItemDto>>(
+            reviews,
+            opts => opts.Items["CurrentUserId"] = userId
+        );
 
         return new PagedResult<ReviewListItemDto>(items, total, query.Page, query.PageSize);
     }

@@ -44,7 +44,11 @@
     } @else if (!error() && reviews().length > 0) {
       <div class="reviews-list">
         @for (review of reviews(); track review.id) {
-          <app-review-card [review]="review"></app-review-card>
+          <app-review-card 
+            [review]="review"
+            (edit)="onEdit()"
+            (delete)="onDelete()"
+          />
         }
       </div>
 

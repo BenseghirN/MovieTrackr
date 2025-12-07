@@ -21,14 +21,9 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 export class UserProfileReviewsSectionComponent {
   readonly userId = input.required<string | undefined>();
 
-  private readonly authService = inject(AuthService);
   private readonly reviewService = inject(ReviewService);
   private readonly notificationService = inject(NotificationService);
-  // private readonly likesService = inject(ReviewLikesService);
-  // private readonly dialogService = inject(DialogService);
-  // private commentsDialogRef: DynamicDialogRef<CommentsModalComponent> | null = null;
 
-  readonly isAuthenticated = this.authService.isAuthenticated;
   
   readonly reviews = signal<ReviewListItem[]>([]);
   readonly totalCount = signal(0);
@@ -92,38 +87,16 @@ export class UserProfileReviewsSectionComponent {
     this.ratingFilter.set(rating);
   }
 
-  private ensureAuthenticated(forAction: string): boolean {
-    if (!this.isAuthenticated()) {
-      this.notificationService.warning(
-        `Vous devez être connecté pour ${forAction}`
-      );
-      this.authService.login(window.location.pathname);
-      return false;
-    }
-    return true;
+  onEdit(): void {
+    this.currentPage.set(1);
+    this.reloadKey.update(x => x + 1);
   }
 
-  // onLike(review: ReviewListItem): void {
-  //   if (!this.ensureAuthenticated('liker une critique')) return;
-    
-  //   this.updateReviewLikes(review.id);
+  onDelete(): void {
+    this.currentPage.set(1);
+  }  
 
-  //   const action = review.hasLiked
-  //   ? this.likesService.unlikeReview(review.id)
-  //   : this.likesService.likeReview(review.id);
-    
-  //   action.subscribe({
-  //     error: () => {
-  //       this.updateReviewLikes(review.id);
-  //       this.notificationService.error('Impossible de mettre à jour le like');
-  //     }
-  //   });
-  // }
-
-  // login(): void {
-  //   this.authService.login(window.location.pathname);
-  // }
-  private loadReviews(userId: string, params: UserReviewsQueryParams) {
+  private loadReviews(userId: string, params: UserReviewsQueryParams): void {
     this.loading.set(true);
     this.error.set(null);
 

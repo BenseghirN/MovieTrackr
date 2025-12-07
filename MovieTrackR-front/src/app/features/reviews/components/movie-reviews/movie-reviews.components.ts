@@ -1,17 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, Input, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ReviewService } from '../../services/reviews.service';
-import { ReviewLikesService } from '../../services/review-likes.service';
 import { AuthService } from '../../../../core/auth/auth-service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { MovieReviewSortOption, MovieReviewsQueryParams, ReviewListItem, UserReviewSortOption, UserReviewsQueryParams } from '../../models/review.model';
+import { MovieReviewSortOption, MovieReviewsQueryParams, ReviewListItem } from '../../models/review.model';
 import { ReviewCardComponent } from '../review-card/review-card.component';
 import { ReviewFormModalComponent } from '../review-form-modal/review-form-modal.component';
-import { CommentsModalComponent } from '../comments-modal/comments-modal.component';
 
 @Component({
   selector: 'app-movie-reviews',
@@ -25,12 +23,10 @@ export class MovieReviewsComponents {
   readonly averageRating = input<number | null>();
 
   private readonly reviewService = inject(ReviewService);
-  private readonly likesService = inject(ReviewLikesService);
   private readonly authService = inject(AuthService);
   private readonly notificationService = inject(NotificationService);
   private readonly dialogService = inject(DialogService);
-  private reviewDialogRef: DynamicDialogRef<ReviewFormModalComponent> | null = null;
-  private commentsDialogRef: DynamicDialogRef<CommentsModalComponent> | null = null;
+  private DialogRef: DynamicDialogRef<ReviewFormModalComponent> | null = null;
   readonly isAuthenticated = this.authService.isAuthenticated;
 
   readonly reviews = signal<ReviewListItem[]>([]);
@@ -91,34 +87,17 @@ export class MovieReviewsComponents {
     this.pageSize.set(event.rows ?? 10);
   }
 
-  onLike(review: ReviewListItem): void {
-    if (!this.ensureAuthenticated('liker une critique')) return;
-    
-    this.updateReviewLikes(review.id);
-
-    const action = review.hasLiked
-    ? this.likesService.unlikeReview(review.id)
-    : this.likesService.likeReview(review.id);
-    
-    action.subscribe({
-      error: () => {
-        this.updateReviewLikes(review.id);
-        this.notificationService.error('Impossible de mettre à jour le like');
-      }
-    });
-  }
-
   onWriteReview(): void {
     if (!this.ensureAuthenticated('rédiger une critique')) return;
 
-    this.reviewDialogRef = this.dialogService.open(ReviewFormModalComponent, {
+    this.DialogRef = this.dialogService.open(ReviewFormModalComponent, {
       header: 'Rédiger une critique',
       width: '800px',
       data: { movieId: this.movieId()}
     });
 
-    if (this.reviewDialogRef) {
-      this.reviewDialogRef.onClose.subscribe((success: boolean) => {
+    if (this.DialogRef) {
+      this.DialogRef.onClose.subscribe((success: boolean) => {
         if (success) {
           this.notificationService.success('Critique publiée avec succès !');
           this.currentPage.set(1);
@@ -128,68 +107,13 @@ export class MovieReviewsComponents {
     }
   }
 
-  onEdit(review: ReviewListItem): void {
-    if (!this.ensureAuthenticated('mettre à jour une critique')) return;
-
-    this.reviewDialogRef = this.dialogService.open(ReviewFormModalComponent, {
-      header: 'Modifier ma critique',
-      width: '800px',
-      data: { 
-        movieId: this.movieId(), 
-        review: review
-      }
-    });
-
-    if (this.reviewDialogRef) {
-      this.reviewDialogRef.onClose.subscribe((success: boolean) => {
-        if (success) {
-          this.notificationService.success('Critique modifiée avec succès !');
-          this.currentPage.set(1);
-          this.reloadKey.update(x => x + 1);
-        }
-      });
-    }
+  onEdit(): void {
+    this.currentPage.set(1);
+    this.reloadKey.update(x => x + 1);
   }
 
-  onDelete(reviewId: string): void {
-    if (!this.ensureAuthenticated('supprimer une critique')) return;
-
-    if (!confirm('Êtes-vous certain de vouloir supprimer cette critique ?')) return;
-
-    this.reviewService.deleteReview(reviewId).subscribe({
-      next: () => {
-        this.notificationService.success('Critique supprimée');
-        this.currentPage.set(1);
-      },
-      error: () => {
-        this.notificationService.error('Impossible de supprimer la critique');
-      }
-    });
-  }
-
-  onComments(review: ReviewListItem): void {
-    this.commentsDialogRef = this.dialogService.open(CommentsModalComponent, {
-      width: '800px',
-      data: { 
-        reviewId: review.id,
-        reviewAuthor: review.userName
-      }
-    });
-
-    if (this.commentsDialogRef) {
-      this.commentsDialogRef.onClose.subscribe((updatedCommentsCount?: number) => {
-        if (updatedCommentsCount !== undefined) {
-          this.reviews.update(reviews => 
-            reviews.map(r => 
-              r.id === review.id
-                ? { ...r, commentsCount: updatedCommentsCount }
-                : r
-            )
-          );
-          this.reloadKey.update(x => x + 1);
-        }
-      });
-    }
+  onDelete(): void {
+    this.currentPage.set(1);
   }
 
   private ensureAuthenticated(forAction: string): boolean {
@@ -220,21 +144,5 @@ export class MovieReviewsComponents {
         this.notificationService.error("Impossible de charger les critiques du film.");
       }
     });
-  }
-
-  private updateReviewLikes(reviewId: string): void {
-    this.reviews.update(reviews => 
-      reviews.map((r) => 
-        r.id === reviewId
-        ? {
-          ...r, 
-          hasLiked: !r.hasLiked, 
-          likesCount: r.hasLiked 
-            ? r.likesCount - 1 
-            : r.likesCount + 1
-        }
-        : r
-      )
-    );
   }
 }

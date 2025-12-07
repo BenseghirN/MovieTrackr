@@ -33,6 +33,12 @@ public static class UserProfilesEndpoints
             .Produces<PublicUserProfileDto>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound);
 
+        group.MapGet("/{id:guid}/lists", UserProfilesHandlers.GetListsByUser)
+            .AllowAnonymous()
+            .WithName("Get_Lists_By_UserId")
+            .WithSummary("Récupère les listes d'un utilisateur par son identifiant.")
+            .WithDescription("Retourne la vue 'résumé' des listes appartenant à un utilisateur.")
+            .Produces<IReadOnlyList<UserListDto>>(StatusCodes.Status200OK);
         return app;
     }
 }

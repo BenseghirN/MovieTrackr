@@ -3,17 +3,14 @@
     <div class="review-header">
       <div class="review-author">
         <div class="author-avatar" (click)="onAuthorClick()">
-          {{ review().userName.charAt(0).toUpperCase() }}
+          {{ reviewState()?.userName?.charAt(0)?.toUpperCase() }}
         </div>
         <div class="author-info">
-          <span class="author-name">{{ review().userName }}</span>
-          <span class="review-date">{{ review().createdAt | date:'dd/MM/yyyy' }}</span>
-          @if (review().movieTitle && review().posterUrl) {
-            <a class="movie-title" (click)="onMovieTitleClick()">{{ review().movieTitle }}</a>
-          }
+          <span class="author-name">{{ reviewState()?.userName }}</span>
+          <span class="review-date">{{ reviewState()?.createdAt | date:'dd/MM/yyyy' }}</span>
         </div>
       </div>
-
+      
       <div class="review-rating">
         <div class="stars">
           @for (_ of [].constructor(stars().full); track $index) {
@@ -23,22 +20,23 @@
             <i class="pi pi-star star-empty"></i>
           }
         </div>
-        <span class="rating-value">{{ review().rating }}/5</span>
+        <span class="rating-value">{{ reviewState()?.rating }}/5</span>
       </div>
     </div>
   </ng-template>
   <div class="review-body">
-    @if (review().movieTitle && review().posterUrl) {
+    @if (reviewState()?.movieTitle && reviewState()?.posterUrl) {
       <div class="review-poster" (click)="onMovieTitleClick()">
         <img
-          [src]="imageService.getPosterUrl(review().posterUrl, 'w92')"
-          [alt]="review().movieTitle"
-          loading="lazy"
+        [src]="imageService.getPosterUrl(reviewState()?.posterUrl, 'w92')"
+        [alt]="reviewState()?.movieTitle"
+        loading="lazy"
         />
+        <a class="movie-title" (click)="onMovieTitleClick()">{{ reviewState()?.movieTitle }}</a>
       </div>
     }
     <div class="review-text">
-      <div class="review-content" [innerHTML]="review().content"></div>
+      <div class="review-content" [innerHTML]="reviewState()?.content"></div>
     </div>
   </div>  
   <ng-template pTemplate="footer">
@@ -46,16 +44,16 @@
       <div class="review-actions">
         <button
           class="action-btn"
-          [class.liked]="review().hasLiked"
+          [class.liked]="reviewState()?.hasLiked"
           (click)="onLike()"
         >
-          <i [class]="review().hasLiked ? 'pi pi-heart-fill' : 'pi pi-heart'"></i>
-          <span>{{ review().likesCount }}</span>
+          <i [class]="reviewState()?.hasLiked ? 'pi pi-heart-fill' : 'pi pi-heart'"></i>
+          <span>{{ reviewState()?.likesCount }}</span>
         </button>
 
-        <button class="action-btn" (click)="onComments()">
+        <button class="action-btn" (click)="onComments($event)">
           <i class="pi pi-comment"></i>
-          <span>{{ review().commentsCount }}</span>
+          <span>{{ reviewState()?.commentsCount }}</span>
         </button>
       </div>
 
@@ -65,14 +63,14 @@
             icon="pi pi-pencil"
             [text]="true"
             severity="secondary"
-            (onClick)="onEdit()"
+            (onClick)="onEdit($event)"
             pTooltip="Modifier"
           />
           <p-button
             icon="pi pi-trash"
             [text]="true"
             severity="danger"
-            (onClick)="onDelete()"
+            (onClick)="onDelete($event)"
             pTooltip="Supprimer"
           />
         </div>

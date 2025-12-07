@@ -25,6 +25,9 @@ public class UserListDto
 
     /// <summary>Définit si la liste est une liste systeme défaut ou non.</summary>
     public bool IsSystemList { get; set; }
+
+    /// <summary>Id de l'utilisateur à qui appartient cette liste</summary>
+    public Guid userId { get; set; }
 }
 
 /// <summary>Représente une liste d'utilisateur (vue "détails" avec les films ordonnés).</summary>

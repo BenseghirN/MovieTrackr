@@ -78,11 +78,11 @@
                     <app-user-profile-reviews-section [userId]="userProfile()?.id" />
                   }
                 </p-tabpanel>
-                <!-- <p-tabpanel value="lists">
+                <p-tabpanel value="lists">
                   @if (userProfile()?.id) {
-                    <app-user-lists-section [userId]="userProfile()?.id" />
+                    <app-user-profile-lists-section [userId]="userProfile()?.id" />
                   }
-                </p-tabpanel> -->
+                </p-tabpanel>
               </p-tabpanels>
             </p-tabs>
           </section>

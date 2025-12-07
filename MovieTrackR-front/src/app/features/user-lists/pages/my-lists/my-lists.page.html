@@ -39,8 +39,8 @@
         @for (list of lists(); track list.id) {
           <app-user-list-card 
             [list]="list" 
-            (deletedList)="deleteList($event)" 
-            (editedList)="editList($event)"
+            (deletedList)="onDeletedList($event)" 
+            (editedList)="onEditedList()"
             (click)="onViewList(list)"
           />
         }

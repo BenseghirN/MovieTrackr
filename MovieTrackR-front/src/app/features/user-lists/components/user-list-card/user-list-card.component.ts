@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, input, output } from '@angular/core';
+import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { CardModule } from 'primeng/card';
 import { UserListService } from '../../services/user-list.service';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -9,6 +9,7 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ListFormModalComponent } from '../list-form-modal/list-form-modal.component';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
+import { AuthService } from '../../../../core/auth/auth-service';
 
 @Component({
   selector: 'app-user-list-card',
@@ -19,15 +20,32 @@ import { ConfirmationService } from 'primeng/api';
 })
 export class UserListCardComponent {
   readonly list = input.required<UserListSummary>();
+  readonly listState = signal<UserListSummary | null>(null);
+
   readonly deletedList = output<UserListSummary>();
-  readonly editedList = output<UserListSummary>();
+  readonly editedList = output<void>();
 
   private readonly listService = inject(UserListService);
+  private readonly authService = inject(AuthService);
+
+  readonly isAuthenticated = this.authService.isAuthenticated();
+  readonly isMyList = computed(() => {
+    const currentUser = this.authService.currentUser();
+    const l = this.listState();
+    return !!l && currentUser?.id === l.userId;
+  });
+
   private readonly notificationService = inject(NotificationService);
   private readonly confirmationService = inject(ConfirmationService);
   private readonly dialogService = inject(DialogService);
 
   private dialogRef: DynamicDialogRef | null = null;
+
+  constructor() {
+    effect(() =>{
+      this.listState.set(this.list());
+    });
+  }
 
   onEditList(list: UserListSummary, event: Event): void {
     event.stopPropagation();
@@ -40,7 +58,7 @@ export class UserListCardComponent {
 
     this.dialogRef?.onClose.subscribe((edited: boolean) => {
       if (edited) {
-        this.editedList.emit(this.list());
+        this.editedList.emit();
       }
     });
   }

@@ -116,7 +116,7 @@ export class ReviewFormModalComponent implements OnInit {
       : this.reviewService.createReview(payload as CreateReviewModel);
       
     action.subscribe({
-      next: () => {
+      next: (review) => {
         this.loading.set(false);       
         this.dialogRef.close(true);
       },
