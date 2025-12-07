@@ -94,6 +94,7 @@ export class UserProfileReviewsSectionComponent {
 
   onDelete(): void {
     this.currentPage.set(1);
+    this.reloadKey.update(x => x + 1);
   }  
 
   private loadReviews(userId: string, params: UserReviewsQueryParams): void {

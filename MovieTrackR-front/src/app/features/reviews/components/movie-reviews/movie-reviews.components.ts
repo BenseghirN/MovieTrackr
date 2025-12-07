@@ -114,6 +114,7 @@ export class MovieReviewsComponents {
 
   onDelete(): void {
     this.currentPage.set(1);
+    this.reloadKey.update(x => x + 1);
   }
 
   private ensureAuthenticated(forAction: string): boolean {

@@ -9,7 +9,8 @@ import {
     UpdateListModel, 
     UpdateMoviePositionModel, 
     UserListDetails, 
-    UserLists 
+    UserLists, 
+    UserListSummary
 } from "../models/user-list.model";
 
 @Injectable({ providedIn: 'root' })
@@ -38,8 +39,8 @@ export class UserListService {
         );
     }
 
-    updateList(listId: string, updatedList: UpdateListModel): Observable<void> {
-        return this.api.put<void>(`${this.config.apiUrl}/me/lists/${listId}`,
+    updateList(listId: string, updatedList: UpdateListModel): Observable<UserListSummary> {
+        return this.api.put<UserListSummary>(`${this.config.apiUrl}/me/lists/${listId}`,
             updatedList,
             { withCredentials: true }
         );

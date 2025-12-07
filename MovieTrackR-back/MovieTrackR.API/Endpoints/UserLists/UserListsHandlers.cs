@@ -33,8 +33,8 @@ public static class UserListsHandlers
     public static async Task<IResult> Update(Guid listId, UpdateListDto updatedList, ClaimsPrincipal user, ISender sender, CancellationToken cancellationToken)
     {
         CurrentUserDto currentUser = user.ToCurrentUserDto();
-        await sender.Send(new UpdateListCommand(currentUser, listId, updatedList.Title, updatedList.Description ?? string.Empty), cancellationToken);
-        return TypedResults.NoContent();
+        UserListDto dto = await sender.Send(new UpdateListCommand(currentUser, listId, updatedList.Title, updatedList.Description ?? string.Empty), cancellationToken);
+        return TypedResults.Ok(dto);
     }
 
     public static async Task<IResult> Delete(Guid listId, ClaimsPrincipal user, ISender sender, CancellationToken cancellationToken)

@@ -4,7 +4,7 @@ import { CardModule } from 'primeng/card';
 import { UserListService } from '../../services/user-list.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { ButtonModule } from 'primeng/button';
-import { UserListSummary } from '../../models/user-list.model';
+import { UserListDetails, UserListSummary } from '../../models/user-list.model';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ListFormModalComponent } from '../list-form-modal/list-form-modal.component';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -23,7 +23,8 @@ export class UserListCardComponent {
   readonly listState = signal<UserListSummary | null>(null);
 
   readonly deletedList = output<UserListSummary>();
-  readonly editedList = output<void>();
+  readonly editedList = output<UserListSummary>();
+  readonly viewList = output<UserListSummary>();
 
   private readonly listService = inject(UserListService);
   private readonly authService = inject(AuthService);
@@ -47,6 +48,10 @@ export class UserListCardComponent {
     });
   }
 
+  onCardClick() {
+    this.viewList.emit(this.list());
+  }
+  
   onEditList(list: UserListSummary, event: Event): void {
     event.stopPropagation();
 
@@ -56,15 +61,16 @@ export class UserListCardComponent {
       data: { list }
     });
 
-    this.dialogRef?.onClose.subscribe((edited: boolean) => {
+    this.dialogRef?.onClose.subscribe((edited?: UserListSummary) => {
       if (edited) {
-        this.editedList.emit();
+        this.editedList.emit(edited);
       }
     });
   }
 
   onDeleteList(list: UserListSummary, event: Event): void {
     event.stopPropagation();
+    
     this.confirmationService.confirm({
       header: 'Confirmation',
       message: `Êtes-vous sûr de vouloir supprimer la liste "${list.title}" ?`,

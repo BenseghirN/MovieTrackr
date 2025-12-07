@@ -69,8 +69,14 @@ export class MyListsPage implements OnInit {
     ));
   }
 
-  onEditedList(): void {
-    this.loadUserLists();
+  onEditedList(updatedList: UserListSummary): void {
+    this.lists.update((lists) =>
+      lists.map((l) => l.id === updatedList.id ? {
+        ...l,
+        title: updatedList.title,
+        description: updatedList.description
+      } : l)
+    );
   }
 
   private loadUserLists(): void {

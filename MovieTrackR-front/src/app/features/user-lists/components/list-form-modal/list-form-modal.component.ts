@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { CreateListModel, CreateListResponse, UpdateListModel, UserListSummary } from '../../models/user-list.model';
+import { CreateListModel, CreateListResponse, UpdateListModel, UserListDetails, UserListSummary } from '../../models/user-list.model';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -96,10 +96,10 @@ export class ListFormModalComponent implements OnInit {
 
     if (this.isEditMode()) {
       this.listService.updateList(this.existingList!.id, payload as UpdateListModel).subscribe({
-        next: () => {
+        next: (updatedList: UserListSummary) => {
           this.loading.set(false);
           this.notificationService.success('List modifiée avec succès.');
-          this.dialogRef.close(true);
+          this.dialogRef.close(updatedList);
         },
         error: (err) => this.handleError(err)
       });
