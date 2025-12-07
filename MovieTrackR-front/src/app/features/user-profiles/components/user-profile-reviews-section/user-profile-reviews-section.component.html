@@ -3,25 +3,30 @@
     <h2>Critiques</h2>
 
     <div class="section-filters">
-      <p-floatlabel class="w-full md:w-56" variant="on">
+      <div class="filter-item">
+        <span class="filter-label">Trier par</span>
         <p-select
           [options]="sortOptions"
           optionLabel="label"
           optionValue="value"
           [ngModel]="sort()"
           (onChange)="onSortChange($event.value)"
-         />
-         <label for="on_label">Trier par:</label>
-      </p-floatlabel>
+          [style]="{ width: '100%' }"
+        />
+      </div>
 
-      <p-select
-        [options]="ratingOptions"
-        optionLabel="label"
-        optionValue="value"
-        [ngModel]="ratingFilter()"
-        (onChange)="onRatingFilterChange($event.value)"
-        placeholder="Filtrer par note"
-      />
+      <div class="filter-item">
+        <span class="filter-label">Filtrer par note</span>
+        <p-select
+          [options]="ratingOptions"
+          optionLabel="label"
+          optionValue="value"
+          [ngModel]="ratingFilter()"
+          (onChange)="onRatingFilterChange($event.value)"
+          [style]="{ width: '100%' }"
+          placeholder="Toutes les notes"
+        />
+      </div>
     </div>
   </div>
 
@@ -39,9 +44,7 @@
     } @else if (!error() && reviews().length > 0) {
       <div class="reviews-list">
         @for (review of reviews(); track review.id) {
-          <app-review-card
-            [review]="review"
-          ></app-review-card>
+          <app-review-card [review]="review"></app-review-card>
         }
       </div>
 

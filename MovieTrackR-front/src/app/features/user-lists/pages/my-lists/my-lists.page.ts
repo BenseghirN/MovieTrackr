@@ -10,11 +10,12 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Router } from '@angular/router';
 import { UserLists, UserListSummary } from '../../models/user-list.model';
 import { ListFormModalComponent } from '../../components/list-form-modal/list-form-modal.component';
+import { UserListCardComponent } from '../../components/user-list-card/user-list-card.component';
 
 @Component({
   selector: 'app-my-lists-page',
   standalone: true,
-  imports: [CommonModule, ButtonModule, CardModule, ProgressSpinner],
+  imports: [CommonModule, ButtonModule, CardModule, ProgressSpinner, UserListCardComponent],
   templateUrl: './my-lists.page.html',
   styleUrl: './my-lists.page.scss',
 })
@@ -51,36 +52,6 @@ export class MyListsPage implements OnInit {
     });
   }
 
-  onEditList(list: UserListSummary, event: Event): void {
-    event.stopPropagation();
-
-    this.dialogRef = this.dialogService.open(ListFormModalComponent, {
-      header: 'Modifier la liste',
-      width: '600px',
-      data: { list }
-    });
-
-    this.dialogRef?.onClose.subscribe((created: boolean) => {
-      if (created) {
-        this.loadUserLists();
-      }
-    });
-  }
-
-  onDeleteList(list: UserListSummary, event: Event): void {
-    event.stopPropagation();
-
-    if (!confirm(`Êtes-vous sûr de vouloir supprimer la liste "${list.title}" ?`)) return;
-
-    this.listService.deleteList(list.id).subscribe({
-      next: () => {
-        this.notificationService.success(`La liste "${list.title}" a été supprimée.`)
-        this.loadUserLists();
-      },
-      error: () => this.notificationService.error('Impossible de supprimer la liste')
-    });
-  }
-
   onViewList(list: UserListSummary): void {
     this.router.navigate(['/my-lists', list.id]);
   }
@@ -91,6 +62,21 @@ export class MyListsPage implements OnInit {
 
   onLoadLists(): void {
     this.loadUserLists();
+  }
+
+  deleteList(list: UserListSummary): void {
+    this.lists.update((l) => l.filter(
+      (x) => x.id !== list.id
+    ));
+  }
+
+  editList(list: UserListSummary): void {
+    this.lists.update((l) => l.map(
+      (x) => 
+        x.id === list.id 
+          ? { ...x, ...list } 
+          : x
+    ));
   }
 
   private loadUserLists(): void {

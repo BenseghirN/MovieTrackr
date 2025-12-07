@@ -35,6 +35,9 @@ public sealed class ReviewListItemDto
     /// <summary>Identifiant du film.</summary>
     public Guid MovieId { get; set; }
 
+    /// <summary>URL vers l'affiche du film.</summary>
+    public string PosterUrl { get; set; } = string.Empty;
+
     /// <summary>Titre du film.</summary>
     public string MovieTitle { get; set; } = string.Empty;
 

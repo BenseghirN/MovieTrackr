@@ -1,4 +1,4 @@
-<div class="review-form-modal">
+<!-- <div class="review-form-modal">
   <form [formGroup]="reviewForm" (ngSubmit)="onSubmit()">
     
     <div class="form-section">
@@ -38,31 +38,36 @@
       <p-editor 
         id="review_content" 
         formControlName="content" 
-        [invalid]="isInvalid('content')" 
+        [invalid]="isInvalid('content')"
         rows="8" 
         [style]="{ resize: 'vertical', width: '100%' }" 
         (onTextChange)="onEditorTextChange($event)"
       />
       <p-message severity="info">Text length: {{ contentLength() }}</p-message>
       <p-message severity="info">HTML length: {{ contentHTMLLength() }}</p-message>
+      <p-message severity="info">HTML length: {{ contentLength() < 10 }}</p-message>
+      <p-message severity="info">HTML length: {{ contentLength() > 2000 }}</p-message>
       @if (isInvalid('content')) {
         <div class="error-message">
           @if (reviewForm.get('content')?.hasError('required')) {
             <p-message severity="error" variant="simple">Le contenu est obligatoire</p-message>
           }
-          @if (reviewForm.get('content')?.hasError('minlength')) {
-            <p-message severity="error" variant="simple">Le contenu doit contenir au moins 10 caractères</p-message>
-          }
-          @if (reviewForm.get('content')?.hasError('maxlength')) {
-            <p-message severity="error" variant="simple">Le contenu ne peut pas dépasser 2000 caractères</p-message>
-          }
         </div>
       }
-
+      @if (contentLength() < 10) {
+        <div class="error-message">
+          <p-message severity="error" variant="simple">Le contenu doit contenir au moins 10 caractères</p-message>
+        </div>
+      }
+      @if (contentLength() > 2000) {
+        <div class="error-message">
+          <p-message severity="error" variant="simple">Le contenu ne peut pas dépasser 2000 caractères</p-message>
+        </div>
+      }
       @if (validationErrors()['Content']) {
         <div class="error-message">
           @for (error of validationErrors()['Content']; track error) {
-            <p-message severity="error" variant="simple"></p-message>{{ error }}</p-message>
+            <p-message severity="error" variant="simple">{{ error }}</p-message>
           }
         </div>
       }
@@ -78,6 +83,126 @@
         [disabled]="loading()"
       />
       
+      <p-button
+        [label]="isEditMode() ? 'Modifier' : 'Publier'"
+        icon="pi pi-check"
+        type="submit"
+        [disabled]="!canSubmit()"
+        [loading]="loading()"
+      />
+    </div>
+  </form>
+</div> -->
+
+<div class="review-form-modal">
+  <form [formGroup]="reviewForm" (ngSubmit)="onSubmit()">
+    <!-- NOTE -->
+    <div class="form-section">
+      <label class="form-label">
+        <span>Note</span>
+
+        @if (rating() > 0) {
+          <span class="rating-value">{{ rating() }}/5</span>
+        }
+      </label>
+
+      <div class="rating-container">
+        <p-rating
+          formControlName="rating"
+          [stars]="5"
+          [invalid]="isInvalid('rating')"
+        />
+
+        @if (isInvalid('rating')) {
+          <p-message
+            severity="error"
+            size="small"
+            variant="simple"
+            text="Veuillez donner une note"
+          />
+        }
+      </div>
+    </div>
+
+    <!-- CONTENU -->
+    <div class="form-section">
+      <div class="form-label">
+        <span>Votre critique</span>
+
+        <span
+          class="char-count"
+          [class.error]="contentLength() < 10 || contentLength() > 2000"
+        >
+          {{ contentLength() }}/2000 caractères (min. 10)
+        </span>
+      </div>
+
+      <p-editor
+        id="review_content"
+        formControlName="content"
+        [invalid]="
+          isInvalid('content') ||
+          contentLength() < 10 ||
+          contentLength() > 2000
+        "
+        rows="8"
+        [style]="{ width: '100%' }"
+        (onTextChange)="onEditorTextChange($event)"
+      />
+
+      <!-- Messages d'erreurs / validation -->
+      <div class="field-messages">
+        @if (isInvalid('content') && reviewForm.get('content')?.hasError('required')) {
+          <p-message
+            severity="error"
+            variant="simple"
+          >
+            Le contenu est obligatoire.
+          </p-message>
+        }
+
+        @if (contentLength() > 0 && contentLength() < 10) {
+          <p-message
+            severity="error"
+            variant="simple"
+          >
+            Le contenu doit contenir au moins 10 caractères.
+          </p-message>
+        }
+
+        @if (contentLength() > 2000) {
+          <p-message
+            severity="error"
+            variant="simple"
+          >
+            Le contenu ne peut pas dépasser 2000 caractères.
+          </p-message>
+        }
+
+        @if (validationErrors()['Content']) {
+          @for (error of validationErrors()['Content']; track error) {
+            <p-message
+              severity="error"
+              variant="simple"
+            >
+              {{ error }}
+            </p-message>
+          }
+        }
+      </div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="form-actions">
+      <p-button
+        label="Annuler"
+        severity="secondary"
+        [outlined]="true"
+        type="button"
+        (onClick)="onCancel()"
+        [disabled]="loading()"
+      />
+
       <p-button
         [label]="isEditMode() ? 'Modifier' : 'Publier'"
         icon="pi pi-check"

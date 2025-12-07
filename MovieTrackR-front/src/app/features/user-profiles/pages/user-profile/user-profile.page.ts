@@ -9,11 +9,12 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { UserProfileReviewsSectionComponent } from '../../components/user-profile-reviews-section/user-profile-reviews-section.component';
+import { TabsModule } from 'primeng/tabs';
 
 @Component({
   selector: 'app-user-profile-page',
   standalone: true,
-  imports: [CommonModule, ProgressSpinnerModule, ButtonModule, UserProfileReviewsSectionComponent],
+  imports: [CommonModule, ProgressSpinnerModule, ButtonModule, TabsModule, UserProfileReviewsSectionComponent],
   templateUrl: './user-profile.page.html',
   styleUrl: './user-profile.page.scss',
 })
@@ -32,12 +33,18 @@ export class UserProfilePage {
     this.route.paramMap.pipe(map((params) => params.get('id'))),
     { initialValue: null }
   );
-
   readonly joinedYear = computed(() => {
     const p = this.userProfile();
     if (!p) return null;
     return new Date(p.createdAt).getFullYear();
   });
+
+  readonly tabs = [
+    { value: 'reviews', label: 'Critiques', icon: 'pi pi-star' },
+    { value: 'lists', label: 'Listes', icon: 'pi pi-list' },
+    // { value: 'comments', label: 'Commentaires', icon: 'pi pi-comments' },
+  ];
+  activeTab = signal<string>('reviews');
 
   constructor() {
     effect(() => {

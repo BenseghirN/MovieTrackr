@@ -36,6 +36,10 @@ export const routes: Routes = [
     { 
         path: 'profiles/:id', 
         loadComponent: () => import('./features/user-profiles/pages/user-profile/user-profile.page').then(m => m.UserProfilePage)
+    },
+    { 
+        path: 'me/:id', 
+        loadComponent: () => import('./features/user-profiles/pages/user-profile/user-profile.page').then(m => m.UserProfilePage)
     },    
     // {
     //     path: 'profile',

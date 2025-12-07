@@ -64,6 +64,7 @@ public class MappingProfile : Profile
         // Review -> List item
         CreateMap<Review, ReviewListItemDto>()
             .ForMember(d => d.MovieTitle, opt => opt.MapFrom(s => s.Movie.Title))
+            .ForMember(d => d.PosterUrl, opt => opt.MapFrom(s => s.Movie.PosterUrl))
             .ForMember(d => d.UserId, opt => opt.MapFrom(s => s.UserId))
             .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.User.Pseudo))
             .ForMember(d => d.Rating, opt => opt.MapFrom(s => s.Rating))

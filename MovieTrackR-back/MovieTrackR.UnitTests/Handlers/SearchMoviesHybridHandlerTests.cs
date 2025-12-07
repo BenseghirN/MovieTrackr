@@ -43,7 +43,7 @@ public class SearchMoviesHybridHandlerTests
 
         Mock<ITmdbClient> tmdbMock = new Mock<ITmdbClient>();
         tmdbMock
-            .Setup(c => c.SearchMoviesAsync(It.Is<MovieSearchCriteria>(crit => crit.Query == "Interstellar"), It.IsAny<string>(), null, It.IsAny<CancellationToken>()))
+            .Setup(c => c.SearchMoviesAsync(It.Is<MovieSearchCriteria>(crit => crit.Query == "Interstellar"), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new TmdbSearchMoviesResponse(
                 Page: 1,
                 TotalResults: 2,
@@ -138,7 +138,7 @@ public class SearchMoviesHybridHandlerTests
 
         Mock<ITmdbClient> tmdbMock = new Mock<ITmdbClient>();
         tmdbMock
-            .Setup(c => c.SearchMoviesAsync(It.Is<MovieSearchCriteria>(crit => crit.Query == "Blade Runner"), It.IsAny<string>(), null, It.IsAny<CancellationToken>()))
+            .Setup(c => c.SearchMoviesAsync(It.Is<MovieSearchCriteria>(crit => crit.Query == "Blade Runner"), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new TmdbSearchMoviesResponse(
                 Page: 1,
                 TotalResults: 2,

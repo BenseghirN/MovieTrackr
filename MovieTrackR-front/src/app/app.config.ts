@@ -13,6 +13,7 @@ import Lara from '@primeuix/themes/lara';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { DialogService } from 'primeng/dynamicdialog';
+import { ConfirmationService } from 'primeng/api';
 
 const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
@@ -39,5 +40,6 @@ export const appConfig: ApplicationConfig = {
       // }
     }),
     DialogService,
+    ConfirmationService
   ],
 };

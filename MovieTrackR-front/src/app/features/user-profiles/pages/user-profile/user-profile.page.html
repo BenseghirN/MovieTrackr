@@ -56,32 +56,35 @@
                   <span class="label">liste(s)</span>
                 </div>
               </div>
-
-              <div class="user-profile-actions">
-                <button
-                  pButton
-                  type="button"
-                  label="Voir ses critiques"
-                  icon="pi pi-comments"
-                  class="p-button-outlined"
-                  disabled
-                ></button>
-
-                <button
-                  pButton
-                  type="button"
-                  label="Voir ses listes"
-                  icon="pi pi-list"
-                  class="p-button-outlined"
-                  disabled
-                ></button>
-              </div>
             </div>
           </section>
-          <section *ngIf="userProfile() as p">
-            <app-user-profile-reviews-section
-              [userId]="p.id"
-            ></app-user-profile-reviews-section>
+          <section class="profile-tabs">
+            <p-tabs [value]="activeTab()">
+              <p-tablist>
+                @for (tab of tabs; track tab.value) {
+                  <p-tab
+                    [value]="tab.value"
+                    (click)="activeTab.set(tab.value)"
+                    class="flex items-center gap-2 text-inherit"
+                  >
+                    <i [class]="tab.icon"></i>
+                    <span>{{ tab.label }}</span>
+                  </p-tab>
+                }
+              </p-tablist>
+              <p-tabpanels>
+                <p-tabpanel value="reviews">
+                  @if (userProfile()?.id) {
+                    <app-user-profile-reviews-section [userId]="userProfile()?.id" />
+                  }
+                </p-tabpanel>
+                <!-- <p-tabpanel value="lists">
+                  @if (userProfile()?.id) {
+                    <app-user-lists-section [userId]="userProfile()?.id" />
+                  }
+                </p-tabpanel> -->
+              </p-tabpanels>
+            </p-tabs>
           </section>
         </ng-container>
       </ng-template>

@@ -1,14 +1,15 @@
 import { inject } from "@angular/core";
 import { CanActivateFn, Router } from "@angular/router";
 import { AuthService } from "../auth/auth-service";
+import { of } from "rxjs";
+import { map, catchError } from "rxjs/operators";
 
 export const authGuard: CanActivateFn = () => {
     const authService = inject(AuthService);
     const router = inject(Router);
 
-    if (authService.isAuthenticated()) {
-        return true;
-    }
-    router.navigate(['/forbidden']);
-    return false;
+    return authService.checkAuth().pipe(
+        map((isAuth: boolean) => (isAuth ? true : router.createUrlTree(['/forbidden']))),
+        catchError(() => of(router.createUrlTree(['/forbidden'])))
+    );
 };

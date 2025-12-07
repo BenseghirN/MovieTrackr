@@ -40,7 +40,7 @@ export class ReviewFormModalComponent implements OnInit {
       validators: [Validators.required, Validators.min(1), Validators.max(5)],
     }),
     content: this.formBuilder.nonNullable.control<string>('', {
-      validators: [Validators.required, Validators.minLength(10), Validators.maxLength(2000)],
+      validators: [Validators.required],
     }),
   });
   
@@ -83,12 +83,20 @@ export class ReviewFormModalComponent implements OnInit {
   }
 
   onEditorTextChange(event: EditorTextChangeEvent): void {
-    this.contentLength.set(event.textValue.length);
-    this.contentHTMLLength.set(event.htmlValue!.length);
+    const textLength = (event.textValue ?? '').trim().length;
+    this.contentLength.set(textLength);
+
+    if (textLength > 2000) {
+      this.isInvalid('content');
+    }
   }
 
   onSubmit(): void {
-    if (!this.canSubmit()) {
+    if (!this.canSubmit() 
+        || this.reviewForm.invalid 
+        || this.contentLength() < 10 
+        || this.contentLength() > 2000
+    ) {
       this.reviewForm.markAllAsTouched();
       return;
     }

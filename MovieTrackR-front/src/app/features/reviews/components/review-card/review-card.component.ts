@@ -5,6 +5,8 @@ import { CardModule } from 'primeng/card';
 import { TooltipModule } from 'primeng/tooltip';
 import { ReviewListItem } from '../../models/review.model';
 import { AuthService } from '../../../../core/auth/auth-service';
+import { Router } from '@angular/router';
+import { TmdbImageService } from '../../../../core/services/tmdb-image.service';
 
 @Component({
   selector: 'app-review-card',
@@ -14,6 +16,7 @@ import { AuthService } from '../../../../core/auth/auth-service';
   styleUrl: './review-card.component.scss',
 })
 export class ReviewCardComponent {
+  readonly router = inject(Router);
   readonly review = input.required<ReviewListItem>();
 
   readonly like = output<void>();
@@ -22,7 +25,8 @@ export class ReviewCardComponent {
   readonly comments = output<void>();
 
   private readonly authService = inject(AuthService);
-  
+  readonly imageService = inject(TmdbImageService);
+
   readonly isMyReview = computed(() => {
     const currentUser = this.authService.currentUser();
     return currentUser?.id === this.review().userId;
@@ -51,5 +55,15 @@ export class ReviewCardComponent {
 
   onComments(): void {
     this.comments.emit();
+  }
+
+  onAuthorClick(): void {
+    const id = this.review().userId;
+    this.router.navigate(['profiles', id]);
+  }
+
+  onMovieTitleClick(): void {
+    const movieId = this.review().movieId;
+    this.router.navigate(['movies/', movieId]);
   }
 }

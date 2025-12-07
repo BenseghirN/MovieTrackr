@@ -8,7 +8,7 @@ import { ReviewLikesService } from '../../services/review-likes.service';
 import { AuthService } from '../../../../core/auth/auth-service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { MovieReviewsQueryParams, ReviewListItem, UserReviewsQueryParams } from '../../models/review.model';
+import { MovieReviewSortOption, MovieReviewsQueryParams, ReviewListItem, UserReviewSortOption, UserReviewsQueryParams } from '../../models/review.model';
 import { ReviewCardComponent } from '../review-card/review-card.component';
 import { ReviewFormModalComponent } from '../review-form-modal/review-form-modal.component';
 import { CommentsModalComponent } from '../comments-modal/comments-modal.component';
@@ -36,25 +36,45 @@ export class MovieReviewsComponents {
   readonly reviews = signal<ReviewListItem[]>([]);
   readonly totalCount = signal(0);
   readonly currentPage = signal(1);
-  readonly reloadKey = signal(0);
   readonly pageSize = signal(10);
+  readonly sort = signal<MovieReviewSortOption>('Newest');
+  readonly ratingFilter = signal<number | null>(null);
+  readonly reloadKey = signal(0);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
   readonly hasReviews = computed(() => this.reviews().length > 0);
   readonly totalPages = computed(() => Math.ceil(this.totalCount() / this.pageSize() || 1));
 
+  readonly sortOptions = [
+    { label: 'Plus récents', value: 'Newest' as MovieReviewSortOption },
+    { label: 'Plus anciens', value: 'Oldest' as MovieReviewSortOption },
+    { label: 'Mieux notés', value: 'HighestRating' as MovieReviewSortOption },
+    { label: 'Moins bien notés', value: 'LowestRating' as MovieReviewSortOption },
+    { label: 'Plus likés', value: 'MostLiked' as MovieReviewSortOption },
+    { label: 'Moins likés', value: 'MostCommented' as MovieReviewSortOption },
+  ];
+
+  readonly ratingOptions = [
+    { label: 'Toutes les notes', value: null },
+    { label: '5 ★', value: 5 },
+    { label: '4 ★', value: 4 },
+    { label: '3 ★', value: 3 },
+    { label: '2 ★', value: 2 },
+    { label: '1 ★', value: 1 },
+    { label: '0 ★', value: 0 },
+  ];
+
   constructor() {
     effect(() => {
       const id = this.movieId();
-      const page = this.currentPage();
-      const size = this.pageSize();
       const reload = this.reloadKey();
+
       const params: MovieReviewsQueryParams = {
           page: this.currentPage(),
           pageSize: this.pageSize(),
-          // sort: this.sort(),
-          // ratingFilter: this.ratingFilter()
+          sort: this.sort(),
+          ratingFilter: this.ratingFilter()
         };
       if (!id) return;
 

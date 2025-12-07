@@ -8,7 +8,7 @@ namespace MovieTrackR.Application.TMDB.Interfaces;
 public interface ITmdbClient
 {
     Task<TmdbSearchMoviesResponse> SearchMoviesAsync(
-        MovieSearchCriteria criterias, string language, string? region, CancellationToken cancellationToken);
+        MovieSearchCriteria criterias, string language, CancellationToken cancellationToken);
     Task<TmdbMovieDetails> GetMovieDetailsAsync(int tmdbId, string language, CancellationToken cancellationToken);
     Task<TmdbMovieCredits> GetMovieCreditsAsync(int tmdbId, string language, CancellationToken cancellationToken);
     Task<TmdbVideosResponse> GetMovieVideosAsync(int tmdbId, string language, CancellationToken cancellationToken);
@@ -18,4 +18,5 @@ public interface ITmdbClient
     Task<TmdbSearchPeopleResponse> SearchPeopleAsync(string query, int page, string? language, CancellationToken cancellationToken = default);
     Task<TmdbPersonDetails?> GetPersonDetailsAsync(int tmdbId, string? language, CancellationToken cancellationToken = default);
     Task<TmdbPersonMovieCredits?> GetPersonMovieCreditsAsync(int tmdbId, string? language, CancellationToken cancellationToken = default);
+    Task<TmdbSearchMoviesResponse> GetPopularMovies(string? language, int page, CancellationToken cancellationToken = default);
 }

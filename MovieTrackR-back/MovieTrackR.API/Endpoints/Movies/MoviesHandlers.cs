@@ -61,6 +61,23 @@ public static class MoviesHandlers
         return TypedResults.Ok(result);
     }
 
+    /// <summary>Recherche paginée de films par critères.</summary>
+    /// <param name="query">Paramètres de recherche (query string).</param>
+    /// <param name="mediator">Médiateur applicatif.</param>
+    /// <param name="response">Réponse HTTP (ajoute l'entête X-Total-Count).</param>
+    /// <param name="cancellationToken">Token d'annulation.</param>
+    /// <returns>La liste paginée de films.</returns>
+    public static async Task<IResult> GetPopular([AsParameters] MovieSearchRequest query, IMediator mediator, HttpResponse response, CancellationToken cancellationToken)
+    {
+        HybridPagedResult<SearchMovieResultDto> result =
+        await mediator.Send(new GetPopularMoviesQuery(query.ToCriteria()), cancellationToken);
+
+        response.Headers["X-Total-Local"] = result.Meta.TotalLocal.ToString();
+        response.Headers["X-Total-Tmdb"] = result.Meta.TotalTmdb.ToString();
+        response.Headers["X-Total"] = result.Meta.TotalResults.ToString();
+        return TypedResults.Ok(result);
+    }
+
 
     /// <summary>Crée un film (réservé aux administrateurs).</summary>
     /// <param name="dto">Données de création.</param>

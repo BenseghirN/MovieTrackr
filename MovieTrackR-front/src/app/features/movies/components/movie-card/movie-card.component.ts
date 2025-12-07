@@ -1,4 +1,4 @@
-import { Component, computed, EventEmitter, inject, input, Input, output, Output } from '@angular/core';
+import { Component, computed, EventEmitter, inject, input, output, Output } from '@angular/core';
 import { TmdbImageService } from '../../../../core/services/tmdb-image.service';
 import { SearchMovieResult } from '../../models/movie.model';
 import { CommonModule, DecimalPipe } from '@angular/common';

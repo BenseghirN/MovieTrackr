@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, effect, inject, OnInit } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
 import { MenubarModule } from 'primeng/menubar';
@@ -16,6 +16,7 @@ import { TooltipModule } from 'primeng/tooltip';
 })
 export class Header implements OnInit {
   readonly authService = inject(AuthService);
+  readonly router = inject(Router);
 
   constructor() {    
     effect(() => {
@@ -29,6 +30,13 @@ export class Header implements OnInit {
     if (this.authService.isAuthenticated() && !this.authService.currentUser()) {
       this.authService.getUserInfo().subscribe();
     }
+  }
+
+  onAvatarClick(): void {
+    const currentUserId = this.authService.currentUser()?.id;
+    if (!currentUserId) return;
+
+    this.router.navigate(['/me', currentUserId]);
   }
 
   login(): void {    

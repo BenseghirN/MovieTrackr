@@ -56,7 +56,7 @@ public sealed class TmdbHttpClient(HttpClient httpClient, IOptions<TmdbOptions> 
         return await GetFromTmdbAsync<TmdbGenresResponse>(relative, cancellationToken);
     }
 
-    public async Task<TmdbSearchMoviesResponse> SearchMoviesAsync(MovieSearchCriteria criterias, string language, string? region, CancellationToken cancellationToken)
+    public async Task<TmdbSearchMoviesResponse> SearchMoviesAsync(MovieSearchCriteria criterias, string language, CancellationToken cancellationToken)
     {
         string lang = string.IsNullOrWhiteSpace(language) ? "fr-FR" : language;
         string q = string.IsNullOrWhiteSpace(criterias.Query) ? string.Empty : Uri.EscapeDataString(criterias.Query);
@@ -67,9 +67,6 @@ public sealed class TmdbHttpClient(HttpClient httpClient, IOptions<TmdbOptions> 
         {
             relative += $"&year={criterias.Year.Value}";
         }
-        if (!string.IsNullOrWhiteSpace(region))
-            relative += $"&region={Uri.EscapeDataString(region)}";
-
         return await GetFromTmdbAsync<TmdbSearchMoviesResponse>(relative, cancellationToken);
     }
 
@@ -94,6 +91,14 @@ public sealed class TmdbHttpClient(HttpClient httpClient, IOptions<TmdbOptions> 
         string lang = string.IsNullOrWhiteSpace(language) ? "fr-FR" : language;
         string relative = $"person/{tmdbId}/movie_credits?language={Uri.EscapeDataString(lang)}";
         return await GetFromTmdbAsync<TmdbPersonMovieCredits>(relative, cancellationToken);
+    }
+
+    public async Task<TmdbSearchMoviesResponse> GetPopularMovies(string? language, int page, CancellationToken cancellationToken = default)
+    {
+        string lang = string.IsNullOrWhiteSpace(language) ? "fr-FR" : language;
+        int safePage = page <= 0 ? 1 : page;
+        string relative = $"movie/popular?&page={safePage}&language={Uri.EscapeDataString(lang)}";
+        return await GetFromTmdbAsync<TmdbSearchMoviesResponse>(relative, cancellationToken);
     }
 
     private async Task<T> GetFromTmdbAsync<T>(string relativeUrl, CancellationToken cancellationToken)

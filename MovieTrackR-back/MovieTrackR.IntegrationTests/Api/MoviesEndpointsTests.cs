@@ -54,7 +54,7 @@ public sealed class MoviesEndpointsTests : IClassFixture<PostgresFixture>, IAsyn
 
         // TMDb: 1 doublon + 1 différent
         _factory.TmdbMock
-            .Setup(c => c.SearchMoviesAsync(It.Is<MovieSearchCriteria>(crit => crit.Query == "Inter"), "fr-FR", null, It.IsAny<CancellationToken>()))
+            .Setup(c => c.SearchMoviesAsync(It.Is<MovieSearchCriteria>(crit => crit.Query == "Inter"), "fr-FR", It.IsAny<CancellationToken>()))
             .ReturnsAsync(new TmdbSearchMoviesResponse(
                 Page: 1, TotalResults: 2, TotalPages: 1,
                 Results: new[]

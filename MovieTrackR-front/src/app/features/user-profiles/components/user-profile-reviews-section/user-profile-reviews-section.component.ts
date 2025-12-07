@@ -1,16 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, input, OnChanges, signal, SimpleChanges } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ReviewService } from '../../../reviews/services/reviews.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { ReviewCardComponent } from '../../../reviews/components/review-card/review-card.component';
-import { ReviewLikesService } from '../../../reviews/services/review-likes.service';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { CommentsModalComponent } from '../../../reviews/components/comments-modal/comments-modal.component';
 import { AuthService } from '../../../../core/auth/auth-service';
-import { PagedReviews, ReviewListItem, UserReviewSortOption, UserReviewsQueryParams } from '../../../reviews/models/review.model';
-import { CascadeSelectModule } from 'primeng/cascadeselect';
+import { ReviewListItem, UserReviewSortOption, UserReviewsQueryParams } from '../../../reviews/models/review.model';
 import { SelectModule } from 'primeng/select';
 import { FormsModule } from '@angular/forms';
 import { FloatLabelModule } from 'primeng/floatlabel';
@@ -23,7 +19,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
   styleUrl: './user-profile-reviews-section.component.scss',
 })
 export class UserProfileReviewsSectionComponent {
-  readonly userId = input.required<string>();
+  readonly userId = input.required<string | undefined>();
 
   private readonly authService = inject(AuthService);
   private readonly reviewService = inject(ReviewService);
@@ -62,25 +58,6 @@ export class UserProfileReviewsSectionComponent {
     { label: '2 ★', value: 2 },
     { label: '1 ★', value: 1 },
     { label: '0 ★', value: 0 },
-  ];
-
-  readonly sortCascadeOptions = [
-    {
-      label: 'Date',
-      code: 'date',
-      items: [
-        { label: 'Plus récents', value: 'Newest' as UserReviewSortOption },
-        { label: 'Plus anciens', value: 'Oldest' as UserReviewSortOption },
-      ],
-    },
-    {
-      label: 'Note',
-      code: 'rating',
-      items: [
-        { label: 'Mieux notés', value: 'HighestRating' as UserReviewSortOption },
-        { label: 'Moins bien notés', value: 'LowestRating' as UserReviewSortOption },
-      ],
-    },
   ];
 
   constructor() {

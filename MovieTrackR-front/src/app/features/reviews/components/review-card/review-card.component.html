@@ -2,12 +2,15 @@
   <ng-template pTemplate="header">
     <div class="review-header">
       <div class="review-author">
-        <div class="author-avatar">
+        <div class="author-avatar" (click)="onAuthorClick()">
           {{ review().userName.charAt(0).toUpperCase() }}
         </div>
         <div class="author-info">
           <span class="author-name">{{ review().userName }}</span>
           <span class="review-date">{{ review().createdAt | date:'dd/MM/yyyy' }}</span>
+          @if (review().movieTitle && review().posterUrl) {
+            <a class="movie-title" (click)="onMovieTitleClick()">{{ review().movieTitle }}</a>
+          }
         </div>
       </div>
 
@@ -16,9 +19,6 @@
           @for (_ of [].constructor(stars().full); track $index) {
             <i class="pi pi-star-fill star-full"></i>
           }
-          <!-- @if (stars().half) {
-            <i class="pi pi-star-half-fill star-half"></i>
-          } -->
           @for (_ of [].constructor(stars().empty); track $index) {
             <i class="pi pi-star star-empty"></i>
           }
@@ -27,9 +27,20 @@
       </div>
     </div>
   </ng-template>
-
-  <div class="review-content" [innerHTML]="review().content"></div>
-  
+  <div class="review-body">
+    @if (review().movieTitle && review().posterUrl) {
+      <div class="review-poster" (click)="onMovieTitleClick()">
+        <img
+          [src]="imageService.getPosterUrl(review().posterUrl, 'w92')"
+          [alt]="review().movieTitle"
+          loading="lazy"
+        />
+      </div>
+    }
+    <div class="review-text">
+      <div class="review-content" [innerHTML]="review().content"></div>
+    </div>
+  </div>  
   <ng-template pTemplate="footer">
     <div class="review-footer">
       <div class="review-actions">

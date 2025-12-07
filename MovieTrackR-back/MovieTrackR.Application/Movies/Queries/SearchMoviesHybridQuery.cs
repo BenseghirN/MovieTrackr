@@ -50,7 +50,6 @@ public sealed class SearchMoviesHybridHandler(IMovieTrackRDbContext dbContext, I
             TmdbSearchMoviesResponse tmdb = await tmdbClient.SearchMoviesAsync(
                 criterias: searchCriteria,
                 language: "fr-FR",
-                region: null,
                 cancellationToken: cancellationToken);
 
             totalTmdb = tmdb.TotalResults;

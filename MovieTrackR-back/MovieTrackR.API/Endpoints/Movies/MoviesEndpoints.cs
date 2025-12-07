@@ -40,6 +40,12 @@ public static class MoviesEndpoints
             .AllowAnonymous()
             .Produces<IReadOnlyList<SearchMovieResultDto>>(StatusCodes.Status200OK);
 
+        group.MapGet("/popular", MoviesHandlers.GetPopular)
+            .WithName("Get_Popular")
+            .WithSummary("Get popular/newest movies from TMDB (paged)")
+            .AllowAnonymous()
+            .Produces<IReadOnlyList<SearchMovieResultDto>>(StatusCodes.Status200OK);
+
         group.MapPost("/", MoviesHandlers.Create)
             .WithName("Create_Movie")
             .WithSummary("Create a movie")

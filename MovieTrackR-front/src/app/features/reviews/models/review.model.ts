@@ -4,6 +4,8 @@ export type PagedReviews = PagedResult<ReviewListItem>;
 export interface ReviewListItem {
   id: string;
   movieId: string;
+  movieTitle: string;
+  posterUrl: string;
   userId: string;
   userName: string;
   rating: number;
