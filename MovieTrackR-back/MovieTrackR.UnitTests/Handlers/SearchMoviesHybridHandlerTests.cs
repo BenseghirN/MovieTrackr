@@ -41,7 +41,7 @@ public class SearchMoviesHybridHandlerTests
         db.Movies.Add(MakeMovie("Dune", 2021));
         await db.SaveChangesAsync();
 
-        Mock<ITmdbClient> tmdbMock = new Mock<ITmdbClient>();
+        Mock<ITmdbClientService> tmdbMock = new Mock<ITmdbClientService>();
         tmdbMock
             .Setup(c => c.SearchMoviesAsync(It.Is<MovieSearchCriteria>(crit => crit.Query == "Interstellar"), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new TmdbSearchMoviesResponse(
@@ -86,7 +86,7 @@ public class SearchMoviesHybridHandlerTests
         );
         await db.SaveChangesAsync();
 
-        Mock<ITmdbClient> tmdbMock = new Mock<ITmdbClient>(MockBehavior.Strict);
+        Mock<ITmdbClientService> tmdbMock = new Mock<ITmdbClientService>(MockBehavior.Strict);
         SearchMoviesHybridHandler handler = new SearchMoviesHybridHandler(dbAbs, tmdbMock.Object, _mapper);
 
         MovieSearchCriteria criteria = new MovieSearchCriteria
@@ -118,7 +118,7 @@ public class SearchMoviesHybridHandlerTests
         );
         await db.SaveChangesAsync();
 
-        Mock<ITmdbClient> tmdbMock = new Mock<ITmdbClient>();
+        Mock<ITmdbClientService> tmdbMock = new Mock<ITmdbClientService>();
         SearchMoviesHybridHandler handler = new SearchMoviesHybridHandler(dbAbs, tmdbMock.Object, _mapper);
         MovieSearchCriteria criteria = new MovieSearchCriteria { Query = null, Page = 1, PageSize = 3 };
 
@@ -136,7 +136,7 @@ public class SearchMoviesHybridHandlerTests
         db.Movies.Add(MakeMovie("Interstellar", 2014, tmdbId: 157336)); // bruit, != "Blade Runner"
         await db.SaveChangesAsync();
 
-        Mock<ITmdbClient> tmdbMock = new Mock<ITmdbClient>();
+        Mock<ITmdbClientService> tmdbMock = new Mock<ITmdbClientService>();
         tmdbMock
             .Setup(c => c.SearchMoviesAsync(It.Is<MovieSearchCriteria>(crit => crit.Query == "Blade Runner"), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new TmdbSearchMoviesResponse(
@@ -177,7 +177,7 @@ public class SearchMoviesHybridHandlerTests
         );
         await db.SaveChangesAsync();
 
-        Mock<ITmdbClient> tmdbMock = new Mock<ITmdbClient>(MockBehavior.Strict);
+        Mock<ITmdbClientService> tmdbMock = new Mock<ITmdbClientService>(MockBehavior.Strict);
         SearchMoviesHybridHandler handler = new SearchMoviesHybridHandler(dbAbs, tmdbMock.Object, _mapper);
         MovieSearchCriteria criteria = new MovieSearchCriteria { Query = null, Page = 2, PageSize = 3 };
 

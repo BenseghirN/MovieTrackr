@@ -1,7 +1,6 @@
 using Asp.Versioning;
 using Asp.Versioning.Builder;
 using MovieTrackR.API.Filters;
-using MovieTrackR.API.Validators.Reviews;
 using MovieTrackR.Application.DTOs;
 
 namespace MovieTrackR.API.Endpoints.Reviews;

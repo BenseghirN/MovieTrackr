@@ -30,6 +30,9 @@ public static class DependencyInjection
         // TMDB Configuration
         services.AddTmdb(configuration);
 
+        // Azure Storage for Avatars
+        services.AddAzureStorage(configuration);
+
         return services;
     }
 }

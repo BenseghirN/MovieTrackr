@@ -18,7 +18,7 @@ namespace MovieTrackR.IntegrationTests.Utils;
 public sealed class TestAppFactory : WebApplicationFactory<Program>
 {
     private readonly PostgresFixture _pg;
-    public Mock<ITmdbClient> TmdbMock { get; } = new(MockBehavior.Strict);
+    public Mock<ITmdbClientService> TmdbMock { get; } = new(MockBehavior.Strict);
 
     public TestAppFactory(PostgresFixture pg)
     {
@@ -56,7 +56,7 @@ public sealed class TestAppFactory : WebApplicationFactory<Program>
             });
             services.AddScoped<IMovieTrackRDbContext>(sp => sp.GetRequiredService<MovieTrackRDbContext>());
 
-            services.RemoveAll<ITmdbClient>();
+            services.RemoveAll<ITmdbClientService>();
             services.AddSingleton(_ => TmdbMock.Object);
 
             List<ServiceDescriptor> authDescriptors = services

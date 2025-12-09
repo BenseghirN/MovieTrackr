@@ -9,7 +9,7 @@ namespace MovieTrackR.Application.Movies.Queries;
 public sealed record GetPopularMoviesQuery(MovieSearchCriteria searchCriteria)
     : IRequest<HybridPagedResult<SearchMovieResultDto>>;
 
-public sealed class GetPopularMoviesHandler(ITmdbClient tmdbClient, IMapper mapper)
+public sealed class GetPopularMoviesHandler(ITmdbClientService tmdbClient, IMapper mapper)
     : IRequestHandler<GetPopularMoviesQuery, HybridPagedResult<SearchMovieResultDto>>
 {
     public async Task<HybridPagedResult<SearchMovieResultDto>> Handle(GetPopularMoviesQuery searchQuery, CancellationToken cancellationToken)

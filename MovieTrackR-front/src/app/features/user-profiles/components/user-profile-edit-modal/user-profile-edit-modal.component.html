@@ -1,0 +1,76 @@
+<p-card *ngIf="!loading(); else loadingTpl" header="Mon profil">
+  <div class="profile-container">
+
+    <!-- Avatar -->
+    <div class="avatar-wrapper">
+      <ng-container *ngIf="avatarUrl(); else avatarPlaceholder">
+        <img
+          [src]="avatarUrl()!"
+          alt="Avatar"
+          class="avatar-image"
+        />
+      </ng-container>
+
+      <ng-template #avatarPlaceholder>
+        <div class="avatar-placeholder">
+          {{ avatarInitials() }}
+        </div>
+      </ng-template>
+
+      <p-fileUpload
+        mode="basic"
+        name="avatar"
+        [auto]="true"
+        [customUpload]="true"
+        [disabled]="savingAvatar()"
+        accept="image/jpeg, image/png"
+        chooseLabel="{{ savingAvatar() ? 'Envoi...' : 'Changer d\'avatar' }}"
+        (uploadHandler)="onAvatarUpload($event)"
+      ></p-fileUpload>
+    </div>
+
+    <!-- Infos -->
+    <div class="profile-form">
+      <form [formGroup]="profileForm" class="p-fluid formgrid grid">
+
+        <div class="field col-12">
+          <label>Email</label>
+          <input
+            type="text"
+            pInputText
+            [value]="user()?.email"
+            disabled
+          />
+        </div>
+
+        <div class="field col-12 md:col-6">
+          <label for="pseudo">Pseudo</label>
+          <input id="pseudo" pInputText formControlName="pseudo" />
+          <small class="p-error" *ngIf="profileForm.controls.pseudo.invalid && profileForm.controls.pseudo.touched">
+            Pseudo requis
+          </small>
+        </div>
+
+        <div class="field col-12 md:col-6">
+          <label for="givenName">Prénom</label>
+          <input id="givenName" pInputText formControlName="givenName" />
+        </div>
+
+        <div class="field col-12 md:col-6">
+          <label for="surname">Nom</label>
+          <input id="surname" pInputText formControlName="surname" />
+        </div>
+      </form>
+
+      <div class="actions">
+        <button pButton type="button" class="p-button-text" label="Annuler" (click)="onCancel()"></button>
+        <button pButton type="button" label="Enregistrer" [disabled]="!canSubmitInfos()" (click)="onSubmitInfos()"></button>
+      </div>
+    </div>
+
+  </div>
+</p-card>
+
+<ng-template #loadingTpl>
+  <p-skeleton class="loading-skeleton"></p-skeleton>
+</ng-template>

@@ -5,7 +5,7 @@ namespace MovieTrackR.Application.TMDB.Interfaces;
 /// <summary>
 /// Client en lecture seule vers TMDb (contrat pur, sans dépendance HTTP).
 /// </summary>
-public interface ITmdbClient
+public interface ITmdbClientService
 {
     Task<TmdbSearchMoviesResponse> SearchMoviesAsync(
         MovieSearchCriteria criterias, string language, CancellationToken cancellationToken);

@@ -8,7 +8,7 @@ using MovieTrackR.Application.TMDB.Interfaces;
 
 namespace MovieTrackR.Application.Common.Services;
 
-public sealed class TmdbHttpClient(HttpClient httpClient, IOptions<TmdbOptions> options, ILogger<TmdbHttpClient> logger) : ITmdbClient
+public sealed class TmdbHttpClientService(HttpClient httpClient, IOptions<TmdbOptions> options, ILogger<TmdbHttpClientService> logger) : ITmdbClientService
 {
     private readonly string? _apiKey = string.IsNullOrWhiteSpace(options.Value.AccessTokenV4)
     ? options.Value.ApiKey ?? throw new InvalidOperationException("Tmdb:ApiKey is required when AccessTokenV4 is not set.")

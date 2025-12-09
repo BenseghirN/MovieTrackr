@@ -18,14 +18,6 @@ public static class UserProfilesEndpoints
             .WithTags("User Profiles")
             .WithOpenApi();
 
-        // group.MapGet("/", UsersHandlers.GetAll)
-        //     .WithName("Users_GetAll")
-        //     .WithSummary("Récupère tous les utilisateurs.")
-        //     .WithDescription("Réservé aux administrateurs.")
-        //     .Produces<List<UserDto>>(StatusCodes.Status200OK)
-        //     .Produces(StatusCodes.Status401Unauthorized)
-        //     .Produces(StatusCodes.Status403Forbidden);
-
         group.MapGet("/{id:guid}", UserProfilesHandlers.GetById)
             .WithName("UserProfiles_GetById")
             .WithSummary("Récupère le profil public d'un utilisateur.")

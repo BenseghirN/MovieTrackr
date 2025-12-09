@@ -12,6 +12,18 @@ public sealed class PublicUserProfileDto
     /// <summary>Pseudo public de l'utilisateur.</summary>
     public string Pseudo { get; init; } = string.Empty;
 
+    /// <summary>Adresse email de l'utilisateur.</summary>
+    public string Email { get; set; } = string.Empty;
+
+    /// <summary>Prénom de l'utilisateur (issu du provider).</summary>
+    public string GivenName { get; set; } = string.Empty;
+
+    /// <summary>Nom de famille de l'utilisateur (issu du provider).</summary>
+    public string Surname { get; set; } = string.Empty;
+
+    /// <summary>URL de l'avatar de l'utilisateur</summary>
+    public string AvatarUrl { get; set; } = string.Empty;
+
     /// <summary>Nombre de critiques publiées par l'utilisateur.</summary>
     public int ReviewsCount { get; init; }
 

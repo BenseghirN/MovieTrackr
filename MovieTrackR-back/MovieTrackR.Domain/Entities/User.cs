@@ -10,6 +10,7 @@ public class User
     public string? ExternalId { get; set; } = string.Empty;
     public string GivenName { get; set; } = string.Empty;
     public string Surname { get; set; } = string.Empty;
+    public string AvatarUrl { get; set; } = string.Empty;
     public UserRole Role { get; set; } = UserRole.User;
     public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
 
@@ -47,9 +48,27 @@ public class User
         };
     }
 
-    public void UpdateProfile(string pseudo, string? externalId = null)
+    public void UpdateProfile(
+        string? pseudo,
+        string? givenName,
+        string? surName)
     {
+        if (string.IsNullOrWhiteSpace(pseudo))
+            throw new ArgumentException("Pseudo invalide.");
+
         Pseudo = pseudo;
+
+        if (!string.IsNullOrWhiteSpace(givenName))
+            GivenName = givenName;
+
+        if (!string.IsNullOrWhiteSpace(surName))
+            Surname = surName;
+    }
+
+    public void SetAvatar(string avatarUrl)
+    {
+        if (!string.IsNullOrWhiteSpace(avatarUrl))
+            AvatarUrl = avatarUrl;
     }
 
     public void AddList(UserList list)

@@ -10,6 +10,17 @@
         class="p-button-text"
         (click)="onBack()"
       ></button>
+
+      <button
+        *ngIf="canEditProfile()"
+        pButton
+        type="button"
+        icon="pi pi-pencil"
+        class="p-button-text p-button-rounded"
+        (click)="openEditProfileModal()"
+        pTooltip="Modifier mon profil"
+        tooltipPosition="left"
+      ></button>
     </div>
 
     <!-- Loading -->

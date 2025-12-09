@@ -13,7 +13,7 @@ namespace MovieTrackR.Application.People.Queries;
 
 public sealed record GetPersonMovieCreditsQuery(Guid PersonId) : IRequest<List<PersonMovieCreditDto>?>;
 
-public sealed class GetPersonMovieCreditsHandler(IMovieTrackRDbContext dbContext, ITmdbClient tmdbClient, IMapper mapper)
+public sealed class GetPersonMovieCreditsHandler(IMovieTrackRDbContext dbContext, ITmdbClientService tmdbClient, IMapper mapper)
     : IRequestHandler<GetPersonMovieCreditsQuery, List<PersonMovieCreditDto>?>
 {
     public async Task<List<PersonMovieCreditDto>?> Handle(GetPersonMovieCreditsQuery query, CancellationToken cancellationToken)

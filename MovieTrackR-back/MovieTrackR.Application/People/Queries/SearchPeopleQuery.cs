@@ -13,7 +13,7 @@ namespace MovieTrackR.Application.People.Queries;
 public sealed record SearchPeopleQuery(PeopleSearchCriteria searchCriteria)
     : IRequest<HybridPagedResult<SearchPersonResultDto>>;
 
-public sealed class SearchPeopleHandler(IMovieTrackRDbContext dbContext, ITmdbClient tmdbClient, IMapper mapper)
+public sealed class SearchPeopleHandler(IMovieTrackRDbContext dbContext, ITmdbClientService tmdbClient, IMapper mapper)
     : IRequestHandler<SearchPeopleQuery, HybridPagedResult<SearchPersonResultDto>>
 {
     public async Task<HybridPagedResult<SearchPersonResultDto>> Handle(SearchPeopleQuery searchQuery, CancellationToken cancellationToken)

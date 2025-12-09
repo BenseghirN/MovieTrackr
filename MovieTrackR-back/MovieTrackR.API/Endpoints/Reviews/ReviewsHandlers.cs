@@ -93,10 +93,10 @@ public static class ReviewsHandlers
     /// Met à jour une review (note/texte).
     /// </summary>
     /// <remarks>Erreurs (middleware) : 400, 401, 403, 404.</remarks>
-    public static async Task<NoContent> Update(Guid id, ClaimsPrincipal user, UpdateReviewDto dto, ISender sender, CancellationToken ct)
+    public static async Task<NoContent> Update(Guid id, ClaimsPrincipal user, UpdateReviewDto dto, ISender sender, CancellationToken cancellationToken)
     {
         CurrentUserDto current = user.ToCurrentUserDto();
-        await sender.Send(new UpdateReviewCommand(id, dto, current), ct);
+        await sender.Send(new UpdateReviewCommand(id, dto, current), cancellationToken);
         return TypedResults.NoContent();
     }
 
@@ -104,10 +104,10 @@ public static class ReviewsHandlers
     /// Supprime une review.
     /// </summary>
     /// <remarks>Erreurs (middleware) : 401, 403, 404.</remarks>
-    public static async Task<NoContent> Delete(Guid id, ClaimsPrincipal user, ISender sender, CancellationToken ct)
+    public static async Task<NoContent> Delete(Guid id, ClaimsPrincipal user, ISender sender, CancellationToken cancellationToken)
     {
         CurrentUserDto current = user.ToCurrentUserDto();
-        await sender.Send(new DeleteReviewCommand(id, current), ct);
+        await sender.Send(new DeleteReviewCommand(id, current), cancellationToken);
         return TypedResults.NoContent();
     }
 }

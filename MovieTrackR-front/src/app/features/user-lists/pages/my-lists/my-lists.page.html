@@ -40,7 +40,7 @@
           <app-user-list-card 
             [list]="list" 
             (deletedList)="onDeletedList($event)" 
-            (editedList)="onEditedList()"
+            (editedList)="onEditedList($event)"
             (viewList)="onViewList(list)"
           />
         }

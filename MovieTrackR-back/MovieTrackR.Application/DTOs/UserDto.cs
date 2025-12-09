@@ -28,3 +28,15 @@ public class UserDto
     /// <summary>Rôle de l'utilisateur dans la plateforme (User, Admin).</summary>
     public UserRole Role { get; set; } = UserRole.User;
 }
+
+public class UserUpdateDto
+{
+    /// <summary>Pseudo de l'utilisateur (affiché publiquement).</summary>
+    public string Pseudo { get; set; } = string.Empty;
+
+    /// <summary>Prénom de l'utilisateur (issu du provider).</summary>
+    public string GivenName { get; set; } = string.Empty;
+
+    /// <summary>Nom de famille de l'utilisateur (issu du provider).</summary>
+    public string Surname { get; set; } = string.Empty;
+}

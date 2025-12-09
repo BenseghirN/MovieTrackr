@@ -11,7 +11,7 @@ using MovieTrackR.Domain.Entities;
 namespace MovieTrackR.Application.Common.Services;
 
 public sealed class TmdbCatalogService(
-    ITmdbClient tmdbClient,
+    ITmdbClientService tmdbClient,
     IMovieTrackRDbContext dbContext,
     IOptionsSnapshot<TmdbOptions> options,
     ILogger<TmdbCatalogService> logger

@@ -11,6 +11,9 @@ import { ButtonModule } from 'primeng/button';
 import { UserProfileReviewsSectionComponent } from '../../components/user-profile-reviews-section/user-profile-reviews-section.component';
 import { TabsModule } from 'primeng/tabs';
 import { UserProfileListsSectionComponent } from '../../components/user-profile-lists-section/user-profile-lists-section.component';
+import { AuthService } from '../../../../core/auth/auth-service';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { UserProfileModalComponent } from '../../components/user-profile-edit-modal/user-profile-edit-modal.component';
 
 @Component({
   selector: 'app-user-profile-page',
@@ -23,7 +26,11 @@ export class UserProfilePage {
   private readonly route = inject(ActivatedRoute);
   private readonly location = inject(Location);
   private readonly profilesService = inject(UserProfilesService);
+  private readonly authService = inject(AuthService);
   private readonly notificationService = inject(NotificationService);
+  private readonly dialogService = inject(DialogService);
+  private DialogRef: DynamicDialogRef<UserProfileModalComponent> | null = null;
+  
   
 
   readonly loading = signal(false);
@@ -38,6 +45,17 @@ export class UserProfilePage {
     const p = this.userProfile();
     if (!p) return null;
     return new Date(p.createdAt).getFullYear();
+  });
+
+  readonly canEditProfile = computed(() => {
+    const profile = this.userProfile();
+    const current = this.authService.currentUser();
+    if (!profile || !current) return false;
+
+    const isOwner = current.id === profile.id;
+    const isAdmin = current.role === 'Admin';
+
+    return isOwner || isAdmin;
   });
 
   readonly tabs = [
@@ -61,6 +79,35 @@ export class UserProfilePage {
 
   onBack(): void {
     this.location.back();
+  }
+
+  openEditProfileModal(): void {
+    const profile = this.userProfile();
+    if (!profile) return;
+
+    if (!this.authService.isAuthenticated()) {
+      this.notificationService.warning('Vous devez être connecté pour modifier votre profil.');
+      this.authService.login(window.location.href);
+      return;
+    }
+
+    this.DialogRef = this.dialogService.open(UserProfileModalComponent, {
+      header: 'Modifier mon profil',
+      width: '600px',
+      data: {
+        userId: profile.id
+      },
+      closable: true,
+      dismissableMask: true
+    });
+
+    if (this.DialogRef) {
+      this.DialogRef.onClose.subscribe((updated?: UserProfile) => {
+        if (updated) {
+          this.userProfile.set(updated);
+        }
+      });
+    }
   }
 
   private loadUserProfile(id: string): void {

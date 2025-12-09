@@ -14,7 +14,7 @@ namespace MovieTrackR.Application.Movies.Queries;
 public sealed record SearchMoviesHybridQuery(MovieSearchCriteria searchCriteria)
     : IRequest<HybridPagedResult<SearchMovieResultDto>>;
 
-public sealed class SearchMoviesHybridHandler(IMovieTrackRDbContext dbContext, ITmdbClient tmdbClient, IMapper mapper)
+public sealed class SearchMoviesHybridHandler(IMovieTrackRDbContext dbContext, ITmdbClientService tmdbClient, IMapper mapper)
     : IRequestHandler<SearchMoviesHybridQuery, HybridPagedResult<SearchMovieResultDto>>
 {
     public async Task<HybridPagedResult<SearchMovieResultDto>> Handle(SearchMoviesHybridQuery searchQuery, CancellationToken cancellationToken)

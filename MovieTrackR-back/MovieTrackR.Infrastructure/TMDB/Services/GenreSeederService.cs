@@ -9,7 +9,7 @@ namespace MovieTrackR.Infrastructure.TMDB.Services;
 
 public sealed class GenreSeeder(
     IMovieTrackRDbContext dbContext,
-    ITmdbClient tmdbClient,
+    ITmdbClientService tmdbClient,
     ILogger<GenreSeeder> logger) : IGenreSeeder
 {
     public async Task SeedGenresAsync(CancellationToken cancellationToken = default)

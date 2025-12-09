@@ -15,7 +15,7 @@ public static class TmdbDependencyInjection
     {
         services.Configure<TmdbOptions>(config.GetSection(TmdbOptions.SectionName));
 
-        services.AddHttpClient<ITmdbClient, TmdbHttpClient>()
+        services.AddHttpClient<ITmdbClientService, TmdbHttpClientService>()
             .ConfigureHttpClient((sp, client) =>
             {
                 var opt = sp.GetRequiredService<IOptions<TmdbOptions>>().Value;

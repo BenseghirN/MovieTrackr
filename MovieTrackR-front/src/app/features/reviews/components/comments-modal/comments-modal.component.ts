@@ -14,7 +14,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 
 
-interface CommentsDialogData {
+interface CommentFormDialogData {
   reviewId: string;
   reviewAuthor: string;
 }
@@ -36,7 +36,7 @@ interface CommentsDialogData {
 })
 export class CommentsModalComponent implements OnInit {
   private readonly dialogRef = inject(DynamicDialogRef);
-  private readonly dialogConfig = inject(DynamicDialogConfig<CommentsDialogData>);
+  private readonly dialogConfig = inject(DynamicDialogConfig<CommentFormDialogData>);
   private readonly commentService = inject(ReviewCommentsService);
   private readonly notificationService = inject(NotificationService);
   private readonly authService = inject(AuthService);
