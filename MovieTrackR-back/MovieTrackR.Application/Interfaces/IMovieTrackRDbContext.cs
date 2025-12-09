@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using MovieTrackR.Domain.Entities;
 
 namespace MovieTrackR.Application.Interfaces;
@@ -22,4 +24,9 @@ public interface IMovieTrackRDbContext
     DbSet<MovieCrew> MovieCrews { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+    DbSet<TEntity> Set<TEntity>() where TEntity : class;
+    EntityEntry<TEntity> Attach<TEntity>(TEntity entity) where TEntity : class;
+    EntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class;
+    ChangeTracker ChangeTracker { get; }
+
 }

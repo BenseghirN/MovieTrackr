@@ -1,0 +1,22 @@
+<div class="person-card" (click)="onClick()">
+    <div class="person-poster">
+    @if (profileUrl()) {
+        <img [src]="profileUrl()" [alt]="person().name" />
+    } @else {
+        <div class="no-image">
+        <i class="pi pi-user"></i>
+        </div>
+    }
+    </div>
+    <div class="person-info">
+    <h3 class="person-name">{{ person().name }}</h3>
+    @if (person().knownForDepartment) {
+        <span class="person-department">{{ person().knownForDepartment }}</span>
+    }
+    @if (person().isLocal) {
+        <span class="local-badge">
+        <i class="pi pi-database"></i> Local
+        </span>
+    }
+    </div>
+</div>

@@ -1,0 +1,155 @@
+<div class="list-details-page">
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-container">
+      <p-progressSpinner strokeWidth="3" animationDuration="1s" />
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="error-container">
+      <div class="error-icon">
+        <i class="pi pi-exclamation-triangle"></i>
+      </div>
+      <h2>Une erreur est survenue</h2>
+      <p>{{ error() }}</p>
+      <div class="error-actions">
+        <p-button
+          label="Retour"
+          icon="pi pi-arrow-left"
+          [outlined]="true"
+          styleClass="back-btn"
+          (onClick)="onBack()"
+        />
+        <p-button
+          label="Réessayer"
+          icon="pi pi-refresh"
+          styleClass="retry-btn"
+          (onClick)="onReload()"
+        />
+      </div>
+    </div>
+  }
+
+  <!-- List Content -->
+  @if (!loading() && !error() && listDetails(); as list) {
+    <!-- Page Header -->
+    <header class="page-header">
+      <div class="header-left">
+        <p-button
+          icon="pi pi-arrow-left"
+          [text]="true"
+          [rounded]="true"
+          styleClass="back-nav-btn"
+          pTooltip="Retour aux listes"
+          (onClick)="onBack()"
+        />
+        
+        <div class="list-info">
+          <div class="list-title-row">
+            <i class="pi pi-bookmark list-icon"></i>
+            <h1>{{ list.title }}</h1>
+            @if (list.isSystemList) {
+              <span class="system-badge">Système</span>
+            }
+          </div>
+
+          @if (list.description) {
+            <p class="description">{{ list.description }}</p>
+          }
+
+          <div class="meta">
+            <span class="movie-count">
+              <i class="pi pi-film"></i>
+              {{ list.movies.length }} film{{ list.movies.length > 1 ? 's' : '' }}
+            </span>
+            <span class="separator">•</span>
+            <span class="created-date">
+              <i class="pi pi-calendar"></i>
+              Créée le {{ list.createdAt | date:'dd MMMM yyyy' }}
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      @if (isAuthenticated()) {
+        <div class="header-actions">
+          <app-reorder-movies-popover 
+            [listId]="list.id"
+            [movies]="list.movies"
+            (reordered)="onReordered()"
+          />
+          <p-button
+            icon="pi pi-pencil"
+            label="Modifier"
+            [outlined]="true"
+            styleClass="edit-btn"
+            (onClick)="onEditList()"
+          />
+          @if (!list.isSystemList) {
+            <p-button
+              icon="pi pi-trash"
+              label="Supprimer"
+              [outlined]="true"
+              styleClass="delete-btn"
+              (onClick)="onDeleteList()"
+            />
+          }
+        </div>
+      }
+    </header>
+
+    <!-- Movies Section -->
+    <section class="movies-section">
+      @if (hasMovies()) {
+        <div class="movies-grid">
+          @for (item of list.movies; track item.movieId) {
+            <div class="movie-item" (click)="onViewMovie(item.movie.id)">
+              <!-- Position Badge -->
+              <div class="movie-position">
+                <span>{{ item.position / 10 }}</span>
+              </div>
+              
+              <!-- Movie Card -->
+              <app-movie-card
+                [movie]="{
+                  id: item.movie.id,
+                  title: item.movie.title,
+                  posterUrl: item.movie.posterUrl,
+                  year: item.movie.year
+                }"
+              />
+              
+              <!-- Remove Button -->
+              @if (isAuthenticated()) {
+                <button 
+                  class="remove-movie-btn"
+                  (click)="onRemoveMovie(item.movieId); $event.stopPropagation()"
+                  pTooltip="Retirer de la liste"
+                >
+                  <i class="pi pi-times"></i>
+                </button>
+              }
+            </div>
+          }
+        </div>
+      } @else {
+        <!-- Empty State -->
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="pi pi-film"></i>
+          </div>
+          <h2>Aucun film dans cette liste</h2>
+          <p>Commencez à ajouter des films à votre liste depuis les pages de films</p>
+          <p-button
+            label="Parcourir les films"
+            icon="pi pi-search"
+            styleClass="browse-btn"
+            (onClick)="goToMovies()"
+          />
+        </div>
+      }
+    </section>
+  }
+</div>

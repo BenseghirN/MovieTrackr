@@ -1,3 +1,4 @@
+using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using MovieTrackR.Application.Common.Commands;
@@ -8,11 +9,11 @@ using MovieTrackR.Domain.Entities;
 
 namespace MovieTrackR.Application.UserLists.Commands;
 
-public sealed record UpdateListCommand(CurrentUserDto currentUser, Guid ListId, string Title, string Description) : IRequest;
+public sealed record UpdateListCommand(CurrentUserDto currentUser, Guid ListId, string Title, string Description) : IRequest<UserListDto>;
 
-public sealed class UpdateListHandler(IMovieTrackRDbContext dbContext, ISender sender) : IRequestHandler<UpdateListCommand>
+public sealed class UpdateListHandler(IMovieTrackRDbContext dbContext, IMapper mapper, ISender sender) : IRequestHandler<UpdateListCommand, UserListDto>
 {
-    public async Task Handle(UpdateListCommand command, CancellationToken cancellationToken)
+    public async Task<UserListDto> Handle(UpdateListCommand command, CancellationToken cancellationToken)
     {
         Guid userId = await sender.Send(new EnsureUserExistsCommand(command.currentUser), cancellationToken);
 
@@ -24,5 +25,7 @@ public sealed class UpdateListHandler(IMovieTrackRDbContext dbContext, ISender s
 
         list.Update(command.Title, command.Description);
         await dbContext.SaveChangesAsync(cancellationToken);
+
+        return mapper.Map<UserListDto>(list);
     }
 }

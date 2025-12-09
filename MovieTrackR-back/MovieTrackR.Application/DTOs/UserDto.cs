@@ -16,6 +16,24 @@ public class UserDto
     /// <summary>Adresse email de l'utilisateur.</summary>
     public string Email { get; set; } = string.Empty;
 
+    /// <summary>Pseudo public de l'utilisateur.</summary>
+    public string Pseudo { get; init; } = string.Empty;
+
+    /// <summary>Prénom de l'utilisateur (issu du provider).</summary>
+    public string GivenName { get; set; } = string.Empty;
+
+    /// <summary>Nom de famille de l'utilisateur (issu du provider).</summary>
+    public string Surname { get; set; } = string.Empty;
+
+    /// <summary>URL de l'avatar de l'utilisateur</summary>
+    public string AvatarUrl { get; set; } = string.Empty;
+
+    /// <summary>Rôle de l'utilisateur dans la plateforme (User, Admin).</summary>
+    public UserRole Role { get; set; } = UserRole.User;
+}
+
+public class UserUpdateDto
+{
     /// <summary>Pseudo de l'utilisateur (affiché publiquement).</summary>
     public string Pseudo { get; set; } = string.Empty;
 
@@ -24,7 +42,4 @@ public class UserDto
 
     /// <summary>Nom de famille de l'utilisateur (issu du provider).</summary>
     public string Surname { get; set; } = string.Empty;
-
-    /// <summary>Rôle de l'utilisateur dans la plateforme (User, Admin).</summary>
-    public UserRole Role { get; set; } = UserRole.User;
 }

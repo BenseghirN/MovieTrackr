@@ -1,15 +1,19 @@
 using System.Text.Json.Serialization;
 using FluentValidation;
+using Microsoft.Extensions.FileProviders;
 using MovieTrackR.api.middleware;
 using MovieTrackR.API.Configuration;
 using MovieTrackR.API.Endpoints.Auth;
+using MovieTrackR.API.Endpoints.Genres;
 using MovieTrackR.API.Endpoints.Movies;
+using MovieTrackR.API.Endpoints.People;
 using MovieTrackR.API.Endpoints.ReviewComments;
 using MovieTrackR.API.Endpoints.ReviewLikes;
 using MovieTrackR.API.Endpoints.Reviews;
 using MovieTrackR.API.Endpoints.UserLists;
 using MovieTrackR.API.Endpoints.Users;
 using MovieTrackR.Application.Configuration;
+using MovieTrackR.Application.Interfaces;
 using MovieTrackR.Infrastructure.Configuration;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -17,6 +21,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services
     .AddSwaggerConfiguration()
+    .AddCorsConfiguration()
     .AddApiVersioningConfiguration()
     .AddAuthorization()
     .AddRateLimitingConfiguration()
@@ -30,15 +35,31 @@ builder.Services
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    });
+    })
+    .Services
+    .AddHealthChecks()
+    .AddNpgSql(builder.Configuration.GetConnectionString("MovieTrackRDatabase")
+        ?? throw new InvalidOperationException("Connection string 'MovieTrackRDatabase' not found."));
 
 WebApplication app = builder.Build();
+
+// Seed des genres au démarrage
+using (var scope = app.Services.CreateScope())
+{
+    IGenreSeeder seeder = scope.ServiceProvider.GetRequiredService<IGenreSeeder>();
+    await seeder.SeedGenresAsync();
+}
 
 // Swagger
 if (app.Environment.IsDevelopment()) app.UseSwaggerConfiguration();
 
-app.UseHttpsRedirection();
-app.UseGlobalExceptionHandler();
+if (!app.Environment.IsDevelopment()) app.UseHttpsRedirection();
+app
+.UseGlobalExceptionHandler()
+.UseCorsConfiguration(app.Environment)
+.UseAuthentication()
+.UseAuthorization();
+app.UseRateLimitingConfiguration();
 
 // Map endpoints
 app
@@ -48,28 +69,13 @@ app
 .MapReviewLikesEndpoints()
 .MapReviewsEndpoints()
 .MapUserListsEndpoints()
-.MapUsersEndpoints();
+.MapUsersEndpoints()
+.MapGenresEndpoints()
+.MapPeopleEndpoints()
+.MapUserProfilesEndpoints()
+.MapHealthChecks("/health");
 
-app.UseRateLimitingConfiguration();
-app.UseAuthentication();
-app.UseAuthorization();
-
-
-// Static files server for static frontend
-app.UseDefaultFiles(); // Automaticaly serve index.html if exists
-app.UseStaticFiles(new StaticFileOptions // Serve  static files (CSS, JS, images, etc.)
-{
-    OnPrepareResponse = ctx =>
-    {
-        string path = ctx.File.PhysicalPath ?? string.Empty;
-        if (path.EndsWith(".json") || path.EndsWith(".js") || path.EndsWith(".css"))
-        {
-            ctx.Context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
-            ctx.Context.Response.Headers["Pragma"] = "no-cache";
-            ctx.Context.Response.Headers["Expires"] = "0";
-        }
-    }
-});
-app.MapFallbackToFile("index.html");
+// Sert index.html dans /browser comme page par défaut
+app.ConfigureStaticFiles(builder.Environment);
 
 app.Run();

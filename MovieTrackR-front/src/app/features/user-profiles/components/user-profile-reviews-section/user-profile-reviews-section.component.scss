@@ -1,0 +1,291 @@
+// ============================================
+// USER PROFILE REVIEWS SECTION - CINEMATIC DESIGN
+// ============================================
+
+@use "sass:color";
+
+// Variables
+$color-background: #0a0a0f;
+$color-surface: rgba(18, 18, 24, 0.85);
+$color-surface-solid: #12121a;
+$color-accent: #e4b45f;
+$color-accent-light: #f5d190;
+$color-text-primary: #ffffff;
+$color-text-secondary: rgba(255, 255, 255, 0.7);
+$color-text-muted: rgba(255, 255, 255, 0.5);
+$color-border: rgba(255, 255, 255, 0.1);
+$color-error: #ef4444;
+
+$font-display: 'Playfair Display', Georgia, serif;
+$font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+$shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.3);
+$transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+$breakpoint-md: 992px;
+$breakpoint-sm: 768px;
+$breakpoint-xs: 576px;
+
+// ============================================
+// SECTION HEADER
+// ============================================
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid $color-border;
+
+  @media (max-width: $breakpoint-sm) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: $color-text-primary;
+
+    i {
+      color: $color-accent;
+      font-size: 1.125rem;
+    }
+  }
+}
+
+// Filters
+.section-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+
+  @media (max-width: $breakpoint-sm) {
+    width: 100%;
+  }
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  min-width: 160px;
+
+  @media (max-width: $breakpoint-sm) {
+    flex: 1;
+    min-width: 140px;
+  }
+
+  @media (max-width: $breakpoint-xs) {
+    width: 100%;
+  }
+}
+
+.filter-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: $color-text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+// Select Override
+::ng-deep .filter-select {
+  width: 100%;
+
+  .p-select {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid $color-border;
+    border-radius: 8px;
+    transition: $transition-smooth;
+
+    &:hover {
+      border-color: rgba(228, 180, 95, 0.3);
+    }
+
+    &.p-focus,
+    &:focus {
+      border-color: $color-accent;
+      box-shadow: 0 0 0 3px rgba(228, 180, 95, 0.1);
+    }
+
+    .p-select-label {
+      color: $color-text-secondary;
+      font-family: $font-body;
+      font-size: 0.875rem;
+    }
+
+    .p-select-dropdown {
+      color: $color-text-muted;
+    }
+  }
+}
+
+// ============================================
+// LOADING STATE
+// ============================================
+
+.section-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem;
+}
+
+// ============================================
+// ERROR MESSAGE
+// ============================================
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: rgba($color-error, 0.1);
+  border: 1px solid rgba($color-error, 0.2);
+  border-radius: 10px;
+  color: color.adjust($color-error, $lightness: 15%);
+  margin-bottom: 1rem;
+
+  i {
+    font-size: 1.125rem;
+    flex-shrink: 0;
+  }
+}
+
+// ============================================
+// EMPTY STATE
+// ============================================
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 2rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid $color-border;
+  border-radius: 12px;
+
+  i {
+    font-size: 2.5rem;
+    color: $color-accent;
+    opacity: 0.4;
+    margin-bottom: 0.75rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+    color: $color-text-muted;
+  }
+}
+
+// ============================================
+// REVIEWS LIST
+// ============================================
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+// Review Card Override (si nécessaire)
+::ng-deep app-review-card {
+  .review-card {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid $color-border;
+    border-radius: 12px;
+    transition: $transition-smooth;
+
+    &:hover {
+      border-color: rgba(228, 180, 95, 0.2);
+    }
+  }
+}
+
+// ============================================
+// PAGINATOR
+// ============================================
+
+.paginator-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+::ng-deep .custom-paginator {
+  background: transparent;
+  border: none;
+  padding: 0;
+
+  .p-paginator-element {
+    min-width: 2.25rem;
+    height: 2.25rem;
+    margin: 0 0.125rem;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid $color-border;
+    color: $color-text-secondary;
+    font-size: 0.875rem;
+    transition: $transition-smooth;
+
+    &:hover:not(.p-disabled) {
+      background: rgba(228, 180, 95, 0.1);
+      border-color: rgba(228, 180, 95, 0.3);
+      color: $color-accent;
+    }
+
+    &.p-highlight {
+      background: $color-accent;
+      border-color: $color-accent;
+      color: $color-background;
+    }
+  }
+
+  .p-paginator-first,
+  .p-paginator-prev,
+  .p-paginator-next,
+  .p-paginator-last {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid $color-border;
+    color: $color-text-secondary;
+
+    &:hover:not(.p-disabled) {
+      background: rgba(228, 180, 95, 0.1);
+      border-color: rgba(228, 180, 95, 0.3);
+      color: $color-accent;
+    }
+  }
+
+  .p-dropdown {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid $color-border;
+    border-radius: 6px;
+
+    .p-dropdown-label {
+      color: $color-text-secondary;
+      font-size: 0.875rem;
+    }
+
+    &:hover {
+      border-color: rgba(228, 180, 95, 0.3);
+    }
+  }
+
+  .p-paginator-current {
+    color: $color-text-muted;
+    font-size: 0.875rem;
+  }
+}

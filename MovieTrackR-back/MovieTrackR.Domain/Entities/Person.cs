@@ -8,29 +8,41 @@ public class Person
     public string? ProfilePictureUrl { get; private set; }
     public DateTime? BirthDate { get; private set; }
     public DateTime? DeathDate { get; private set; }
+    public string? PlaceOfBirth { get; private set; }
     public string? Biography { get; private set; }
+    public string? KnownForDepartment { get; private set; }
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
     public ICollection<MovieCast> CastRoles { get; private set; } = new List<MovieCast>();
     public ICollection<MovieCrew> CrewRoles { get; private set; } = new List<MovieCrew>();
+    private Person() { }
 
-    public static Person Create(string name, int? tmdbId = null)
+    public static Person Create(string name, int? tmdbId = null, string? ProfilePictureUrl = null)
     {
         return new Person
         {
-            Id = Guid.NewGuid(),
             Name = name,
             TmdbId = tmdbId,
+            ProfilePictureUrl = ProfilePictureUrl,
             CreatedAt = DateTime.UtcNow
         };
     }
 
-    public void UpdateDetails(string name, string? profileUrl, DateTime? birth, DateTime? death, string? bio)
+    public void UpdateDetails(
+        string name,
+        string? profilePath,
+        DateTime? birth,
+        DateTime? death,
+        string? bio,
+        string? placeOfBirth,
+        string? knownForDepartment)
     {
         Name = name;
-        ProfilePictureUrl = profileUrl;
+        ProfilePictureUrl = profilePath;
         BirthDate = birth;
         DeathDate = death;
         Biography = bio;
+        PlaceOfBirth = placeOfBirth;
+        KnownForDepartment = knownForDepartment;
     }
 }

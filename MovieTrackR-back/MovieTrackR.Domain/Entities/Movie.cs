@@ -8,10 +8,13 @@ public class Movie
     public string? OriginalTitle { get; private set; }
     public int? Year { get; private set; }
     public string? PosterUrl { get; private set; }
+    public string? BackdropPath { get; private set; }
     public string? TrailerUrl { get; private set; }
+    public string? Tagline { get; private set; }
     public int? Duration { get; private set; }
     public string? Overview { get; private set; }
     public DateTime? ReleaseDate { get; private set; }
+    public double? VoteAverage { get; private set; }
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
     public ICollection<MovieGenre> MovieGenres { get; private set; } = new List<MovieGenre>();
@@ -26,23 +29,28 @@ public class Movie
         string? originalTitle,
         int? year,
         string? posterUrl,
+        string? backdropPath,
         string? trailerUrl,
+        string? tagLine,
         int? duration,
         string? overview,
-        DateTime? releaseDate)
+        DateTime? releaseDate,
+        double? voteAverage)
     {
         return new Movie
         {
-            Id = Guid.NewGuid(),
             TmdbId = tmdbId,
             Title = title,
             OriginalTitle = originalTitle,
             Year = year,
             PosterUrl = posterUrl,
+            BackdropPath = backdropPath,
             TrailerUrl = trailerUrl,
+            Tagline = tagLine,
             Duration = duration,
             Overview = overview,
             ReleaseDate = releaseDate,
+            VoteAverage = voteAverage,
             CreatedAt = DateTime.UtcNow
         };
     }
@@ -52,19 +60,25 @@ public class Movie
         string? originalTitle,
         int? year,
         string? posterUrl,
+        string? backdropPath,
         string? trailerUrl,
+        string? tagLine,
         int? duration,
         string? overview,
+        double? voteAverage,
         DateTime? releaseDate)
     {
         Title = title;
         OriginalTitle = originalTitle;
         Year = year;
         PosterUrl = posterUrl;
+        BackdropPath = backdropPath;
         TrailerUrl = trailerUrl;
+        Tagline = tagLine;
         Duration = duration;
         Overview = overview;
         ReleaseDate = releaseDate;
+        VoteAverage = voteAverage;
     }
 
     public void AddGenre(Genre genre)
@@ -90,17 +104,11 @@ public class Movie
 
     public void AddCast(Person person, string? characterName, int? order)
     {
-        if (!Cast.Any(c => c.PersonId == person.Id))
-        {
-            Cast.Add(new MovieCast
-            {
-                Id = Guid.NewGuid(),
-                MovieId = Id,
-                PersonId = person.Id,
-                CharacterName = characterName,
-                Order = order
-            });
-        }
+        if (Cast.Any(c => c.PersonId == person.Id && c.CharacterName == characterName))
+            return;
+
+        MovieCast cast = MovieCast.Create(this, person, characterName, order);
+        Cast.Add(cast);
     }
 
     public void RemoveCast(Guid personId)
@@ -114,17 +122,11 @@ public class Movie
 
     public void AddCrew(Person person, string job, string? department)
     {
-        if (!Crew.Any(c => c.PersonId == person.Id && c.Job == job))
-        {
-            Crew.Add(new MovieCrew
-            {
-                Id = Guid.NewGuid(),
-                MovieId = Id,
-                PersonId = person.Id,
-                Job = job,
-                Department = department
-            });
-        }
+        if (Crew.Any(c => c.PersonId == person.Id && c.Job == job))
+            return;
+
+        MovieCrew crew = MovieCrew.Create(this, person, job, department);
+        Crew.Add(crew);
     }
 
     public void RemoveCrew(Guid personId, string job)

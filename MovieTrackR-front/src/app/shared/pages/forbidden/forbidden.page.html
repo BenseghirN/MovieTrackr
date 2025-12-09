@@ -1,0 +1,45 @@
+<div class="forbidden-container">
+  <p-card styleClass="forbidden-card">
+    <ng-template pTemplate="header">
+      <div class="forbidden-header">
+        <h1 class="error-code">403</h1>
+        <h2 class="error-title">🚫 Accès Refusé</h2>
+      </div>
+    </ng-template>
+
+    <div class="forbidden-content">
+      <div class="gif-container">
+        <img 
+          [src]="selectedGif().url" 
+          [alt]="selectedGif().movie"
+          class="error-gif"
+        />
+      </div>
+
+      <div class="message-container">
+        <blockquote class="quote">
+          <p class="quote-text">"{{ selectedGif().quote }}"</p>
+          <footer class="quote-author">— {{ selectedGif().movie }}</footer>
+        </blockquote>
+
+        <p class="error-message">
+          Vous n'avez pas les permissions nécessaires pour accéder à cette page.
+        </p>
+        
+        <div class="actions">
+          <p-button 
+            label="Retour" 
+            icon="pi pi-arrow-left"
+            styleClass="p-button-secondary"
+            (onClick)="goBack()">
+          </p-button>
+          <p-button 
+            label="Accueil" 
+            icon="pi pi-home"
+            routerLink="/"
+            severity="danger" />
+        </div>
+      </div>
+    </div>
+  </p-card>
+</div>

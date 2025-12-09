@@ -1,0 +1,36 @@
+@import "primeicons/primeicons.css";
+@import "primeflex/primeflex.css";
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --font-family-base: "Inter", sans-serif;
+  --font-family-title: "Montserrat", sans-serif;
+}
+
+h1, h2, h3, .title {
+  font-family: var(--font-family-title);
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family-base);
+}
+
+a {
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}

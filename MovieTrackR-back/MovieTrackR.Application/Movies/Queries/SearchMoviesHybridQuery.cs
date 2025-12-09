@@ -14,7 +14,7 @@ namespace MovieTrackR.Application.Movies.Queries;
 public sealed record SearchMoviesHybridQuery(MovieSearchCriteria searchCriteria)
     : IRequest<HybridPagedResult<SearchMovieResultDto>>;
 
-public sealed class SearchMoviesHybridHandler(IMovieTrackRDbContext dbContext, ITmdbClient tmdbClient, IMapper mapper)
+public sealed class SearchMoviesHybridHandler(IMovieTrackRDbContext dbContext, ITmdbClientService tmdbClient, IMapper mapper)
     : IRequestHandler<SearchMoviesHybridQuery, HybridPagedResult<SearchMovieResultDto>>
 {
     public async Task<HybridPagedResult<SearchMovieResultDto>> Handle(SearchMoviesHybridQuery searchQuery, CancellationToken cancellationToken)
@@ -30,15 +30,8 @@ public sealed class SearchMoviesHybridHandler(IMovieTrackRDbContext dbContext, I
         localQuery = localQuery.ApplyTitleFilter((DbContext)dbContext, searchCriteria.Query);
 
         if (searchCriteria.Year is not null) localQuery = localQuery.Where(m => m.Year == searchCriteria.Year);
-        if (searchCriteria.GenreId is not null)
-            localQuery = localQuery.Where(m => m.MovieGenres.Any(mg => mg.GenreId == searchCriteria.GenreId));
 
-        localQuery = searchCriteria.Sort?.ToLowerInvariant() switch
-        {
-            "year" => localQuery.OrderByDescending(m => m.Year).ThenBy(m => m.Title),
-            "title" => localQuery.OrderBy(m => m.Title),
-            _ => localQuery.OrderBy(m => m.Title)
-        };
+        localQuery = localQuery.OrderBy(m => m.Title);
 
         int totalLocal = await localQuery.CountAsync(cancellationToken);
 
@@ -55,7 +48,9 @@ public sealed class SearchMoviesHybridHandler(IMovieTrackRDbContext dbContext, I
         if (!string.IsNullOrWhiteSpace(searchCriteria.Query))
         {
             TmdbSearchMoviesResponse tmdb = await tmdbClient.SearchMoviesAsync(
-                query: searchCriteria.Query!, page: searchCriteria.Page, language: "fr-FR", region: null, cancellationToken: cancellationToken);
+                criterias: searchCriteria,
+                language: "fr-FR",
+                cancellationToken: cancellationToken);
 
             totalTmdb = tmdb.TotalResults;
             totalTmdbPages = tmdb.TotalPages;
@@ -63,11 +58,11 @@ public sealed class SearchMoviesHybridHandler(IMovieTrackRDbContext dbContext, I
         }
 
         // 3. Fusionner les résultats locaux et TMDB en évitant les doublons
-        HashSet<string> localKeys =
-            new HashSet<string>(locals.Select(MakeKey), StringComparer.OrdinalIgnoreCase);
+        HashSet<string> localKeys = new HashSet<string>(
+            locals.Select(MakeKey),
+            StringComparer.OrdinalIgnoreCase);
 
-        List<SearchMovieResultDto> merged =
-            locals.Concat(
+        List<SearchMovieResultDto> merged = locals.Concat(
                 tmdbDtos.Where(x => !localKeys.Contains(MakeKey(x)))
             )
             .Take(searchCriteria.PageSize)

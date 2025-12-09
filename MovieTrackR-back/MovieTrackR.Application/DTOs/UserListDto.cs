@@ -1,3 +1,5 @@
+using MovieTrackR.Domain.Enums;
+
 namespace MovieTrackR.Application.DTOs;
 
 /// <summary>Représente une liste d'utilisateur (vue "résumé").</summary>
@@ -17,6 +19,15 @@ public class UserListDto
 
     /// <summary>Nombre de films présents dans la liste.</summary>
     public int MoviesCount { get; set; }
+
+    /// <summary>Type de liste utilisateur.</summary>
+    public UserListType Type { get; set; }
+
+    /// <summary>Définit si la liste est une liste systeme défaut ou non.</summary>
+    public bool IsSystemList { get; set; }
+
+    /// <summary>Id de l'utilisateur à qui appartient cette liste</summary>
+    public Guid userId { get; set; }
 }
 
 /// <summary>Représente une liste d'utilisateur (vue "détails" avec les films ordonnés).</summary>
@@ -33,6 +44,12 @@ public class UserListDetailsDto
 
     /// <summary>Date de création de la liste (UTC).</summary>
     public DateTime CreatedAt { get; set; }
+
+    /// <summary>Type de liste utilisateur.</summary>
+    public UserListType Type { get; set; }
+
+    /// <summary>Définit si la liste est une liste systeme défaut ou non.</summary>
+    public bool IsSystemList { get; set; }
 
     /// <summary>Films contenus dans la liste, triés par position croissante.</summary>
     public IReadOnlyList<UserListMovieDto> Movies { get; set; } = Array.Empty<UserListMovieDto>();

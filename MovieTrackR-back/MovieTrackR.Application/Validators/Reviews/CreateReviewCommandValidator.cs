@@ -8,7 +8,8 @@ public sealed class CreateReviewCommandValidator : AbstractValidator<CreateRevie
     public CreateReviewCommandValidator()
     {
         RuleFor(x => x.Review.MovieId).NotEmpty().WithName("movieId");
-        RuleFor(x => x.Review.Rating).InclusiveBetween(0, 10).WithName("rating");
-        RuleFor(x => x.Review.Content).MaximumLength(4000).WithName("content");
+        RuleFor(x => x.Review.Rating).InclusiveBetween(0, 5).WithMessage("Rating is out of scope");
+        RuleFor(x => x.Review.Content).MaximumLength(5000).WithMessage("Review content is too long.");
+        RuleFor(x => x.Review.Content).NotEmpty().WithMessage("Review content cannot be empty.");
     }
 }

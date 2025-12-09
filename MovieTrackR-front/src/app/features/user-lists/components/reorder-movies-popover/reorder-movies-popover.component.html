@@ -1,0 +1,63 @@
+<p-button
+  label="Réorganiser"
+  icon="pi pi-sort-alt"
+  [outlined]="true"
+  severity="secondary"
+  (onClick)="toggle($event, popover)"
+/>
+
+<p-popover #popover [style]="{ width: '600px' }">
+  <div class="reorder-popover">
+    <div class="popover-header">
+      <h3>Réorganiser les films</h3>
+      <p>Glissez-déposez pour changer l'ordre</p>
+    </div>
+    
+    <div class="popover-body">
+      <p-orderList 
+        [value]="localMovies()"
+        dataKey="movieId"
+        (onReorder)="onReorder($event)"
+        [dragdrop]="true"
+        [listStyle]="{ 'max-height': '400px' }"
+      >
+        <ng-template let-movie pTemplate="item">
+          <div class="movie-item">
+            <div class="movie-poster">
+              <img 
+                [src]="imageService.getPosterUrl(movie.movie.posterUrl, 'w92')" 
+                [alt]="movie.movie.title"
+              />
+            </div>
+            <div class="movie-info">
+              <span class="movie-title">{{ movie.movie.title }}</span>
+              @if (movie.movie.year) {
+                <span class="movie-year">{{ movie.movie.year }}</span>
+              }
+            </div>
+          </div>
+        </ng-template>
+      </p-orderList>
+    </div>
+    
+    <div class="popover-footer">
+      <p-button
+        label="Annuler"
+        severity="secondary"
+        [outlined]="true"
+        size="small"
+        (onClick)="onCancel(popover)"
+        [disabled]="saving()"
+      />
+      
+      <p-button
+        label="Enregistrer"
+        icon="pi pi-check"
+        size="small"
+        (onClick)="onSave(popover)"
+        [disabled]="!hasChanges()"
+        [loading]="saving()"
+      />
+    </div>
+  </div>
+</p-popover>

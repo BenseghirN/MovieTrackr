@@ -7,5 +7,7 @@ public enum ResourceKind
     [EnumMember(Value = "Review")]
     Review,
     [EnumMember(Value = "UserList")]
-    UserList
+    UserList,
+    [EnumMember(Value = "User")]
+    User
 }

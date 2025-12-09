@@ -50,6 +50,8 @@ public class MovieTrackRDbContext : DbContext, IMovieTrackRDbContext
             e.HasIndex(x => x.CreatedAt);
             e.Property(x => x.ReleaseDate).HasColumnType("date");
             e.Property(x => x.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            e.Property(x => x.BackdropPath).HasMaxLength(500);
+            e.Property(x => x.VoteAverage).HasPrecision(3, 1);
         });
 
         //  Genres 

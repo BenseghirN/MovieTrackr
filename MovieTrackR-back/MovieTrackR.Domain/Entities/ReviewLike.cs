@@ -2,19 +2,20 @@ namespace MovieTrackR.Domain.Entities;
 
 public class ReviewLike
 {
-    public Guid UserId { get; private set; }
-    public Guid ReviewId { get; private set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public Guid UserId { get; init; }
+    public Guid ReviewId { get; init; }
+    public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
 
-    public User User { get; private set; } = null!;
-    public Review Review { get; private set; } = null!;
+    public User User { get; init; } = null!;
+    public Review Review { get; init; } = null!;
 
     public static ReviewLike Create(Guid userId, Guid reviewId)
     {
         return new ReviewLike
         {
             UserId = userId,
-            ReviewId = reviewId
+            ReviewId = reviewId,
+            CreatedAt = DateTime.UtcNow
         };
     }
 }

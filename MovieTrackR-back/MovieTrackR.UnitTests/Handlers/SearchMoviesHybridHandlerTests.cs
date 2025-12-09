@@ -29,8 +29,8 @@ public class SearchMoviesHybridHandlerTests
     private static Movie MakeMovie(string title, int? year = null, int? tmdbId = null)
         => Movie.CreateNew(
             title: title, tmdbId: tmdbId, originalTitle: null,
-            year: year, posterUrl: null, trailerUrl: null,
-            duration: 120, overview: "test", releaseDate: year is int y ? new DateTime(y, 1, 1) : null);
+            year: year, posterUrl: null, backdropPath: null, trailerUrl: null, tagLine: null,
+            duration: 120, overview: "test", releaseDate: year is int y ? new DateTime(y, 1, 1) : null, voteAverage: null);
 
     [Fact]
     public async Task Should_merge_local_and_tmdb_results()
@@ -41,9 +41,9 @@ public class SearchMoviesHybridHandlerTests
         db.Movies.Add(MakeMovie("Dune", 2021));
         await db.SaveChangesAsync();
 
-        Mock<ITmdbClient> tmdbMock = new Mock<ITmdbClient>();
+        Mock<ITmdbClientService> tmdbMock = new Mock<ITmdbClientService>();
         tmdbMock
-            .Setup(c => c.SearchMoviesAsync("Interstellar", 1, It.IsAny<string>(), null, It.IsAny<CancellationToken>()))
+            .Setup(c => c.SearchMoviesAsync(It.Is<MovieSearchCriteria>(crit => crit.Query == "Interstellar"), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new TmdbSearchMoviesResponse(
                 Page: 1,
                 TotalResults: 2,
@@ -86,7 +86,7 @@ public class SearchMoviesHybridHandlerTests
         );
         await db.SaveChangesAsync();
 
-        Mock<ITmdbClient> tmdbMock = new Mock<ITmdbClient>(MockBehavior.Strict);
+        Mock<ITmdbClientService> tmdbMock = new Mock<ITmdbClientService>(MockBehavior.Strict);
         SearchMoviesHybridHandler handler = new SearchMoviesHybridHandler(dbAbs, tmdbMock.Object, _mapper);
 
         MovieSearchCriteria criteria = new MovieSearchCriteria
@@ -118,7 +118,7 @@ public class SearchMoviesHybridHandlerTests
         );
         await db.SaveChangesAsync();
 
-        Mock<ITmdbClient> tmdbMock = new Mock<ITmdbClient>();
+        Mock<ITmdbClientService> tmdbMock = new Mock<ITmdbClientService>();
         SearchMoviesHybridHandler handler = new SearchMoviesHybridHandler(dbAbs, tmdbMock.Object, _mapper);
         MovieSearchCriteria criteria = new MovieSearchCriteria { Query = null, Page = 1, PageSize = 3 };
 
@@ -136,9 +136,9 @@ public class SearchMoviesHybridHandlerTests
         db.Movies.Add(MakeMovie("Interstellar", 2014, tmdbId: 157336)); // bruit, != "Blade Runner"
         await db.SaveChangesAsync();
 
-        Mock<ITmdbClient> tmdbMock = new Mock<ITmdbClient>();
+        Mock<ITmdbClientService> tmdbMock = new Mock<ITmdbClientService>();
         tmdbMock
-            .Setup(c => c.SearchMoviesAsync("Blade Runner", 1, It.IsAny<string>(), null, It.IsAny<CancellationToken>()))
+            .Setup(c => c.SearchMoviesAsync(It.Is<MovieSearchCriteria>(crit => crit.Query == "Blade Runner"), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new TmdbSearchMoviesResponse(
                 Page: 1,
                 TotalResults: 2,
@@ -162,7 +162,6 @@ public class SearchMoviesHybridHandlerTests
         result.Items.Should().HaveCount(2);
         result.Items.Select(x => x.Title).Should().BeEquivalentTo(new[] { "Blade Runner", "Blade Runner 2049" });
 
-        // Optionnel : vérifier que ce sont bien des éléments TMDb (pas locaux)
         result.Items.All(i => i.LocalId is null).Should().BeTrue();
     }
 
@@ -178,7 +177,7 @@ public class SearchMoviesHybridHandlerTests
         );
         await db.SaveChangesAsync();
 
-        Mock<ITmdbClient> tmdbMock = new Mock<ITmdbClient>(MockBehavior.Strict);
+        Mock<ITmdbClientService> tmdbMock = new Mock<ITmdbClientService>(MockBehavior.Strict);
         SearchMoviesHybridHandler handler = new SearchMoviesHybridHandler(dbAbs, tmdbMock.Object, _mapper);
         MovieSearchCriteria criteria = new MovieSearchCriteria { Query = null, Page = 2, PageSize = 3 };
 

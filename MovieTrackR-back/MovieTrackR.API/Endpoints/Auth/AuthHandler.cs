@@ -23,10 +23,21 @@ public static class AuthHandlers
         string scheme =
             config["EntraExternalId:openIdScheme"] ??
             config["EntraExternalId:OpenIdScheme"] ??
-            throw new InvalidOperationException("OpenId scheme manquant (EntraExternalId:openIdScheme).");
+            throw new InvalidOperationException("OpenId scheme manquant.");
 
-        AuthenticationProperties props = new AuthenticationProperties { RedirectUri = string.IsNullOrWhiteSpace(returnUrl) ? "/" : returnUrl };
-        return Results.Challenge(props, [scheme]);
+        string? frontOrigin = config["FrontEnd:Origin"];
+
+        string resolvedReturnUrl =
+            string.IsNullOrWhiteSpace(returnUrl)
+                ? (frontOrigin ?? "/")
+                : returnUrl;
+
+        AuthenticationProperties props = new AuthenticationProperties
+        {
+            RedirectUri = resolvedReturnUrl
+        };
+
+        return TypedResults.Challenge(props, [scheme]);
     }
 
     /// <summary>
@@ -37,7 +48,7 @@ public static class AuthHandlers
     public static IResult Me(ClaimsPrincipal user)
     {
         var claims = user.Claims.Select(c => new { c.Type, c.Value }).ToArray();
-        return Results.Ok(new { claims });
+        return TypedResults.Ok(new { claims });
     }
 
     /// <summary>
@@ -52,7 +63,7 @@ public static class AuthHandlers
         CurrentUserDto currentUser = user.ToCurrentUserDto();
 
         UserDto? response = await mediator.Send(new GetCurrentUserInfoQuery(currentUser), cancellationToken);
-        return response is null ? Results.NotFound() : Results.Ok(response);
+        return response is null ? TypedResults.NotFound() : TypedResults.Ok(response);
     }
 
     /// <summary>
@@ -64,6 +75,6 @@ public static class AuthHandlers
     public static async Task<IResult> Logout(HttpContext context, string? returnUrl)
     {
         await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        return Results.Redirect(string.IsNullOrWhiteSpace(returnUrl) ? "/" : returnUrl);
+        return TypedResults.Redirect(string.IsNullOrWhiteSpace(returnUrl) ? "/" : returnUrl);
     }
 }

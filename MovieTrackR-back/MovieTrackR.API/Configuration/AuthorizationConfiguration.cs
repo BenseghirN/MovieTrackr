@@ -12,6 +12,7 @@ public static class AuthorizationConfiguration
     public const string AdminPolicy = "AdminRolePolicy";
     public const string ReviewOwnerPolicy = "IsReviewOwner";
     public const string ListOwnerPolicy = "IsListOwner";
+    public const string UserOwnerPolicy = "IsUserOwner";
 
     public static IServiceCollection AddAppAuthorization(this IServiceCollection services)
     {
@@ -33,6 +34,10 @@ public static class AuthorizationConfiguration
             options.AddPolicy(ListOwnerPolicy, policyBuilder =>
                 policyBuilder.RequireAuthenticatedUser()
                  .AddRequirements(new OwnerRequirement(ResourceKind.UserList)));
+
+            options.AddPolicy(UserOwnerPolicy, policyBuilder =>
+                policyBuilder.RequireAuthenticatedUser()
+                 .AddRequirements(new OwnerRequirement(ResourceKind.User)));
         });
 
         return services;
@@ -76,7 +81,7 @@ public sealed class OwnerAuthorizationHandler(IMovieTrackRDbContext db) : Author
         }
 
         HttpContext? httpCtx = (context.Resource as HttpContext) ??
-                      (context.Resource as DefaultHttpContext);
+                                (context.Resource as DefaultHttpContext);
         string? idStr = httpCtx?.GetRouteValue(requirement.RouteParam)?.ToString();
         if (!Guid.TryParse(idStr, out Guid resourceId)) return;
 
@@ -87,6 +92,8 @@ public sealed class OwnerAuthorizationHandler(IMovieTrackRDbContext db) : Author
 
             ResourceKind.UserList => await db.UserLists
                 .AnyAsync(l => l.Id == resourceId && l.UserId == user.Id),
+
+            ResourceKind.User => resourceId == user.Id,
 
             _ => false
         };

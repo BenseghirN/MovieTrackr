@@ -1,0 +1,116 @@
+<!-- Loading State -->
+@if (loading() && !user()) {
+  <div class="loading-container">
+    <p-progressSpinner strokeWidth="3" animationDuration="1s" />
+  </div>
+} @else if (user(); as profile) {
+  <div class="profile-modal">
+    <!-- Avatar Section -->
+    <div class="avatar-section">
+      <div class="avatar-wrapper">
+        @if (avatarUrl()) {
+          <img
+            [src]="avatarUrl()!"
+            alt="Avatar"
+            class="avatar-image"
+          />
+        } @else {
+          <div class="avatar-placeholder">
+            {{ avatarInitials() }}
+          </div>
+        }
+
+        <!-- Upload overlay -->
+        <div class="avatar-overlay">
+          <i class="pi pi-camera"></i>
+        </div>
+      </div>
+
+      <p-fileUpload
+        mode="basic"
+        name="avatar"
+        [auto]="true"
+        [customUpload]="true"
+        [disabled]="savingAvatar()"
+        accept="image/jpeg, image/png"
+        chooseLabel="{{ savingAvatar() ? 'Envoi...' : 'Changer l\'avatar' }}"
+        styleClass="avatar-upload-btn"
+        (uploadHandler)="onAvatarUpload($event)"
+      />
+
+      <p class="avatar-hint">JPG ou PNG, max 2 Mo</p>
+    </div>
+
+    <!-- Form Section -->
+    <div class="form-section">
+      <form [formGroup]="profileForm">
+        <!-- Email (readonly) -->
+        <div class="form-field">
+          <label>Email</label>
+          <div class="readonly-field">
+            <i class="pi pi-envelope"></i>
+            <span>{{ profile.email }}</span>
+          </div>
+        </div>
+
+        <!-- Pseudo -->
+        <div class="form-field">
+          <label for="pseudo">Pseudo <span class="required">*</span></label>
+          <input 
+            id="pseudo" 
+            type="text"
+            pInputText 
+            formControlName="pseudo" 
+            placeholder="Votre pseudo"
+          />
+          @if (profileForm.controls.pseudo.invalid && profileForm.controls.pseudo.touched) {
+            <small class="field-error">Le pseudo est requis</small>
+          }
+        </div>
+
+        <!-- Name Row -->
+        <div class="form-row">
+          <div class="form-field">
+            <label for="givenName">Prénom</label>
+            <input 
+              id="givenName" 
+              type="text"
+              pInputText 
+              formControlName="givenName"
+              placeholder="Votre prénom"
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="surname">Nom</label>
+            <input 
+              id="surname" 
+              type="text"
+              pInputText 
+              formControlName="surname"
+              placeholder="Votre nom"
+            />
+          </div>
+        </div>
+      </form>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <p-button
+          label="Annuler"
+          [text]="true"
+          styleClass="cancel-btn"
+          (onClick)="onCancel()"
+        />
+        <p-button
+          label="Enregistrer"
+          icon="pi pi-check"
+          styleClass="save-btn"
+          [disabled]="!canSubmitInfos()"
+          [loading]="savingInfos()"
+          (onClick)="onSubmitInfos()"
+        />
+      </div>
+    </div>
+  </div>
+}

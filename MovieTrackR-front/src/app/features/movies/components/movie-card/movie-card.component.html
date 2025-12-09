@@ -1,0 +1,32 @@
+<article class="movie-card" (click)="onClick()">
+  <!-- Poster -->
+  <div class="poster-wrapper">
+    <img
+      [src]="imageService.getPosterUrl(posterPath(), 'w342')"
+      [alt]="movie().title"
+      loading="lazy"
+      class="poster-image"
+    />
+    
+    <!-- Hover Overlay -->
+    <div class="poster-overlay">
+      <i class="pi pi-play-circle"></i>
+    </div>
+
+    <!-- Rating Badge -->
+    @if (rating()) {
+      <div class="rating-badge">
+        <i class="pi pi-star-fill"></i>
+        <span>{{ rating() | number:'1.1-1' }} TMDB</span>
+      </div>
+    }
+  </div>
+
+  <!-- Info -->
+  <div class="card-info">
+    <h3 class="movie-title">{{ movie().title }}</h3>
+    @if (movie().year) {
+      <span class="movie-year">{{ movie().year }}</span>
+    }
+  </div>
+</article>

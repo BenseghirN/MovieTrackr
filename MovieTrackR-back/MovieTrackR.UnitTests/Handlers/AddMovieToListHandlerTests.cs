@@ -24,10 +24,13 @@ public class AddMovieToListHandlerTests
             originalTitle: null,
             year: year,
             posterUrl: null,
+            backdropPath: null,
             trailerUrl: null,
+            tagLine: null,
             duration: 120,
             overview: "Test movie",
-            releaseDate: year is int y ? new DateTime(y, 1, 1) : null
+            releaseDate: year is int y ? new DateTime(y, 1, 1) : null,
+            voteAverage: null
         );
 
     [Fact]
@@ -36,12 +39,14 @@ public class AddMovieToListHandlerTests
         var (dbAbs, db) = InMemoryDbContextFactory.Create();
 
         User user = User.Create("ext-1", "u@test.dev", "UserTest", "User", "Test");
-        UserList list = UserList.Create(user.Id, "Watchlist", null);
-        Movie movie = MakeMovie("Interstellar", 2014);
-
         db.Users.Add(user);
-        db.Movies.Add(movie);
+        await db.SaveChangesAsync();
+
+        UserList list = UserList.Create(user.Id, "Watchlist", null);
         db.UserLists.Add(list);
+
+        Movie movie = MakeMovie("Interstellar", 2014);
+        db.Movies.Add(movie);
         await db.SaveChangesAsync();
 
         Mock<ISender> sender = new Mock<ISender>();
@@ -74,12 +79,15 @@ public class AddMovieToListHandlerTests
         var (dbAbs, db) = InMemoryDbContextFactory.Create();
 
         User user = User.Create("ext-1", "u@test.dev", "UserTest", "User", "Test");
-        UserList list = UserList.Create(user.Id, "Favs", null);
-        Movie movie = MakeMovie("Dune", 2021);
-
         db.Users.Add(user);
-        db.Movies.Add(movie);
+        await db.SaveChangesAsync();
+
+        UserList list = UserList.Create(user.Id, "Favs", null);
         db.UserLists.Add(list);
+
+        Movie movie = MakeMovie("Dune", 2021);
+        db.Movies.Add(movie);
+
         await db.SaveChangesAsync();
 
         Mock<ISender> sender = new Mock<ISender>();
@@ -110,14 +118,17 @@ public class AddMovieToListHandlerTests
         var (dbAbs, db) = InMemoryDbContextFactory.Create();
 
         User user = User.Create("ext-1", "u@test.dev", "UserTest", "User", "Test");
+        db.Users.Add(user);
+        await db.SaveChangesAsync();
+
         UserList list = UserList.Create(user.Id, "Seen", null);
+        db.UserLists.Add(list);
+
         Movie movie = MakeMovie("Matrix", 1999);
+        db.Movies.Add(movie);
 
         list.AddMovie(movie, position: 10);
 
-        db.Users.Add(user);
-        db.Movies.Add(movie);
-        db.UserLists.Add(list);
         await db.SaveChangesAsync();
 
         Mock<ISender> sender = new Mock<ISender>();
@@ -148,12 +159,15 @@ public class AddMovieToListHandlerTests
         var (dbAbs, db) = InMemoryDbContextFactory.Create();
 
         User owner = User.Create("ext-1", "u@test.dev", "UserTest", "User", "Test");
-        UserList list = UserList.Create(owner.Id, "Private", null);
-        Movie movie = MakeMovie("Seven", 1995);
-
         db.Users.Add(owner);
-        db.Movies.Add(movie);
+        await db.SaveChangesAsync();
+
+        UserList list = UserList.Create(owner.Id, "Private", null);
         db.UserLists.Add(list);
+
+        Movie movie = MakeMovie("Seven", 1995);
+        db.Movies.Add(movie);
+
         await db.SaveChangesAsync();
 
         Mock<ISender> sender = new Mock<ISender>();
@@ -183,14 +197,19 @@ public class AddMovieToListHandlerTests
         var (dbAbs, db) = InMemoryDbContextFactory.Create();
 
         User user = User.Create("ext-1", "u@test.dev", "UserTest", "User", "Test");
+        db.Users.Add(user);
+        await db.SaveChangesAsync();
+
         UserList list = UserList.Create(user.Id, "List", null);
-        Movie m1 = Movie.CreateNew("A", null, null, 2000, null, null, 100, "a", new DateTime(2000, 1, 1));
-        Movie m2 = Movie.CreateNew("B", null, null, 2001, null, null, 100, "b", new DateTime(2001, 1, 1));
+        db.UserLists.Add(list);
+        await db.SaveChangesAsync();
+
+        Movie m1 = Movie.CreateNew("A", null, null, 2000, null, null, null, null, 100, "a", new DateTime(2000, 1, 1), null);
+        Movie m2 = Movie.CreateNew("B", null, null, 2001, null, null, null, null, 100, "b", new DateTime(2001, 1, 1), null);
+        db.Movies.AddRange(m1, m2);
+        await db.SaveChangesAsync();
 
         list.AddMovie(m1, 10);
-        db.Users.Add(user);
-        db.UserLists.Add(list);
-        db.Movies.AddRange(m1, m2);
         await db.SaveChangesAsync();
 
         Mock<ISender> sender = new Mock<ISender>();

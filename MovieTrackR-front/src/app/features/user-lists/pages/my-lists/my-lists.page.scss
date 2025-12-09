@@ -1,0 +1,396 @@
+// ============================================
+// MY LISTS PAGE - CINEMATIC DESIGN
+// ============================================
+
+@use "sass:color";
+
+// Variables
+$color-background: #0a0a0f;
+$color-surface: rgba(18, 18, 24, 0.85);
+$color-surface-solid: #12121a;
+$color-accent: #e4b45f;
+$color-accent-light: #f5d190;
+$color-text-primary: #ffffff;
+$color-text-secondary: rgba(255, 255, 255, 0.7);
+$color-text-muted: rgba(255, 255, 255, 0.5);
+$color-border: rgba(255, 255, 255, 0.1);
+$color-error: #ef4444;
+
+$font-display: 'Playfair Display', Georgia, serif;
+$font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+$shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.3);
+$shadow-glow: 0 0 30px rgba(228, 180, 95, 0.2);
+
+$transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+$breakpoint-lg: 1200px;
+$breakpoint-md: 992px;
+$breakpoint-sm: 768px;
+$breakpoint-xs: 576px;
+
+// ============================================
+// BASE
+// ============================================
+
+:host {
+  display: block;
+  min-height: 100vh;
+  background: $color-background;
+  color: $color-text-primary;
+}
+
+.my-lists-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 3rem 4rem;
+  min-height: calc(100vh - 140px);
+
+  @media (max-width: $breakpoint-md) {
+    padding: 1.5rem 1.5rem 3rem;
+  }
+
+  @media (max-width: $breakpoint-xs) {
+    padding: 1rem 1rem 2rem;
+  }
+}
+
+// ============================================
+// PAGE HEADER
+// ============================================
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2.5rem;
+  gap: 2rem;
+  flex-wrap: wrap;
+
+  @media (max-width: $breakpoint-sm) {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+}
+
+.header-content {
+  flex: 1;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+
+  i {
+    font-size: 2rem;
+    color: $color-accent;
+
+    @media (max-width: $breakpoint-sm) {
+      font-size: 1.5rem;
+    }
+  }
+
+  h1 {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 1.0625rem;
+  color: $color-text-muted;
+  padding-left: 3rem;
+
+  @media (max-width: $breakpoint-sm) {
+    padding-left: 2.5rem;
+    font-size: 1rem;
+  }
+}
+
+::ng-deep .create-list-btn {
+  background: $color-accent !important;
+  border-color: $color-accent !important;
+  color: $color-background !important;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  transition: $transition-smooth;
+
+  &:hover {
+    background: $color-accent-light !important;
+    border-color: $color-accent-light !important;
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: $breakpoint-sm) {
+    width: 100%;
+  }
+}
+
+// ============================================
+// LOADING STATE
+// ============================================
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5rem 2rem;
+}
+
+// ============================================
+// ERROR STATE
+// ============================================
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: 16px;
+
+  .error-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba($color-error, 0.1);
+    border: 1px solid rgba($color-error, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+
+    i {
+      font-size: 2rem;
+      color: color.adjust($color-error, $lightness: 10%);
+    }
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem;
+  }
+
+  p {
+    font-size: 1rem;
+    color: $color-text-secondary;
+    margin: 0 0 1.5rem;
+    max-width: 400px;
+  }
+}
+
+::ng-deep .retry-btn {
+  border-color: $color-border !important;
+  color: $color-text-secondary !important;
+
+  &:hover {
+    border-color: $color-accent !important;
+    color: $color-accent !important;
+    background: rgba(228, 180, 95, 0.1) !important;
+  }
+}
+
+// ============================================
+// LISTS INFO
+// ============================================
+
+.lists-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid $color-border;
+}
+
+.lists-count {
+  font-size: 0.9375rem;
+  color: $color-text-secondary;
+
+  strong {
+    color: $color-accent;
+    font-weight: 600;
+  }
+}
+
+// ============================================
+// LISTS GRID
+// ============================================
+
+.lists-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+
+  @media (max-width: $breakpoint-sm) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+// Override pour user-list-card si nécessaire
+::ng-deep app-user-list-card {
+  .list-card {
+    background: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: 12px;
+    transition: $transition-smooth;
+
+    &:hover {
+      border-color: rgba(228, 180, 95, 0.3);
+      box-shadow: $shadow-soft, $shadow-glow;
+    }
+  }
+}
+
+// ============================================
+// EMPTY STATE
+// ============================================
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 5rem 2rem;
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: 16px;
+  min-height: 400px;
+
+  @media (max-width: $breakpoint-sm) {
+    padding: 3rem 1.5rem;
+    min-height: 350px;
+  }
+}
+
+.empty-icon {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(228, 180, 95, 0.1) 0%, rgba(228, 180, 95, 0.05) 100%);
+  border: 1px solid rgba(228, 180, 95, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+
+  i {
+    font-size: 2.5rem;
+    color: $color-accent;
+    opacity: 0.7;
+  }
+}
+
+.empty-state h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+  color: $color-text-primary;
+}
+
+.empty-state p {
+  font-size: 1rem;
+  color: $color-text-muted;
+  margin: 0 0 2rem;
+  max-width: 450px;
+  line-height: 1.6;
+}
+
+::ng-deep .create-first-btn {
+  background: $color-accent !important;
+  border-color: $color-accent !important;
+  color: $color-background !important;
+  font-weight: 600;
+  padding: 0.875rem 1.75rem;
+  border-radius: 10px;
+  transition: $transition-smooth;
+
+  &:hover {
+    background: $color-accent-light !important;
+    border-color: $color-accent-light !important;
+    transform: translateY(-2px);
+    box-shadow: $shadow-glow;
+  }
+}
+
+// ============================================
+// AUTH REQUIRED STATE
+// ============================================
+
+.auth-required {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 5rem 2rem;
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: 16px;
+  min-height: 400px;
+
+  @media (max-width: $breakpoint-sm) {
+    padding: 3rem 1.5rem;
+    min-height: 350px;
+  }
+}
+
+.auth-icon {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border: 1px solid $color-border;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+
+  i {
+    font-size: 2.5rem;
+    color: $color-text-muted;
+  }
+}
+
+.auth-required h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+  color: $color-text-primary;
+}
+
+.auth-required p {
+  font-size: 1rem;
+  color: $color-text-muted;
+  margin: 0 0 2rem;
+  max-width: 400px;
+  line-height: 1.6;
+}
+
+::ng-deep .login-btn {
+  background: $color-accent !important;
+  border-color: $color-accent !important;
+  color: $color-background !important;
+  font-weight: 600;
+  padding: 0.875rem 1.75rem;
+  border-radius: 10px;
+  transition: $transition-smooth;
+
+  &:hover {
+    background: $color-accent-light !important;
+    border-color: $color-accent-light !important;
+    transform: translateY(-2px);
+    box-shadow: $shadow-glow;
+  }
+}

@@ -11,7 +11,7 @@ public sealed class ValidationFilter<T> : IEndpointFilter where T : class
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
         // récupère le 1er argument du handler qui est de type T
-        var dto = context.Arguments.FirstOrDefault(a => a is T) as T;
+        T? dto = context.Arguments.FirstOrDefault(a => a is T) as T;
         if (dto is not null)
         {
             ValidationResult result = await _validator.ValidateAsync(dto);
