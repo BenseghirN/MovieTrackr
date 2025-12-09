@@ -6,6 +6,12 @@ public static class StaticFilesConfiguration
 {
     public static void ConfigureStaticFiles(this WebApplication app, IWebHostEnvironment environment)
     {
+        if (string.IsNullOrEmpty(environment.WebRootPath))
+        {
+            Console.WriteLine("⚠️ wwwroot folder not found. Skipping static files configuration.");
+            return;
+        }
+
         string browserRoot = Path.Combine(environment.WebRootPath, "browser");
 
         if (!Directory.Exists(browserRoot))
