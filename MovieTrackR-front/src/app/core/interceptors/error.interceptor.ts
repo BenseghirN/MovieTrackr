@@ -2,7 +2,7 @@ import { HttpInterceptorFn, HttpErrorResponse } from "@angular/common/http";
 import { inject } from "@angular/core";
 import { Router } from "@angular/router";
 import { catchError, throwError } from "rxjs";
-import { AuthService } from "../auth/auth-service";
+import { AuthService } from "../services/auth.service";
 import { ApiError } from "../models/api-error.model";
 import { ProblemDetails } from "../models/api-error.model";
 import { NotificationService } from "../services/notification.service";

@@ -11,7 +11,7 @@ import { ButtonModule } from 'primeng/button';
 import { UserProfileReviewsSectionComponent } from '../../components/user-profile-reviews-section/user-profile-reviews-section.component';
 import { TabsModule } from 'primeng/tabs';
 import { UserProfileListsSectionComponent } from '../../components/user-profile-lists-section/user-profile-lists-section.component';
-import { AuthService } from '../../../../core/auth/auth-service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { UserProfileModalComponent } from '../../components/user-profile-edit-modal/user-profile-edit-modal.component';
 import { TooltipModule } from 'primeng/tooltip';

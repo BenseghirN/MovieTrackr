@@ -28,10 +28,13 @@ export class ReorderMoviesPopoverComponent {
   readonly saving = signal(false);
 
   readonly hasChanges = computed(() => {
-    const original = this.movies()
-    const current = this.localMovies();
-    const changed = current.some((movie, index) => movie.movieId !== original[index]?.movieId);
-    return changed;
+    const original = this.movies() ?? [];
+    const current = this.localMovies() ?? [];
+
+    if (original.length !== current.length)
+      return true;
+
+    return current.some((movie, index) => movie.movieId !== original[index]?.movieId);
   });
 
   toggle(event: Event, popover: Popover): void {

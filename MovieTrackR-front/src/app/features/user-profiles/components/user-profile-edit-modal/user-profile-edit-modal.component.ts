@@ -10,7 +10,7 @@ import { UserProfilesService } from '../../services/user-profiles.service';
 import { UpdatedUserModel, UserProfile } from '../../models/user-profiles.models';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { NotificationService } from '../../../../core/services/notification.service';
-import { AuthService } from '../../../../core/auth/auth-service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 

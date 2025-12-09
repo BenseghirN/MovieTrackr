@@ -4,7 +4,7 @@ import { ButtonModule } from 'primeng/button';
 import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ReviewService } from '../../services/reviews.service';
-import { AuthService } from '../../../../core/auth/auth-service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { MovieReviewSortOption, MovieReviewsQueryParams, ReviewListItem } from '../../models/review.model';

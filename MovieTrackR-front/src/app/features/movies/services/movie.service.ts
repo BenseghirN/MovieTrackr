@@ -58,6 +58,25 @@ export class MovieService {
         );
     }
 
+    getPopularMovies(params: SearchMovieParams): Observable<SearchMovieResponse>{
+        const queryParams: Record<string, string | number> = {
+            Page: params.page ?? 1,
+            PageSize: params.pageSize ?? 20
+        };
+
+        return this.api.get<SearchMovieResponse>(
+            `${this.config.apiUrl}/movies/popular`,
+            { params: queryParams, withCredentials: false }
+        );
+    }
+
+    getTrendingMovies(): Observable<SearchMovieResult[]>{
+        return this.api.get<SearchMovieResult[]>(
+            `${this.config.apiUrl}/movies/trending`,
+            { withCredentials: false }
+        );
+    }    
+
     private getLocalMovie(localId: string): Observable<MovieDetails> {
         return this.api.get<MovieDetails>(
             `${this.config.apiUrl}/movies/${localId}`,

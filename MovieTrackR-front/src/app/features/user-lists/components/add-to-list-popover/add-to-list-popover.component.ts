@@ -5,7 +5,7 @@ import { Popover, PopoverModule } from 'primeng/popover';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { UserListService } from '../../services/user-list.service';
 import { NotificationService } from '../../../../core/services/notification.service';
-import { AuthService } from '../../../../core/auth/auth-service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { UserLists, UserListSummary } from '../../models/user-list.model';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Tooltip } from 'primeng/tooltip';

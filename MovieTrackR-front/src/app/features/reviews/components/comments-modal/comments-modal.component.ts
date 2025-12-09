@@ -9,7 +9,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { ReviewCommentsService } from '../../services/review-comments.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { ReviewComment } from '../../models/review.model';
-import { AuthService } from '../../../../core/auth/auth-service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 

@@ -5,7 +5,7 @@ import { ReviewService } from '../../../reviews/services/reviews.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { ReviewCardComponent } from '../../../reviews/components/review-card/review-card.component';
-import { AuthService } from '../../../../core/auth/auth-service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { ReviewListItem, UserReviewSortOption, UserReviewsQueryParams } from '../../../reviews/models/review.model';
 import { SelectModule } from 'primeng/select';
 import { FormsModule } from '@angular/forms';

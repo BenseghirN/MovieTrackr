@@ -3,7 +3,7 @@ import { Component, computed, effect, inject, input, output, signal } from '@ang
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { ReviewListItem } from '../../models/review.model';
-import { AuthService } from '../../../../core/auth/auth-service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { Router } from '@angular/router';
 import { TmdbImageService } from '../../../../core/services/tmdb-image.service';
 import { NotificationService } from '../../../../core/services/notification.service';

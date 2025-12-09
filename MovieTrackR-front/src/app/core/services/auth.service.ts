@@ -1,8 +1,8 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Observable, tap, catchError, map, of } from 'rxjs';
-import { AuthUser, MeClaims } from './models/auth-user.model';
+import { AuthUser, MeClaims } from '../auth/models/auth-user.model';
 import { HttpBackend, HttpClient } from '@angular/common/http';
-import { ConfigService } from '../services/config.service';
+import { ConfigService } from './config.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {

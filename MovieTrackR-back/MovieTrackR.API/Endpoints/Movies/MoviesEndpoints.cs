@@ -46,6 +46,13 @@ public static class MoviesEndpoints
             .AllowAnonymous()
             .Produces<IReadOnlyList<SearchMovieResultDto>>(StatusCodes.Status200OK);
 
+        group.MapGet("/trending", MoviesHandlers.GetTrending)
+            .WithName("Get_Trending")
+            .WithSummary("Top 20 trending local movies")
+            .WithDescription("Basé sur l'activité locale : reviews, commentaires, likes.")
+            .AllowAnonymous()
+            .Produces<IReadOnlyList<SearchMovieResultDto>>(StatusCodes.Status200OK);
+
         group.MapPost("/", MoviesHandlers.Create)
             .WithName("Create_Movie")
             .WithSummary("Create a movie")

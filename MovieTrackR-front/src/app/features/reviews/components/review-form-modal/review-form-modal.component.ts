@@ -32,7 +32,6 @@ export class ReviewFormModalComponent implements OnInit {
   private readonly notificationService = inject(NotificationService);
   
   movieId!: string;
-  // existingReview?: ReviewListItem;
   readonly existingReview = signal<ReviewListItem | null>(null);
   readonly reviewEditor = viewChild<Editor>('reviewEditor');
   
@@ -58,13 +57,13 @@ export class ReviewFormModalComponent implements OnInit {
     { initialValue: this.reviewForm.controls.content.value }
   );
 
-  readonly isEditMode = computed(() => !!this.existingReview);
+  readonly isEditMode = computed(() => !!this.existingReview());
   readonly contentLength = signal(0);
   readonly contentHTMLLength = signal(0);
   readonly canSubmit = computed(() => {
     const r = this.rating() ?? 0;
     const c = (this.content() ?? '').trim();
-    return r > 0 && c.length >= 10 && !this.loading();
+    return r > 0 && c.length >= 10 && c.length <= 2000 && !this.loading();
   });
   
   ngOnInit(): void {
@@ -81,7 +80,9 @@ export class ReviewFormModalComponent implements OnInit {
       this.reviewForm.patchValue({
         rating: review.rating,
         content: review.content,
-      });
+      })} else {
+      this.reviewForm.reset({ rating: 0, content: '' });
+      this.contentLength.set(0);
     }
   }
 
@@ -152,7 +153,7 @@ export class ReviewFormModalComponent implements OnInit {
 
     if (err.status === 400 && !err.errors) {
       this.notificationService.error(
-        err.message || `Une erreur est survenue lors de l’envoi de la critique.`
+        err.message || `Une erreur est survenue lors de l'envoi de la critique.`
       );
       return;
     }

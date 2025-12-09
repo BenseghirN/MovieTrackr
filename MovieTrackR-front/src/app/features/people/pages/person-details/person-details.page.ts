@@ -97,11 +97,9 @@ export class PersonDetailsPage {
   }
   
   onMovieClick(credit: MovieCredit): void {
-    console.log(credit);
     const isValidGuid = credit.movieId && 
       credit.movieId !== '00000000-0000-0000-0000-000000000000';
     const id = isValidGuid ? credit.movieId : credit.tmdbMovieId;
-    console.log(id);
 
     if (id) {
       this.router.navigate(['/movies', id]);

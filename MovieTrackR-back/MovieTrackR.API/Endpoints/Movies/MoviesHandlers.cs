@@ -5,25 +5,14 @@ using MovieTrackR.Application.Movies.Queries;
 
 namespace MovieTrackR.API.Endpoints.Movies;
 
-/// <summary>Handlers HTTP pour la gestion des films (réservé aux administrateurs).</summary>
 public static class MoviesHandlers
 {
-    /// <summary>Récupère un film par son identifiant.</summary>
-    /// <param name="id">ID du film.</param>
-    /// <param name="mediator">Médiateur applicatif.</param>
-    /// <param name="cancellationToken">Token d'annulation.</param>
-    /// <returns>Le film si trouvé, 404 sinon.</returns>
     public static async Task<IResult> GetById(Guid id, IMediator mediator, CancellationToken cancellationToken)
     {
         MovieDetailsDto? dto = await mediator.Send(new GetMovieByIdQuery(id), cancellationToken);
         return dto is null ? TypedResults.NotFound() : TypedResults.Ok(dto);
     }
 
-    /// <summary>Récupère un film TMDB (l'importe si nécessaire)</summary>
-    /// <param name="tmdbId">ID du film.</param>
-    /// <param name="mediator">Médiateur applicatif.</param>
-    /// <param name="cancellationToken">Token d'annulation.</param>
-    /// <returns>Le film si trouvé, 404 sinon.</returns>
     public static async Task<IResult> GetByTmdbId(int tmdbId, IMediator mediator, CancellationToken cancellationToken)
     {
         try
@@ -44,12 +33,6 @@ public static class MoviesHandlers
         }
     }
 
-    /// <summary>Recherche paginée de films par critères.</summary>
-    /// <param name="query">Paramètres de recherche (query string).</param>
-    /// <param name="mediator">Médiateur applicatif.</param>
-    /// <param name="response">Réponse HTTP (ajoute l'entête X-Total-Count).</param>
-    /// <param name="cancellationToken">Token d'annulation.</param>
-    /// <returns>La liste paginée de films.</returns>
     public static async Task<IResult> Search([AsParameters] MovieSearchRequest query, IMediator mediator, HttpResponse response, CancellationToken cancellationToken)
     {
         HybridPagedResult<SearchMovieResultDto> result =
@@ -61,12 +44,6 @@ public static class MoviesHandlers
         return TypedResults.Ok(result);
     }
 
-    /// <summary>Recherche paginée de films par critères.</summary>
-    /// <param name="query">Paramètres de recherche (query string).</param>
-    /// <param name="mediator">Médiateur applicatif.</param>
-    /// <param name="response">Réponse HTTP (ajoute l'entête X-Total-Count).</param>
-    /// <param name="cancellationToken">Token d'annulation.</param>
-    /// <returns>La liste paginée de films.</returns>
     public static async Task<IResult> GetPopular([AsParameters] MovieSearchRequest query, IMediator mediator, HttpResponse response, CancellationToken cancellationToken)
     {
         HybridPagedResult<SearchMovieResultDto> result =
@@ -78,48 +55,31 @@ public static class MoviesHandlers
         return TypedResults.Ok(result);
     }
 
+    public static async Task<IResult> GetTrending(IMediator mediator, CancellationToken cancellationToken)
+    {
+        IReadOnlyList<SearchMovieResultDto> result =
+        await mediator.Send(new GetTrendingMoviesQuery(), cancellationToken);
+        return TypedResults.Ok(result);
+    }
 
-    /// <summary>Crée un film (réservé aux administrateurs).</summary>
-    /// <param name="dto">Données de création.</param>
-    /// <param name="mediator">Médiateur applicatif.</param>
-    /// <param name="cancellationToken">Token d'annulation.</param>
-    /// <returns>201 Created + identifiant du film.</returns>
     public static async Task<IResult> Create(CreateMovieDto dto, IMediator mediator, CancellationToken cancellationToken)
     {
         Guid id = await mediator.Send(new CreateMovieCommand(dto), cancellationToken);
         return TypedResults.Created($"/movies/{id}", new { id });
     }
 
-
-    /// <summary>Met à jour un film (réservé aux administrateurs).</summary>
-    /// <param name="id">ID du film.</param>
-    /// <param name="dto">Données de mise à jour.</param>
-    /// <param name="mediator">Médiateur applicatif.</param>
-    /// <param name="cancellationToken">Token d'annulation.</param>
-    /// <returns>204 No Content.</returns>
     public static async Task<IResult> Update(Guid id, UpdateMovieDto dto, IMediator mediator, CancellationToken cancellationToken)
     {
         await mediator.Send(new UpdateMovieCommand(id, dto), cancellationToken);
         return TypedResults.NoContent();
     }
 
-    /// <summary>Supprime un film (réservé aux administrateurs).</summary>
-    /// <param name="id">ID du film.</param>
-    /// <param name="mediator">Médiateur applicatif.</param>
-    /// <param name="cancellationToken">Token d'annulation.</param>
-    /// <returns>204 No Content.</returns>
     public static async Task<IResult> Delete(Guid id, IMediator mediator, CancellationToken cancellationToken)
     {
         await mediator.Send(new DeleteMovieCommand(id), cancellationToken);
         return TypedResults.NoContent();
     }
 
-    /// <summary>Récupère les offres de streaming d'un film</summary>
-    /// <param name="tmdbId">ID du film.</param>
-    /// <param name="country">Code pays pour les offres</param>
-    /// <param name="mediator">Médiateur applicatif.</param>
-    /// <param name="cancellationToken">Token d'annulation.</param>
-    /// <returns>La liste des offres si trouvé, ou une liste vide.</returns>
     public static async Task<IResult> GetMovieStreamingOffers(int tmdbId, string? country, IMediator mediator, CancellationToken cancellationToken)
     {
         string countryCode = string.IsNullOrWhiteSpace(country)

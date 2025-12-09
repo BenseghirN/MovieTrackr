@@ -6,7 +6,7 @@ import { MovieCardComponent } from '../../../movies/components/movie-card/movie-
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserListService } from '../../services/user-list.service';
 import { NotificationService } from '../../../../core/services/notification.service';
-import { AuthService } from '../../../../core/auth/auth-service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';

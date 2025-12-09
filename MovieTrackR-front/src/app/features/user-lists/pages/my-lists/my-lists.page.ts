@@ -5,7 +5,7 @@ import { CardModule } from 'primeng/card';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { UserListService } from '../../services/user-list.service';
 import { NotificationService } from '../../../../core/services/notification.service';
-import { AuthService } from '../../../../core/auth/auth-service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Router } from '@angular/router';
 import { UserLists, UserListSummary } from '../../models/user-list.model';
