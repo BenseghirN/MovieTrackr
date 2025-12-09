@@ -61,6 +61,11 @@ namespace MovieTrackR.Infrastructure.Migrations
                         .HasColumnName("id")
                         .HasDefaultValueSql("uuid_generate_v1mc()");
 
+                    b.Property<string>("BackdropPath")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("backdrop_path");
+
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
@@ -87,6 +92,10 @@ namespace MovieTrackR.Infrastructure.Migrations
                         .HasColumnType("date")
                         .HasColumnName("release_date");
 
+                    b.Property<string>("Tagline")
+                        .HasColumnType("text")
+                        .HasColumnName("tagline");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text")
@@ -99,6 +108,11 @@ namespace MovieTrackR.Infrastructure.Migrations
                     b.Property<string>("TrailerUrl")
                         .HasColumnType("text")
                         .HasColumnName("trailer_url");
+
+                    b.Property<double?>("VoteAverage")
+                        .HasPrecision(3, 1)
+                        .HasColumnType("double precision")
+                        .HasColumnName("vote_average");
 
                     b.Property<int?>("Year")
                         .HasColumnType("integer")
@@ -227,6 +241,10 @@ namespace MovieTrackR.Infrastructure.Migrations
                         .HasColumnType("character varying(2)")
                         .HasColumnName("country");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
                     b.Property<string>("ModerationNote")
                         .HasColumnType("text")
                         .HasColumnName("moderation_note");
@@ -310,10 +328,18 @@ namespace MovieTrackR.Infrastructure.Migrations
                         .HasColumnType("date")
                         .HasColumnName("death_date");
 
+                    b.Property<string>("KnownForDepartment")
+                        .HasColumnType("text")
+                        .HasColumnName("known_for_department");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("name");
+
+                    b.Property<string>("PlaceOfBirth")
+                        .HasColumnType("text")
+                        .HasColumnName("place_of_birth");
 
                     b.Property<string>("ProfilePictureUrl")
                         .HasColumnType("text")
@@ -457,6 +483,11 @@ namespace MovieTrackR.Infrastructure.Migrations
                         .HasColumnName("id")
                         .HasDefaultValueSql("uuid_generate_v1mc()");
 
+                    b.Property<string>("AvatarUrl")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("avatar_url");
+
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
@@ -528,6 +559,10 @@ namespace MovieTrackR.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("title");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer")
+                        .HasColumnName("type");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")

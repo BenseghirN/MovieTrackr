@@ -20,6 +20,9 @@ public sealed class DeleteListHandler(IMovieTrackRDbContext dbContext, ISender s
             .FirstOrDefaultAsync(l => l.Id == command.ListId && l.UserId == userId, cancellationToken)
             ?? throw new NotFoundException("UserList", command.ListId);
 
+        if (list.IsSystemList)
+            throw new ForbiddenException("Cannot delete system lists");
+
         dbContext.UserLists.Remove(list);
         await dbContext.SaveChangesAsync(cancellationToken);
     }

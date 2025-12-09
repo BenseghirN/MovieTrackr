@@ -3,7 +3,7 @@ namespace MovieTrackR.Application.DTOs;
 /// <summary>
 /// Représente un film dans la plateforme.
 /// </summary>
-public class MovieDto
+public class MovieDetailsDto
 {
     /// <summary>Identifiant unique du film dans la base locale.</summary>
     public Guid Id { get; set; }
@@ -23,8 +23,14 @@ public class MovieDto
     /// <summary>URL vers l'affiche du film.</summary>
     public string? PosterUrl { get; set; }
 
+    /// <summary>URL vers l’image de fond du film.</summary>
+    public string? BackdropPath { get; set; }
+
     /// <summary>URL vers la bande-annonce officielle.</summary>
     public string? TrailerUrl { get; set; }
+
+    /// <summary>Tag Line ou Réplique culte du film</summary>
+    public string? Tagline { get; set; }
 
     /// <summary>Durée du film en minutes.</summary>
     public int? Duration { get; set; }
@@ -38,8 +44,23 @@ public class MovieDto
     /// <summary>Date et heure de création de l'entrée en base.</summary>
     public DateTime CreatedAt { get; set; }
 
+    /// <summary>Vote average du film sur TMDB.</summary>
+    public double? VoteAverage { get; set; }
+
+    /// <summary>Note moyenne des reviews des utilisateurs (0-5).</summary>
+    public float? AverageRating { get; set; }
+
+    /// <summary>Nombre total de reviews des utilisateurs.</summary>
+    public int ReviewCount { get; set; }
+
     /// <summary>Liste des genres associés au film.</summary>
-    public IReadOnlyList<string> Genres { get; set; } = new List<string>();
+    public IReadOnlyList<GenreDto> Genres { get; set; } = [];
+
+    /// <summary>Liste des acteurs principaux du film.</summary>
+    public IReadOnlyList<CastMemberDto> Cast { get; set; } = [];
+
+    /// <summary>Liste des membres de l'équipe du film.</summary>
+    public IReadOnlyList<CrewMemberDto> Crew { get; set; } = [];
 }
 
 /// <summary>
@@ -62,8 +83,14 @@ public sealed record CreateMovieDto
     /// <summary>URL de l’affiche (si disponible).</summary>
     public string? PosterUrl { get; init; }
 
+    /// <summary>URL de l’image de fond (si disponible).</summary>
+    public string? BackdropPath { get; init; }
+
     /// <summary>URL de la bande-annonce (si disponible).</summary>
     public string? TrailerUrl { get; init; }
+
+    /// <summary>Tagline du film (si disponible).</summary>
+    public string? Tagline { get; init; }
 
     /// <summary>Durée en minutes.</summary>
     public int? Duration { get; init; }
@@ -73,6 +100,9 @@ public sealed record CreateMovieDto
 
     /// <summary>Date de sortie officielle (si connue).</summary>
     public DateTime? ReleaseDate { get; init; }
+
+    /// <summary>Vote average du film.</summary>
+    public double? VoteAverage { get; init; }
 
     /// <summary>Identifiants des genres à associer au film.</summary>
     public IReadOnlyList<Guid> GenreIds { get; init; } = Array.Empty<Guid>();
@@ -95,8 +125,14 @@ public sealed record UpdateMovieDto
     /// <summary>Nouvelle URL de l’affiche (optionnelle).</summary>
     public string? PosterUrl { get; init; }
 
+    /// <summary>Nouvelle URL de l’image de fond (optionnelle).</summary>
+    public string? BackdropPath { get; init; }
+
     /// <summary>Nouvelle URL de la bande-annonce (optionnelle).</summary>
     public string? TrailerUrl { get; init; }
+
+    /// <summary>Nouvelle Tagline (optionnelle).</summary>
+    public string? Tagline { get; init; }
 
     /// <summary>Nouvelle durée en minutes (optionnelle).</summary>
     public int? Duration { get; init; }
@@ -104,9 +140,42 @@ public sealed record UpdateMovieDto
     /// <summary>Nouveau résumé / synopsis (optionnel).</summary>
     public string? Overview { get; init; }
 
+    /// <summary>Nouveau vote average (optionnel).</summary>
+    public double? VoteAverage { get; init; }
+
     /// <summary>Nouvelle date de sortie officielle (optionnelle).</summary>
     public DateTime? ReleaseDate { get; init; }
 
     /// <summary>Liste complète des genres (Ids) à associer au film.</summary>
     public IReadOnlyList<Guid> GenreIds { get; init; } = Array.Empty<Guid>();
+}
+
+/// <summary>Membre de la distribution.</summary>
+public sealed class CastMemberDto
+{
+    /// <summary>Identifiant unique de l'acteur/actrice.</summary>
+    public required Guid PersonId { get; init; }
+    /// <summary>Nom de l'acteur/actrice.</summary>
+    public required string Name { get; init; }
+    /// <summary>Nom du personnage interprété.</summary>
+    public string? Character { get; init; }
+    /// <summary>Chemin vers l'image de profil.</summary>
+    public string? ProfilePath { get; init; }
+    /// <summary>Ordre de crédit dans le casting.</summary>
+    public int? Order { get; init; }
+}
+
+/// <summary>Membre de l'équipe technique.</summary>
+public sealed class CrewMemberDto
+{
+    /// <summary>Identifiant unique du membre dans l'équipe.</summary>
+    public required Guid PersonId { get; init; }
+    /// <summary>Nom du membre de l'équipe.</summary>
+    public required string Name { get; init; }
+    /// <summary>Rôle ou fonction du membre dans l'équipe.</summary>
+    public required string Job { get; init; }
+    /// <summary>Département du membre dans la production.</summary>
+    public string? Department { get; init; }
+    /// <summary>Chemin vers l'image de profil.</summary>
+    public string? ProfilePath { get; init; }
 }

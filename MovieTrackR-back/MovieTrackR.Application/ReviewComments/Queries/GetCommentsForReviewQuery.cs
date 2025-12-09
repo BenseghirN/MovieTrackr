@@ -16,12 +16,13 @@ public sealed class GetCommentsForReviewHandler(IMovieTrackRDbContext dbContext,
     {
         IQueryable<Domain.Entities.ReviewComment> baseSql = dbContext.ReviewComments
             .AsNoTracking()
+            .Include(c => c.User)
             .Where(c => c.ReviewId == query.ReviewId);
 
         int total = await baseSql.CountAsync(ct);
 
         List<CommentDto> items = await baseSql
-            .OrderBy(c => c.CreatedAt)
+            .OrderByDescending(c => c.CreatedAt)
             .ProjectTo<CommentDto>(mapper.ConfigurationProvider)
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)

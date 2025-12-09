@@ -4,10 +4,8 @@ public sealed class MovieSearchCriteria
 {
     public string? Query { get; init; }
     public int? Year { get; init; }
-    public Guid? GenreId { get; init; }
     public int Page { get; init; } = 1;
     public int PageSize { get; init; } = 20;
-    public string? Sort { get; init; } // "title" | "year"
 
     public (int Skip, int Take) Paging(int maxPageSize = 100)
     {

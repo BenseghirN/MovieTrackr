@@ -1,0 +1,375 @@
+// ============================================
+// HEADER - CINEMATIC DESIGN
+// ============================================
+
+@use "sass:color";
+
+// Variables
+$color-background: #0a0a0f;
+$color-surface: rgba(18, 18, 24, 0.95);
+$color-surface-solid: #12121a;
+$color-accent: #e4b45f;
+$color-accent-light: #f5d190;
+$color-text-primary: #ffffff;
+$color-text-secondary: rgba(255, 255, 255, 0.7);
+$color-text-muted: rgba(255, 255, 255, 0.5);
+$color-border: rgba(255, 255, 255, 0.1);
+
+$font-display: 'Playfair Display', Georgia, serif;
+$font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+$shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.3);
+$transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+$breakpoint-lg: 1200px;
+$breakpoint-md: 992px;
+$breakpoint-sm: 768px;
+$breakpoint-xs: 576px;
+
+// ============================================
+// HEADER BASE
+// ============================================
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: $color-surface;
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid $color-border;
+  padding: 0 2rem;
+  height: 70px;
+
+  @media (max-width: $breakpoint-sm) {
+    padding: 0 1rem;
+    height: 60px;
+  }
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1600px;
+  margin: 0 auto;
+  height: 100%;
+}
+
+// ============================================
+// LOGO
+// ============================================
+
+.logo {
+  flex-shrink: 0;
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: $color-text-primary;
+    font-weight: 700;
+    font-size: 1.25rem;
+    transition: $transition-smooth;
+    
+    &:hover {
+      text-decoration: none;
+      
+      .logo-text .accent {
+        color: $color-accent-light;
+      }
+    }
+  }
+  
+  .logo-image {
+    height: 42px;
+    width: auto;
+
+    @media (max-width: $breakpoint-sm) {
+      height: 36px;
+    }
+  }
+  
+  .logo-text {
+    letter-spacing: -0.02em;
+
+    .accent {
+      color: $color-accent;
+      transition: $transition-smooth;
+    }
+
+    @media (max-width: $breakpoint-xs) {
+      display: none;
+    }
+  }
+}
+
+// ============================================
+// NAVIGATION
+// ============================================
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  @media (max-width: $breakpoint-md) {
+    display: none;
+  }
+  
+  a {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: $color-text-secondary;
+    text-decoration: none;
+    padding: 0.625rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    transition: $transition-smooth;
+    
+    &:hover {
+      color: $color-text-primary;
+      background: rgba(255, 255, 255, 0.05);
+      text-decoration: none;
+    }
+    
+    &.active {
+      color: $color-accent;
+      background: rgba(228, 180, 95, 0.1);
+    }
+    
+    i {
+      font-size: 1rem;
+    }
+
+    span {
+      @media (max-width: $breakpoint-lg) {
+        display: none;
+      }
+    }
+  }
+}
+
+// ============================================
+// AUTH SECTION
+// ============================================
+
+.auth-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  @media (max-width: $breakpoint-md) {
+    display: none;
+  }
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.375rem 0.75rem 0.375rem 0.375rem;
+  border-radius: 50px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid $color-border;
+  cursor: pointer;
+  transition: $transition-smooth;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(228, 180, 95, 0.3);
+  }
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid $color-accent;
+}
+
+::ng-deep .user-avatar-fallback {
+  width: 32px !important;
+  height: 32px !important;
+  background: linear-gradient(135deg, $color-accent, color.adjust($color-accent, $lightness: -15%)) !important;
+  color: $color-background !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+}
+
+.user-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $color-text-primary;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @media (max-width: $breakpoint-lg) {
+    display: none;
+  }
+}
+
+::ng-deep .logout-btn {
+  color: $color-text-muted !important;
+  width: 36px;
+  height: 36px;
+
+  &:hover {
+    color: $color-accent !important;
+    background: rgba(228, 180, 95, 0.1) !important;
+  }
+}
+
+::ng-deep .login-btn {
+  background: $color-accent !important;
+  border-color: $color-accent !important;
+  color: $color-background !important;
+  font-weight: 600;
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  transition: $transition-smooth;
+
+  &:hover {
+    background: $color-accent-light !important;
+    border-color: $color-accent-light !important;
+    transform: translateY(-1px);
+  }
+}
+
+// ============================================
+// MOBILE MENU TOGGLE
+// ============================================
+
+.mobile-menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: 1px solid $color-border;
+  border-radius: 8px;
+  color: $color-text-primary;
+  cursor: pointer;
+  transition: $transition-smooth;
+
+  @media (max-width: $breakpoint-md) {
+    display: flex;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(228, 180, 95, 0.3);
+  }
+
+  i {
+    font-size: 1.25rem;
+  }
+}
+
+// ============================================
+// MOBILE NAVIGATION
+// ============================================
+
+.mobile-nav {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: $color-surface-solid;
+  border-bottom: 1px solid $color-border;
+  padding: 1rem;
+  flex-direction: column;
+  gap: 0.5rem;
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+  transition: $transition-smooth;
+
+  @media (max-width: $breakpoint-md) {
+    display: flex;
+  }
+
+  &.open {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: $color-text-secondary;
+    text-decoration: none;
+    padding: 0.875rem 1rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: $transition-smooth;
+
+    &:hover {
+      color: $color-text-primary;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    &.active {
+      color: $color-accent;
+      background: rgba(228, 180, 95, 0.1);
+    }
+
+    i {
+      font-size: 1.125rem;
+      width: 24px;
+    }
+  }
+}
+
+.mobile-login,
+.mobile-logout {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: $transition-smooth;
+  margin-top: 0.5rem;
+  border: none;
+
+  i {
+    font-size: 1.125rem;
+    width: 24px;
+  }
+}
+
+.mobile-login {
+  background: $color-accent;
+  color: $color-background;
+
+  &:hover {
+    background: $color-accent-light;
+  }
+}
+
+.mobile-logout {
+  background: rgba(255, 255, 255, 0.05);
+  color: $color-text-secondary;
+  border: 1px solid $color-border;
+
+  &:hover {
+    color: $color-accent;
+    border-color: rgba(228, 180, 95, 0.3);
+  }
+}

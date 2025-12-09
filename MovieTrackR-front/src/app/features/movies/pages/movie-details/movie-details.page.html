@@ -1,0 +1,331 @@
+<!-- Loading State -->
+@if (loading()) {
+  <div class="loading-container">
+    <p-progressSpinner strokeWidth="3" animationDuration="1s" />
+  </div>
+}
+
+<!-- Error State -->
+@if (error()) {
+  <div class="error-container">
+    <i class="pi pi-exclamation-triangle"></i>
+    <p>{{ error() }}</p>
+    <p-button label="Retour" icon="pi pi-arrow-left" (onClick)="goBack()" />
+  </div>
+}
+
+<!-- Movie Details -->
+@if (movie(); as movie) {
+  <article class="movie-details">
+    <!-- Hero Section with Backdrop -->
+    <section class="hero-section">
+      <!-- Backdrop Image -->
+      <div class="backdrop-wrapper">
+        @if (movie.backdropPath) {
+          <img 
+            [src]="imageService.getBackdropUrl(movie.backdropPath, 'original')" 
+            [alt]="movie.title + ' backdrop'"
+            class="backdrop-image"
+          />
+        }
+        <div class="backdrop-overlay"></div>
+      </div>
+
+      <!-- Back Button -->
+      <div class="header-actions">
+        <p-button
+          icon="pi pi-arrow-left"
+          label="Retour"
+          [text]="true"
+          styleClass="back-btn"
+          (onClick)="goBack()"
+        />
+      </div>
+
+      <!-- Main Content Grid -->
+      <div class="hero-content">
+        <!-- Left Column: Poster -->
+        <div class="poster-column">
+          <div class="poster-card" [class.flipped]="posterFlipped()">
+            <!-- Front: Movie Poster -->
+            <div class="poster-front">
+              @if (movie.posterUrl) {
+                <img 
+                  [src]="imageService.getPosterUrl(movie.posterUrl, 'w500')" 
+                  [alt]="movie.title + ' poster'"
+                  class="poster-image"
+                />
+              } @else {
+                <div class="poster-placeholder">
+                  <i class="pi pi-image"></i>
+                </div>
+              }
+              
+              <!-- Flip Button -->
+              @if (streamingOffers()) {
+                <button class="flip-trigger" (click)="togglePosterFlip()" >
+                  <i class="pi pi-eye" pTooltip="Voir les plateformes de streaming"></i>
+                </button>
+              }
+            </div>
+
+            <!-- Back: Streaming Services -->
+            <div class="poster-back">
+              <div class="streaming-content">
+                <h4>Disponible sur</h4>
+                
+                @if (streamingLoading()) {
+                  <p-progressSpinner strokeWidth="3" animationDuration="1s" styleClass="streaming-spinner" />
+                } @else if (streamingOffers(); as offers) {
+                  @if (offers.flatrate.length) {
+                    <div class="streaming-section">
+                      <span class="streaming-label">Abonnement</span>
+                      <div class="streaming-providers">
+                        @for (provider of offers.flatrate; track provider.providerId) {
+                          <button 
+                            class="provider-logo" 
+                            (click)="openStreamingLink(offers.link, $event)"
+                            [pTooltip]="provider.providerName"
+                            tooltipPosition="bottom"
+                          >
+                            <img [src]="provider.logoPath" [alt]="provider.providerName"/>
+                          </button>
+                        }
+                      </div>
+                    </div>
+                  }
+                  
+                  @if (offers.free.length) {
+                    <div class="streaming-section">
+                      <span class="streaming-label">Gratuit</span>
+                      <div class="streaming-providers">
+                        @for (provider of offers.free; track provider.providerId) {
+                          <button 
+                            class="provider-logo" 
+                            (click)="openStreamingLink(offers.link, $event)"
+                            [pTooltip]="provider.providerName"
+                            tooltipPosition="bottom"
+                          >
+                            <img [src]="provider.logoPath" [alt]="provider.providerName" />
+                          </button>
+                        }
+                      </div>
+                    </div>
+                  }
+
+                  @if (!offers.flatrate.length && !offers.free.length) {
+                    <p class="no-streaming">Aucune offre disponible</p>
+                  }
+                } @else {
+                  <p class="no-streaming">Aucune offre disponible</p>
+                }
+
+                <button class="flip-trigger back" (click)="togglePosterFlip()">
+                  <i class="pi pi-arrow-left"></i>
+                  <span>Retour</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="action-buttons">
+            <app-add-to-list-popover 
+              [movieId]="movie.id" 
+              [tmdbId]="movie.tmdbId"
+            />
+            
+            @if (movie.trailerUrl) {
+              <p-button 
+                icon="pi pi-play" 
+                label="Bande-annonce"
+                styleClass="trailer-btn"
+                [outlined]="true"
+                (onClick)="openTrailer(movie.trailerUrl)"
+              />
+            }
+          </div>
+        </div>
+
+        <!-- Center Column: Info Panel -->
+        <div class="info-column">
+          <div class="info-panel">
+            <!-- Title -->
+            <h1 class="movie-title">{{ movie.title }}</h1>
+            
+            <!-- Original Title -->
+            @if (movie.originalTitle && movie.originalTitle !== movie.title) {
+              <p class="original-title">{{ movie.originalTitle }}</p>
+            }
+
+            <!-- Tagline -->
+            @if (movie.tagline) {
+              <p class="tagline">« {{ movie.tagline }} »</p>
+            }
+
+            <!-- Meta Info: Year, Duration, Rating -->
+            <div class="meta-info">
+              @if (movie.year) {
+                <span class="meta-item">
+                  <i class="pi pi-calendar"></i>
+                  {{ movie.year }}
+                </span>
+              }
+              @if (movie.duration) {
+                <span class="meta-item">
+                  <i class="pi pi-clock"></i>
+                  {{ formatDuration(movie.duration) }}
+                </span>
+              }
+              @if (movie.averageRating) {
+                <span class="meta-item rating">
+                  <i class="pi pi-star-fill"></i>
+                  {{ movie.averageRating | number:'1.1-1' }}/10
+                </span>
+              } @else if (movie.voteAverage) {
+                <span class="meta-item rating tmdb">
+                  <i class="pi pi-star"></i>
+                  {{ movie.voteAverage | number:'1.1-1' }}/10
+                  <small>TMDB</small>
+                </span>
+              }
+            </div>
+
+            <!-- Genres -->
+            @if (movie.genres.length) {
+              <div class="genres">
+                @for (genre of movie.genres; track genre.id) {
+                  <p-chip [label]="genre.name" styleClass="genre-chip" />
+                }
+              </div>
+            }
+
+            <!-- Director -->
+            @if (director(); as dir) {
+              <div class="director">
+                <span class="label">Réalisé par</span>
+                <button class="director-link" (click)="onPersonClick(dir.personId)">
+                  {{ dir.name }}
+                </button>
+              </div>
+            }
+
+            <!-- Synopsis -->
+            @if (movie.overview) {
+              <div class="synopsis">
+                <h3>Synopsis</h3>
+                <p>{{ movie.overview }}</p>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Right Column: Crew -->
+        <aside class="crew-column">
+          <div class="crew-panel">
+            <h3>Équipe technique</h3>
+            
+            @for (dept of getDepartmentKeys(); track dept) {
+              <div class="crew-department">
+                <h4>{{ dept }}</h4>
+                <ul class="crew-list">
+                  @for (member of crewByDepartment()[dept]; track member.personId) {
+                    <li>
+                      <button class="crew-member" (click)="onPersonClick(member.personId)">
+                        <span class="member-name">{{ member.name }}</span>
+                        <span class="member-job">{{ member.job }}</span>
+                      </button>
+                    </li>
+                  }
+                </ul>
+              </div>
+            }
+
+            @if (!getDepartmentKeys().length) {
+              <p class="no-crew">Aucune information disponible</p>
+            }
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Cast Carousel Section -->
+    @if (hasCast()) {
+      <section class="cast-section">
+        <div class="section-header">
+          <h2>Distribution</h2>
+          <span class="cast-count">{{ movie.cast.length }} acteurs</span>
+        </div>
+
+        <p-carousel 
+          [value]="movie.cast" 
+          [numVisible]="6" 
+          [numScroll]="3"
+          [circular]="true"
+          [showIndicators]="false"
+          [responsiveOptions]="carouselResponsiveOptions"
+          styleClass="cast-carousel"
+        >
+          <ng-template pTemplate="item" let-actor>
+            <div class="cast-card" (click)="onPersonClick(actor.personId)">
+              <div class="actor-photo">
+                @if (actor.profilePath) {
+                  <img 
+                    [src]="imageService.getProfileUrl(actor.profilePath, 'w185')" 
+                    [alt]="actor.name"
+                  />
+                } @else {
+                  <div class="photo-placeholder">
+                    <i class="pi pi-user"></i>
+                  </div>
+                }
+              </div>
+              <div class="actor-info">
+                <span class="actor-name">{{ actor.name }}</span>
+                @if (actor.character) {
+                  <span class="actor-role">{{ actor.character }}</span>
+                }
+              </div>
+            </div>
+          </ng-template>
+        </p-carousel>
+      </section>
+    }
+
+    <!-- Reviews Section -->
+    <section class="reviews-section">
+      <app-movie-reviews 
+        [movieId]="movie.id" 
+        [averageRating]="movie.averageRating"
+      />
+    </section>
+  </article>
+}
+
+<!-- Trailer Dialog -->
+<p-dialog 
+  [visible]="trailerDialogVisible()" 
+  (visibleChange)="onTrailerDialogVisibleChange($event)"
+  [modal]="true" 
+  [dismissableMask]="true"
+  [draggable]="false"
+  [resizable]="true"
+  styleClass="trailer-dialog"
+  [showHeader]="false"
+  styleClass="trailer-dialog"
+  [style]="{ width: '900px', maxWidth: '90vw' }"
+>
+  @if (currentTrailerUrl()) {
+    <div class="trailer-wrapper">
+      <iframe 
+        [src]="currentTrailerUrl() | safeUrl" 
+        frameborder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+        allowfullscreen
+      ></iframe>
+      <button class="close-trailer" (click)="onTrailerDialogVisibleChange(false)">
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+  }
+</p-dialog>

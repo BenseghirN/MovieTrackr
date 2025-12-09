@@ -1,0 +1,114 @@
+<div class="movies-page">
+  <!-- Page Header -->
+  <header class="page-header">
+    <h1>Recherche de films</h1>
+    <p class="subtitle">Explorez notre catalogue et découvrez votre prochain film préféré</p>
+  </header>
+
+  <!-- Search Panel -->
+  <div class="search-panel">
+    <div class="search-bar">
+      <div class="search-input-wrapper">
+        <i class="pi pi-search"></i>
+        <input
+          type="text"
+          pInputText
+          placeholder="Rechercher un film..."
+          [value]="searchQuery()"
+          (input)="onQueryChange($event)"
+          (keyup)="onSearchKeyup($event)"
+          class="search-input"
+        />
+      </div>
+      <p-button
+        label="Rechercher"
+        icon="pi pi-search"
+        styleClass="search-btn"
+        (onClick)="currentPage.set(1); search()"
+        [loading]="loading()"
+      />
+    </div>
+
+    <div class="filters-row">
+      <div class="filter-item">
+        <label for="year">Année</label>
+        <p-inputNumber
+          id="year"
+          [ngModel]="yearFilter()"
+          (ngModelChange)="onYearChange($event)"
+          placeholder="Ex: 2024"
+          [useGrouping]="false"
+          [min]="1900"
+          [max]="2030"
+          styleClass="year-input"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-container">
+      <p-progressSpinner strokeWidth="3" animationDuration="1s" />
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="error-message">
+      <i class="pi pi-exclamation-triangle"></i>
+      <span>{{ error() }}</span>
+    </div>
+  }
+
+  <!-- No Results -->
+  @if (showNoResults()) {
+    <div class="no-results">
+      <i class="pi pi-film"></i>
+      <div class="no-results-content">
+        <p>Aucun film trouvé pour</p>
+        <span class="search-term">"{{ searchQuery() }}"</span>
+      </div>
+    </div>
+  }
+
+  <!-- Results -->
+  @if (hasResults()) {
+    <div class="results-header">
+      <span class="results-count">
+        <strong>{{ totalResults() }}</strong> résultat(s) trouvé(s)
+      </span>
+    </div>
+
+    <div class="movies-grid">
+      @for (movie of movies(); track movie.tmdbId) {
+        <app-movie-card 
+          [movie]="movie" 
+          (movieClick)="onMovieClick(movie)"
+        />
+      }
+    </div>
+
+    <div class="paginator-wrapper">
+      <p-paginator
+        [rows]="pageSize()"
+        [totalRecords]="totalResults()"
+        [first]="(currentPage() - 1) * pageSize()"
+        [rowsPerPageOptions]="[10, 20, 50]"
+        (onPageChange)="onPageChange($event)"
+        styleClass="custom-paginator"
+      />
+    </div>
+  }
+
+  <!-- Empty State (no search yet) -->
+  @if (!loading() && !searchQuery() && !hasResults()) {
+    <div class="empty-state">
+      <div class="empty-icon">
+        <i class="pi pi-video"></i>
+      </div>
+      <h2>Commencez votre recherche</h2>
+      <p>Entrez le titre d'un film pour explorer notre catalogue</p>
+    </div>
+  }
+</div>

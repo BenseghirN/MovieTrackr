@@ -49,7 +49,7 @@ package-lock.json
 yarn.lock
 
 # Ignorer tout dans wwwRoot
-GameShelf.API/wwwroot/
+MovieTrackR.API/wwwroot/
 
 # Ignorer les fichiers appsettings
 appsettings.json

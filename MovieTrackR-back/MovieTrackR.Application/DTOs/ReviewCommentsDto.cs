@@ -12,6 +12,9 @@ public sealed class CommentDto
     /// <summary>Identifiant de l'auteur du commentaire.</summary>
     public Guid UserId { get; set; }
 
+    /// <summary>Pseudo de l'auteur du commentaire.</summary>
+    public string UserName { get; set; } = default!;
+
     /// <summary>Contenu textuel du commentaire.</summary>
     public string Content { get; set; } = default!;
 

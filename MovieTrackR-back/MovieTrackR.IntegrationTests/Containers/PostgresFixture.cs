@@ -1,9 +1,5 @@
-using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Configurations;
-using DotNet.Testcontainers.Containers;
 using Microsoft.EntityFrameworkCore;
 using MovieTrackR.Infrastructure.Persistence;
-using Npgsql;
 using Testcontainers.PostgreSql;
 
 namespace MovieTrackR.IntegrationTests.Containers;

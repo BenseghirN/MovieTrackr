@@ -4,6 +4,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using MovieTrackR.Application.Movies;
 using MovieTrackR.Application.TMDB;
 using MovieTrackR.Domain.Entities;
 using MovieTrackR.Infrastructure.Persistence;
@@ -47,13 +48,13 @@ public sealed class MoviesEndpointsTests : IClassFixture<PostgresFixture>, IAsyn
         using (var scope = _factory.Services.CreateScope())
         {
             MovieTrackRDbContext db = scope.ServiceProvider.GetRequiredService<MovieTrackRDbContext>();
-            db.Movies.Add(Movie.CreateNew("Interstellar", 157336, "Interstellar", 2014, null, null, 169, "test", new(2014, 11, 7)));
+            db.Movies.Add(Movie.CreateNew("Interstellar", 157336, "Interstellar", 2014, null, null, null, null, 169, "test", new(2014, 11, 7), null));
             await db.SaveChangesAsync();
         }
 
         // TMDb: 1 doublon + 1 différent
         _factory.TmdbMock
-            .Setup(c => c.SearchMoviesAsync("Inter", 1, "fr-FR", null, It.IsAny<CancellationToken>()))
+            .Setup(c => c.SearchMoviesAsync(It.Is<MovieSearchCriteria>(crit => crit.Query == "Inter"), "fr-FR", It.IsAny<CancellationToken>()))
             .ReturnsAsync(new TmdbSearchMoviesResponse(
                 Page: 1, TotalResults: 2, TotalPages: 1,
                 Results: new[]
@@ -84,8 +85,9 @@ public sealed class MoviesEndpointsTests : IClassFixture<PostgresFixture>, IAsyn
         {
             var db = scope.ServiceProvider.GetRequiredService<MovieTrackRDbContext>();
             db.Movies.AddRange(
-                Movie.CreateNew("A", null, null, 2000, null, null, 100, "a", new(2000, 1, 1)),
-                Movie.CreateNew("B", null, null, 2001, null, null, 100, "b", new(2001, 1, 1)));
+                Movie.CreateNew("A", null, null, 2000, null, null, null, null, 100, "a", new(2000, 1, 1), null),
+                Movie.CreateNew("B", null, null, 2001, null, null, null, null, 100, "b", new(2001, 1, 1), null)
+            );
             await db.SaveChangesAsync();
         }
 
@@ -94,7 +96,5 @@ public sealed class MoviesEndpointsTests : IClassFixture<PostgresFixture>, IAsyn
 
         var json = await res.Content.ReadAsStringAsync();
         json.Should().Contain("\"title\":\"A\"").And.Contain("\"title\":\"B\"");
-
-        _factory.TmdbMock.VerifyNoOtherCalls();
     }
 }

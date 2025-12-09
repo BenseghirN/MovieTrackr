@@ -1,0 +1,272 @@
+<div class="home-page">
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-background">
+      <div class="hero-gradient"></div>
+      <div class="hero-particles"></div>
+    </div>
+
+    <div class="hero-content">
+      <span class="hero-badge">
+        <i class="pi pi-video"></i>
+        Votre univers cinéma
+      </span>
+
+      <h1 class="hero-title">
+        Bienvenue sur
+        <span class="brand">Movie<span class="accent">TrackR</span></span>
+      </h1>
+
+      <p class="hero-subtitle">
+        Découvrez, organisez et partagez votre passion pour le cinéma.
+        <br />
+        Des millions de films à portée de main.
+      </p>
+
+      <!-- Search Box -->
+      <div class="search-container">
+        <div class="search-box">
+          <i class="pi pi-search"></i>
+          <input 
+            type="text" 
+            pInputText 
+            placeholder="Rechercher un film, un acteur..." 
+            class="search-input"
+            (input)="onQueryChange($event)"
+            (keyup)="onSearchKeyup($event)"
+          />
+          <p-button 
+            label="Rechercher" 
+            icon="pi pi-arrow-right"
+            iconPos="right"
+            styleClass="search-btn"
+            (onClick)="onSearch()"
+          />
+        </div>
+        <p class="search-hint">
+          <i class="pi pi-info-circle"></i>
+          Appuyez sur Entrée ou cliquez pour rechercher
+        </p>
+      </div>
+    </div>
+
+    <!-- Scroll Indicator -->
+    <div class="scroll-indicator" (click)="scrollToCarousels()">
+      <span>Découvrir</span>
+      <i class="pi pi-chevron-down"></i>
+    </div>
+  </section>
+
+  <!-- Carousels Section -->
+  <section class="carousels-section" id="carousels">
+    <!-- Popular Movies Carousel -->
+    <div class="carousel-block">
+      <div class="carousel-header">
+        <div class="carousel-title">
+          <i class="pi pi-star"></i>
+          <h2>Nouveautés</h2>
+        </div>
+        <span class="carousel-subtitle">Les dernières sorties à découvrir</span>
+      </div>
+
+      @if (loadingPopular()) {
+        <div class="skeleton-carousel">
+          @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+            <div class="skeleton-card">
+              <p-skeleton width="100%" height="240px" borderRadius="10px" />
+              <p-skeleton width="80%" height="16px" styleClass="mt-2" />
+              <p-skeleton width="50%" height="14px" styleClass="mt-1" />
+            </div>
+          }
+        </div>
+      } @else if (popularMovies().length > 0) {
+        <p-carousel
+          [value]="popularMovies()"
+          [numVisible]="6"
+          [numScroll]="3"
+          [responsiveOptions]="carouselResponsiveOptions"
+          [circular]="false"
+          [showIndicators]="false"
+          styleClass="movies-carousel"
+        >
+          <ng-template let-movie pTemplate="item">
+            <div class="movie-card" (click)="onMovieClick(movie)">
+              <div class="movie-poster">
+                @if (movie.posterPath) {
+                  <img
+                    [src]="imageService.getPosterUrl(movie.posterPath, 'w342')"
+                    [alt]="movie.title"
+                    loading="lazy"
+                  />
+                } @else {
+                  <div class="poster-placeholder">
+                    <i class="pi pi-video"></i>
+                  </div>
+                }
+                <div class="poster-overlay">
+                  <i class="pi pi-play-circle"></i>
+                </div>
+                @if (movie.year) {
+                  <span class="year-badge">{{ movie.year }}</span>
+                }
+              </div>
+              <div class="movie-info">
+                <h4 class="movie-title">{{ movie.title }}</h4>
+              </div>
+            </div>
+          </ng-template>
+        </p-carousel>
+      } @else {
+        <div class="empty-carousel">
+          <i class="pi pi-film"></i>
+          <p>Aucun film disponible</p>
+        </div>
+      }
+    </div>
+
+    <!-- Trending Movies Carousel -->
+    <div class="carousel-block">
+      <div class="carousel-header">
+        <div class="carousel-title">
+          <i class="pi pi-bolt"></i>
+          <h2>Tendances communauté</h2>
+        </div>
+        <span class="carousel-subtitle">Films avec activité récente</span>
+      </div>
+
+      @if (loadingTrending()) {
+        <div class="skeleton-carousel">
+          @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+            <div class="skeleton-card">
+              <p-skeleton width="100%" height="240px" borderRadius="10px" />
+              <p-skeleton width="80%" height="16px" styleClass="mt-2" />
+              <p-skeleton width="50%" height="14px" styleClass="mt-1" />
+            </div>
+          }
+        </div>
+      } @else if (trendingMovies().length > 0) {
+        <p-carousel
+          [value]="trendingMovies()"
+          [numVisible]="6"
+          [numScroll]="3"
+          [responsiveOptions]="carouselResponsiveOptions"
+          [circular]="false"
+          [showIndicators]="false"
+          styleClass="movies-carousel"
+        >
+          <ng-template let-movie pTemplate="item">
+            <div class="movie-card" (click)="onMovieClick(movie)">
+              <div class="movie-poster">
+                @if (movie.posterPath) {
+                  <img
+                    [src]="imageService.getPosterUrl(movie.posterPath, 'w342')"
+                    [alt]="movie.title"
+                    loading="lazy"
+                  />
+                } @else {
+                  <div class="poster-placeholder">
+                    <i class="pi pi-video"></i>
+                  </div>
+                }
+                <div class="poster-overlay">
+                  <i class="pi pi-play-circle"></i>
+                </div>
+                @if (movie.year) {
+                  <span class="year-badge">{{ movie.year }}</span>
+                }
+              </div>
+              <div class="movie-info">
+                <h4 class="movie-title">{{ movie.title }}</h4>
+              </div>
+            </div>
+          </ng-template>
+        </p-carousel>
+      } @else {
+        <div class="empty-carousel">
+          <i class="pi pi-comments"></i>
+          <p>Aucune activité récente</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <div class="features-header">
+      <span class="section-badge">Fonctionnalités</span>
+      <h2>Tout ce dont vous avez besoin</h2>
+      <p>Une plateforme complète pour les passionnés de cinéma</p>
+    </div>
+
+    <div class="features-grid">
+      <!-- Feature 1 -->
+      <div class="feature-card">
+        <div class="feature-icon-wrapper">
+          <i class="pi pi-search"></i>
+        </div>
+        <h3>Recherche avancée</h3>
+        <p>Explorez des millions de films et découvrez de nouveaux titres grâce à notre moteur de recherche puissant.</p>
+      </div>
+
+      <!-- Feature 2 -->
+      <div class="feature-card">
+        <div class="feature-icon-wrapper">
+          <i class="pi pi-bookmark"></i>
+        </div>
+        <h3>Listes personnalisées</h3>
+        <p>Créez vos propres listes de films à voir, vos favoris, et organisez votre collection comme vous le souhaitez.</p>
+      </div>
+
+      <!-- Feature 3 -->
+      <div class="feature-card">
+        <div class="feature-icon-wrapper">
+          <i class="pi pi-star"></i>
+        </div>
+        <h3>Notes & Critiques</h3>
+        <p>Partagez votre avis, notez les films que vous avez vus et lisez les critiques de la communauté.</p>
+      </div>
+
+      <!-- Feature 4 -->
+      <div class="feature-card">
+        <div class="feature-icon-wrapper">
+          <i class="pi pi-users"></i>
+        </div>
+        <h3>Acteurs & Réalisateurs</h3>
+        <p>Découvrez les filmographies complètes de vos acteurs et réalisateurs préférés.</p>
+      </div>
+
+      <!-- Feature 5 -->
+      <div class="feature-card">
+        <div class="feature-icon-wrapper">
+          <i class="pi pi-play"></i>
+        </div>
+        <h3>Streaming</h3>
+        <p>Trouvez où regarder vos films en streaming, avec les plateformes disponibles dans votre région.</p>
+      </div>
+
+      <!-- Feature 6 -->
+      <div class="feature-card">
+        <div class="feature-icon-wrapper">
+          <i class="pi pi-chart-line"></i>
+        </div>
+        <h3>Statistiques</h3>
+        <p>Suivez votre activité cinématographique et découvrez vos habitudes de visionnage.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="cta-content">
+      <h2>Prêt à commencer ?</h2>
+      <p>Rejoignez MovieTrackR et commencez à explorer le monde du cinéma</p>
+      <p-button 
+        label="Commencer l'exploration" 
+        icon="pi pi-arrow-right"
+        iconPos="right"
+        styleClass="cta-btn"
+        (onClick)="goToMovies()"
+      />
+    </div>
+  </section>
+</div>

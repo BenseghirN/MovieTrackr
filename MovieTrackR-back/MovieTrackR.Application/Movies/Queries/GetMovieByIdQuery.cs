@@ -7,19 +7,36 @@ using MovieTrackR.Domain.Entities;
 
 namespace MovieTrackR.Application.Movies.Queries;
 
-public sealed record GetMovieByIdQuery(Guid Id) : IRequest<MovieDto?>;
+public sealed record GetMovieByIdQuery(Guid Id) : IRequest<MovieDetailsDto?>;
 
 public sealed class GetMovieByIdHandler(IMovieTrackRDbContext dbContext, IMapper mapper)
-    : IRequestHandler<GetMovieByIdQuery, MovieDto?>
+    : IRequestHandler<GetMovieByIdQuery, MovieDetailsDto?>
 {
-    public async Task<MovieDto?> Handle(GetMovieByIdQuery q, CancellationToken ct)
+    public async Task<MovieDetailsDto?> Handle(GetMovieByIdQuery query, CancellationToken cancellationToken)
     {
         Movie? movie = await dbContext.Movies
             .Include(m => m.MovieGenres).ThenInclude(mg => mg.Genre)
+            .Include(m => m.Cast).ThenInclude(mc => mc.Person)
+            .Include(m => m.Crew).ThenInclude(mc => mc.Person)
             .AsNoTracking()
-            .FirstOrDefaultAsync(m => m.Id == q.Id, ct);
+            .FirstOrDefaultAsync(m => m.Id == query.Id, cancellationToken);
 
-        return movie is null ? null : mapper.Map<MovieDto>(movie);
+        if (movie is null) return null;
+
+        var reviewStats = await dbContext.Reviews
+            .Where(r => r.MovieId == query.Id)
+            .GroupBy(r => r.MovieId)
+            .Select(g => new
+            {
+                AverageRating = (float?)g.Average(r => r.Rating),
+                Count = g.Count()
+            })
+            .FirstOrDefaultAsync(cancellationToken);
+
+        MovieDetailsDto dto = mapper.Map<MovieDetailsDto>(movie);
+        dto.AverageRating = reviewStats?.AverageRating;
+        dto.ReviewCount = reviewStats?.Count ?? 0;
+        return dto;
     }
 }
 

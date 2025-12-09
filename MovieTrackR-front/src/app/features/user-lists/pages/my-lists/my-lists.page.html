@@ -1,0 +1,102 @@
+<div class="my-lists-page">
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="header-content">
+      <div class="header-title">
+        <i class="pi pi-bookmark"></i>
+        <h1>Mes Listes</h1>
+      </div>
+      <p class="subtitle">Organisez vos films en listes personnalisées</p>
+    </div>
+    
+    @if (isAuthenticated()) {
+      <p-button
+        label="Créer une liste"
+        icon="pi pi-plus"
+        (onClick)="onCreateList()"
+        styleClass="create-list-btn"
+      />
+    }
+  </header>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-container">
+      <p-progressSpinner strokeWidth="3" animationDuration="1s" />
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="error-container">
+      <div class="error-icon">
+        <i class="pi pi-exclamation-triangle"></i>
+      </div>
+      <h2>Une erreur est survenue</h2>
+      <p>{{ error() }}</p>
+      <p-button
+        label="Réessayer"
+        icon="pi pi-refresh"
+        [outlined]="true"
+        styleClass="retry-btn"
+        (onClick)="onLoadLists()"
+      />
+    </div>
+  }
+
+  <!-- Content -->
+  @if (!loading() && !error() && isAuthenticated()) {
+    @if (hasLists()) {
+      <!-- Lists Count -->
+      <div class="lists-info">
+        <span class="lists-count">
+          <strong>{{ lists().length }}</strong> liste(s)
+        </span>
+      </div>
+
+      <!-- Lists Grid -->
+      <div class="lists-grid">
+        @for (list of lists(); track list.id) {
+          <app-user-list-card 
+            [list]="list" 
+            (deletedList)="onDeletedList($event)" 
+            (editedList)="onEditedList($event)"
+            (viewList)="onViewList(list)"
+          />
+        }
+      </div>
+    } @else {
+      <!-- Empty State -->
+      <div class="empty-state">
+        <div class="empty-icon">
+          <i class="pi pi-bookmark"></i>
+        </div>
+        <h2>Aucune liste pour le moment</h2>
+        <p>Créez votre première liste pour organiser vos films préférés, vos envies de visionnage, ou tout ce qui vous inspire.</p>
+        <p-button
+          label="Créer ma première liste"
+          icon="pi pi-plus"
+          styleClass="create-first-btn"
+          (onClick)="onCreateList()"
+        />
+      </div>
+    }
+  }
+
+  <!-- Not Authenticated State -->
+  @if (!loading() && !error() && !isAuthenticated()) {
+    <div class="auth-required">
+      <div class="auth-icon">
+        <i class="pi pi-lock"></i>
+      </div>
+      <h2>Connexion requise</h2>
+      <p>Connectez-vous pour créer et gérer vos listes de films personnalisées.</p>
+      <p-button
+        label="Se connecter"
+        icon="pi pi-sign-in"
+        styleClass="login-btn"
+        (onClick)="onLogin()"
+      />
+    </div>
+  }
+</div>

@@ -1,0 +1,143 @@
+// ============================================
+// FOOTER - CINEMATIC DESIGN
+// ============================================
+
+// Variables
+$color-background: #0a0a0f;
+$color-surface: rgba(18, 18, 24, 0.95);
+$color-surface-solid: #0d0d12;
+$color-accent: #e4b45f;
+$color-accent-light: #f5d190;
+$color-text-primary: #ffffff;
+$color-text-secondary: rgba(255, 255, 255, 0.7);
+$color-text-muted: rgba(255, 255, 255, 0.4);
+$color-border: rgba(255, 255, 255, 0.08);
+
+$font-display: 'Playfair Display', Georgia, serif;
+$font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+$transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+$breakpoint-sm: 768px;
+$breakpoint-xs: 576px;
+
+// ============================================
+// FOOTER BASE
+// ============================================
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: $color-surface-solid;
+  border-top: 1px solid $color-border;
+  padding: 0.875rem 2rem;
+
+  @media (max-width: $breakpoint-sm) {
+    padding: 0.75rem 1rem;
+  }
+}
+
+.footer-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1600px;
+  margin: 0 auto;
+  gap: 1.5rem;
+
+  @media (max-width: $breakpoint-sm) {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+
+// ============================================
+// FOOTER BRAND
+// ============================================
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  @media (max-width: $breakpoint-xs) {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+}
+
+.brand-name {
+  font-family: $font-body;
+  font-size: 1rem;
+  font-weight: 700;
+  color: $color-text-primary;
+  letter-spacing: -0.02em;
+
+  .accent {
+    color: $color-accent;
+  }
+}
+
+.brand-tagline {
+  font-size: 0.8125rem;
+  color: $color-text-muted;
+  padding-left: 1rem;
+  border-left: 1px solid $color-border;
+
+  @media (max-width: $breakpoint-xs) {
+    padding-left: 0;
+    border-left: none;
+  }
+}
+
+// ============================================
+// FOOTER INFO
+// ============================================
+
+.footer-info {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+
+  @media (max-width: $breakpoint-sm) {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+.copyright {
+  font-size: 0.8125rem;
+  color: $color-text-muted;
+  margin: 0;
+}
+
+.tmdb-attribution {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-left: 1.5rem;
+  border-left: 1px solid $color-border;
+
+  @media (max-width: $breakpoint-sm) {
+    padding-left: 0;
+    border-left: none;
+  }
+  
+  span {
+    font-size: 0.75rem;
+    color: $color-text-muted;
+  }
+
+  img {
+    height: 10px;
+    opacity: 0.7;
+    transition: $transition-smooth;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}

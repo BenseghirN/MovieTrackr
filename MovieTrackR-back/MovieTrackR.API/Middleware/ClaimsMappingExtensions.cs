@@ -9,6 +9,9 @@ public static class ClaimsMappingExtensions
 {
     public static CurrentUserDto ToCurrentUserDto(this ClaimsPrincipal user)
     {
+        if (user?.Identity is null || !user.Identity.IsAuthenticated)
+            throw new UnauthorizedAccessException("Utilisateur non authentifié.");
+
         string externalId = user.GetExternalId()
             ?? throw new UnauthorizedAccessException("ExternalId introuvable dans les claims.");
         string email = user.GetEmail() ?? string.Empty;
@@ -23,5 +26,19 @@ public static class ClaimsMappingExtensions
             GivenName: givenName,
             Surname: surname
         );
+    }
+
+    public static CurrentUserDto? ToCurrentUserDtoOrNull(this ClaimsPrincipal user)
+    {
+        if (user?.Identity is null || !user.Identity.IsAuthenticated)
+            return null;
+        try
+        {
+            return user.ToCurrentUserDto();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return null;
+        }
     }
 }

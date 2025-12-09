@@ -8,12 +8,12 @@ using MovieTrackR.Domain.Entities;
 namespace MovieTrackR.Application.Movies.Queries;
 
 public sealed record SearchMoviesQuery(MovieSearchCriteria searchCriteria)
-    : IRequest<(IReadOnlyList<MovieDto> Items, int Total)>;
+    : IRequest<(IReadOnlyList<MovieDetailsDto> Items, int Total)>;
 
 public sealed class SearchMoviesHandler(IMovieTrackRDbContext dbContext, IMapper mapper)
-    : IRequestHandler<SearchMoviesQuery, (IReadOnlyList<MovieDto>, int)>
+    : IRequestHandler<SearchMoviesQuery, (IReadOnlyList<MovieDetailsDto>, int)>
 {
-    public async Task<(IReadOnlyList<MovieDto>, int)> Handle(SearchMoviesQuery searchQuery, CancellationToken cancellationToken)
+    public async Task<(IReadOnlyList<MovieDetailsDto>, int)> Handle(SearchMoviesQuery searchQuery, CancellationToken cancellationToken)
     {
         MovieSearchCriteria searchCriteria = searchQuery.searchCriteria;
         IQueryable<Movie> query = dbContext.Movies
@@ -28,18 +28,8 @@ public sealed class SearchMoviesHandler(IMovieTrackRDbContext dbContext, IMapper
 
         if (searchCriteria.Year is not null) query = query.Where(m => m.Year == searchCriteria.Year);
 
-        if (searchCriteria.GenreId is not null)
-            query = query.Where(m => m.MovieGenres.Any(mg => mg.GenreId == searchCriteria.GenreId));
-
-        query = searchCriteria.Sort?.ToLowerInvariant() switch
-        {
-            "year" => query.OrderByDescending(m => m.Year).ThenBy(m => m.Title),
-            "title" => query.OrderBy(m => m.Title),
-            _ => query.OrderBy(m => m.Title)
-        };
-
         int total = await query.CountAsync(cancellationToken);
         List<Movie> movieResult = await query.Skip((searchCriteria.Page - 1) * searchCriteria.PageSize).Take(searchCriteria.PageSize).ToListAsync(cancellationToken);
-        return (mapper.Map<IReadOnlyList<MovieDto>>(movieResult), total);
+        return (mapper.Map<IReadOnlyList<MovieDetailsDto>>(movieResult), total);
     }
 }

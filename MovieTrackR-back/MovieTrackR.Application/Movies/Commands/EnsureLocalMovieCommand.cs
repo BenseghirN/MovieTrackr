@@ -26,6 +26,7 @@ public sealed class EnsureLocalMovieHandler(IMovieTrackRDbContext dbContext, ITm
 
         // Movie exists ?
         Guid existing = await dbContext.Movies
+            .AsNoTracking()
             .Where(m => m.TmdbId == command.TmdbId)
             .Select(m => m.Id)
             .FirstOrDefaultAsync(cancellationToken);

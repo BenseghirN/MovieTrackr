@@ -5,26 +5,34 @@ using MovieTrackR.Application.Movies.Queries;
 
 namespace MovieTrackR.API.Endpoints.Movies;
 
-/// <summary>Handlers HTTP pour la gestion des films (réservé aux administrateurs).</summary>
 public static class MoviesHandlers
 {
-    /// <summary>Récupère un film par son identifiant.</summary>
-    /// <param name="id">ID du film.</param>
-    /// <param name="mediator">Médiateur applicatif.</param>
-    /// <param name="cancellationToken">Token d'annulation.</param>
-    /// <returns>Le film si trouvé, 404 sinon.</returns>
     public static async Task<IResult> GetById(Guid id, IMediator mediator, CancellationToken cancellationToken)
     {
-        MovieDto? dto = await mediator.Send(new GetMovieByIdQuery(id), cancellationToken);
-        return dto is null ? Results.NotFound() : Results.Ok(dto);
+        MovieDetailsDto? dto = await mediator.Send(new GetMovieByIdQuery(id), cancellationToken);
+        return dto is null ? TypedResults.NotFound() : TypedResults.Ok(dto);
     }
 
-    /// <summary>Recherche paginée de films par critères.</summary>
-    /// <param name="query">Paramètres de recherche (query string).</param>
-    /// <param name="mediator">Médiateur applicatif.</param>
-    /// <param name="response">Réponse HTTP (ajoute l'entête X-Total-Count).</param>
-    /// <param name="cancellationToken">Token d'annulation.</param>
-    /// <returns>La liste paginée de films.</returns>
+    public static async Task<IResult> GetByTmdbId(int tmdbId, IMediator mediator, CancellationToken cancellationToken)
+    {
+        try
+        {
+            Guid localId = await mediator.Send(
+                new EnsureLocalMovieCommand(MovieId: null, TmdbId: tmdbId),
+                cancellationToken);
+
+            MovieDetailsDto? dto = await mediator.Send(
+                new GetMovieByIdQuery(localId),
+                cancellationToken);
+
+            return dto is null ? TypedResults.NotFound() : TypedResults.Ok(dto);
+        }
+        catch (KeyNotFoundException)
+        {
+            return TypedResults.NotFound(new { error = $"Film TMDB {tmdbId} introuvable" });
+        }
+    }
+
     public static async Task<IResult> Search([AsParameters] MovieSearchRequest query, IMediator mediator, HttpResponse response, CancellationToken cancellationToken)
     {
         HybridPagedResult<SearchMovieResultDto> result =
@@ -33,42 +41,51 @@ public static class MoviesHandlers
         response.Headers["X-Total-Local"] = result.Meta.TotalLocal.ToString();
         response.Headers["X-Total-Tmdb"] = result.Meta.TotalTmdb.ToString();
         response.Headers["X-Total"] = result.Meta.TotalResults.ToString();
-        return Results.Ok(result);
+        return TypedResults.Ok(result);
     }
 
+    public static async Task<IResult> GetPopular([AsParameters] MovieSearchRequest query, IMediator mediator, HttpResponse response, CancellationToken cancellationToken)
+    {
+        HybridPagedResult<SearchMovieResultDto> result =
+        await mediator.Send(new GetPopularMoviesQuery(query.ToCriteria()), cancellationToken);
 
-    /// <summary>Crée un film (réservé aux administrateurs).</summary>
-    /// <param name="dto">Données de création.</param>
-    /// <param name="mediator">Médiateur applicatif.</param>
-    /// <param name="cancellationToken">Token d'annulation.</param>
-    /// <returns>201 Created + identifiant du film.</returns>
+        response.Headers["X-Total-Local"] = result.Meta.TotalLocal.ToString();
+        response.Headers["X-Total-Tmdb"] = result.Meta.TotalTmdb.ToString();
+        response.Headers["X-Total"] = result.Meta.TotalResults.ToString();
+        return TypedResults.Ok(result);
+    }
+
+    public static async Task<IResult> GetTrending(IMediator mediator, CancellationToken cancellationToken)
+    {
+        IReadOnlyList<SearchMovieResultDto> result =
+        await mediator.Send(new GetTrendingMoviesQuery(), cancellationToken);
+        return TypedResults.Ok(result);
+    }
+
     public static async Task<IResult> Create(CreateMovieDto dto, IMediator mediator, CancellationToken cancellationToken)
     {
         Guid id = await mediator.Send(new CreateMovieCommand(dto), cancellationToken);
-        return Results.Created($"/movies/{id}", new { id });
+        return TypedResults.Created($"/movies/{id}", new { id });
     }
 
-
-    /// <summary>Met à jour un film (réservé aux administrateurs).</summary>
-    /// <param name="id">ID du film.</param>
-    /// <param name="dto">Données de mise à jour.</param>
-    /// <param name="mediator">Médiateur applicatif.</param>
-    /// <param name="cancellationToken">Token d'annulation.</param>
-    /// <returns>204 No Content.</returns>
     public static async Task<IResult> Update(Guid id, UpdateMovieDto dto, IMediator mediator, CancellationToken cancellationToken)
     {
         await mediator.Send(new UpdateMovieCommand(id, dto), cancellationToken);
-        return Results.NoContent();
+        return TypedResults.NoContent();
     }
 
-    /// <summary>Supprime un film (réservé aux administrateurs).</summary>
-    /// <param name="id">ID du film.</param>
-    /// <param name="mediator">Médiateur applicatif.</param>
-    /// <param name="cancellationToken">Token d'annulation.</param>
-    /// <returns>204 No Content.</returns>
     public static async Task<IResult> Delete(Guid id, IMediator mediator, CancellationToken cancellationToken)
     {
         await mediator.Send(new DeleteMovieCommand(id), cancellationToken);
-        return Results.NoContent();
+        return TypedResults.NoContent();
+    }
+
+    public static async Task<IResult> GetMovieStreamingOffers(int tmdbId, string? country, IMediator mediator, CancellationToken cancellationToken)
+    {
+        string countryCode = string.IsNullOrWhiteSpace(country)
+            ? "BE"
+            : country.ToUpperInvariant();
+        StreamingOfferDto? dto = await mediator.Send(new GetStreamingOffersForMovieQuery(tmdbId, countryCode), cancellationToken);
+        return TypedResults.Ok(dto);
     }
 }

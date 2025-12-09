@@ -17,7 +17,11 @@ public static class DependencyInjection
                 b =>
                 {
                     b.MigrationsAssembly(typeof(MovieTrackRDbContext).Assembly.FullName);
-                    b.EnableRetryOnFailure(5, TimeSpan.FromSeconds(2), null);
+                    b.EnableRetryOnFailure(
+                        maxRetryCount: 5,
+                        maxRetryDelay: TimeSpan.FromSeconds(2),
+                        errorCodesToAdd: null
+                    );
                 }
             ).UseSnakeCaseNamingConvention()
         );
@@ -25,6 +29,9 @@ public static class DependencyInjection
 
         // TMDB Configuration
         services.AddTmdb(configuration);
+
+        // Azure Storage for Avatars
+        services.AddAzureStorage(configuration);
 
         return services;
     }

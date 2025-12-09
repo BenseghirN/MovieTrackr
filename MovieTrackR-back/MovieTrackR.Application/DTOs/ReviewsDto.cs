@@ -14,13 +14,13 @@ public sealed class CreateReviewDto
     /// <summary>Note attribuée au film (0 à 5).</summary>
     public float Rating { get; set; }
     /// <summary>Contenu textuel de la critique (optionnel).</summary>
-    public string? Content { get; set; }
+    public string Content { get; set; } = string.Empty;
 }
 
 /// <summary>Modèle de mise à jour d'une critique (review).</summary>
 public sealed class UpdateReviewDto
 {
-    /// <summary>Nouvelle note attribuée (0 à 10).</summary>
+    /// <summary>Nouvelle note attribuée (0 à 5).</summary>
     public float Rating { get; set; }
     /// <summary>Nouveau contenu textuel de la critique (optionnel).</summary>
     public string? Content { get; set; }
@@ -35,8 +35,20 @@ public sealed class ReviewListItemDto
     /// <summary>Identifiant du film.</summary>
     public Guid MovieId { get; set; }
 
+    /// <summary>URL vers l'affiche du film.</summary>
+    public string PosterUrl { get; set; } = string.Empty;
+
+    /// <summary>Titre du film.</summary>
+    public string MovieTitle { get; set; } = string.Empty;
+
     /// <summary>Identifiant de l'auteur de la critique.</summary>
     public Guid UserId { get; set; }
+
+    /// <summary>Nom d'utilisateur de l'auteur de la critique.</summary>
+    public string UserName { get; set; } = string.Empty;
+
+    /// <summary>URL de l'avatar de l'utilisateur</summary>
+    public string AvatarUrl { get; set; } = string.Empty;
 
     /// <summary>Note attribuée (0 à 10).</summary>
     public float Rating { get; set; }
@@ -52,6 +64,9 @@ public sealed class ReviewListItemDto
 
     /// <summary>Date de création (UTC).</summary>
     public DateTime CreatedAt { get; set; }
+
+    /// <summary>Indique si l'utilisateur courant a liké cette critique.</summary>
+    public bool HasLiked { get; set; }
 }
 
 /// <summary>Détails complets d'une critique.</summary>

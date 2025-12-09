@@ -1,0 +1,164 @@
+<div class="comments-modal">
+  <!-- Header -->
+  <header class="modal-header">
+    <div class="header-info">
+      <h3>Commentaires</h3>
+      <span class="review-author">sur la critique de {{ reviewAuthor }}</span>
+    </div>
+    <button class="close-btn" (click)="onClose()">
+      <i class="pi pi-times"></i>
+    </button>
+  </header>
+
+  <!-- Body -->
+  <div class="modal-body">
+    <!-- Comment Form -->
+    @if (isAuthenticated()) {
+      <div class="comment-form-section">
+        <form [formGroup]="commentForm" (ngSubmit)="onSubmit()">
+          <div class="form-group">
+            <label class="form-label">
+              @if (editingCommentId()) {
+                <span>Modifier votre commentaire</span>
+              } @else {
+                <span>Ajouter un commentaire</span>
+              }
+              <span 
+                class="char-count" 
+                [class.error]="contentLength() < 3 || contentLength() > 500"
+              >
+                {{ contentLength() }}/500
+              </span>
+            </label>
+            
+            <textarea
+              pTextarea
+              formControlName="content"
+              rows="3"
+              placeholder="Partagez votre avis sur cette critique..."
+              class="comment-textarea"
+            ></textarea>
+
+            @if (commentForm.controls.content.invalid && commentForm.controls.content.touched) {
+              <div class="error-messages">
+                @if (commentForm.controls.content.hasError('required')) {
+                  <span class="field-error">Le commentaire est obligatoire</span>
+                }
+                @if (commentForm.controls.content.hasError('minlength')) {
+                  <span class="field-error">Le commentaire doit contenir au moins 3 caractères</span>
+                }
+                @if (commentForm.controls.content.hasError('maxlength')) {
+                  <span class="field-error">Le commentaire ne peut pas dépasser 500 caractères</span>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="form-actions">
+            @if (editingCommentId()) {
+              <p-button
+                label="Annuler"
+                [text]="true"
+                styleClass="cancel-btn"
+                type="button"
+                size="small"
+                (onClick)="onCancelEdit()"
+              />
+            }
+            
+            <p-button
+              [label]="editingCommentId() ? 'Modifier' : 'Publier'"
+              icon="pi pi-send"
+              styleClass="submit-btn"
+              type="submit"
+              size="small"
+              [disabled]="!canSubmit()"
+              [loading]="submitting()"
+            />
+          </div>
+        </form>
+      </div>
+    } @else {
+      <div class="login-prompt">
+        <i class="pi pi-user"></i>
+        <p>
+          <a (click)="login()">Connectez-vous</a>
+          pour commenter cette critique
+        </p>
+      </div>
+    }
+
+    <!-- Comments List -->
+    <div class="comments-section">
+      @if (loading()) {
+        <div class="loading-container">
+          <p-progressSpinner strokeWidth="3" animationDuration="1s" />
+        </div>
+      } @else if (hasComments()) {
+        <p-scrollPanel [style]="{ width: '100%', height: '280px' }" styleClass="comments-scroll">
+          <div class="comments-list">
+            @for (comment of comments(); track comment.id) {
+              <article class="comment-item">
+                <div class="comment-header">
+                  <div class="comment-author">
+                    <div class="author-avatar">
+                      {{ comment.userName.charAt(0).toUpperCase() }}
+                    </div>
+                    <div class="author-info">
+                      <span class="author-name">{{ comment.userName }}</span>
+                      <span class="comment-date">{{ comment.createdAt | date:'dd MMM yyyy à HH:mm' }}</span>
+                    </div>
+                  </div>
+
+                  @if (isMyComment(comment)) {
+                    <div class="comment-actions">
+                      <button 
+                        class="action-btn edit"
+                        pTooltip="Modifier"
+                        (click)="onEdit(comment)"
+                      >
+                        <i class="pi pi-pencil"></i>
+                      </button>
+                      <button 
+                        class="action-btn delete"
+                        pTooltip="Supprimer"
+                        (click)="onDelete(comment.id)"
+                      >
+                        <i class="pi pi-trash"></i>
+                      </button>
+                    </div>
+                  }
+                </div>
+
+                <div class="comment-content">
+                  <p>{{ comment.content }}</p>
+                </div>
+              </article>
+            }
+          </div>
+        </p-scrollPanel>
+
+        @if (totalPages() > 1) {
+          <div class="paginator-wrapper">
+            <p-paginator
+              [rows]="pageSize()"
+              [totalRecords]="totalCount()"
+              [first]="(currentPage() - 1) * pageSize()"
+              [rowsPerPageOptions]="[10, 20, 50]"
+              styleClass="comments-paginator"
+              (onPageChange)="onPageChange($event)"
+            />
+          </div>
+        }
+      } @else {
+        <div class="empty-state">
+          <i class="pi pi-comments"></i>
+          <p>Aucun commentaire pour le moment</p>
+          @if (isAuthenticated()) {
+            <span class="hint">Soyez le premier à commenter !</span>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>

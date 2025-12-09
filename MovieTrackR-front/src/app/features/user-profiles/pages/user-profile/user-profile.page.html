@@ -1,0 +1,126 @@
+<div class="user-profile-page">
+  <!-- Back Button -->
+  <div class="back-nav">
+    <p-button
+      icon="pi pi-arrow-left"
+      label="Retour"
+      [text]="true"
+      styleClass="back-btn"
+      (onClick)="onBack()"
+    />
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-container">
+      <p-progressSpinner strokeWidth="3" animationDuration="1s" />
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="error-container">
+      <div class="error-icon">
+        <i class="pi pi-exclamation-triangle"></i>
+      </div>
+      <h2>Erreur</h2>
+      <p>{{ error() }}</p>
+      <p-button
+        label="Retour"
+        icon="pi pi-arrow-left"
+        styleClass="error-back-btn"
+        (onClick)="onBack()"
+      />
+    </div>
+  }
+
+  <!-- Profile Content -->
+  @if (!loading() && !error() && userProfile(); as profile) {
+    <div class="profile-container">
+      <!-- Profile Card -->
+      <section class="profile-card">
+        <!-- Avatar -->
+        <div class="profile-avatar">
+          @if (profile.avatarUrl) {
+            <img [src]="profile.avatarUrl" [alt]="profile.pseudo" class="avatar-image" />
+          } @else {
+            <div class="avatar-fallback">
+              {{ profile.pseudo.charAt(0) | uppercase }}
+            </div>
+          }
+
+          <!-- Edit Button (positioned on avatar) -->
+          @if (canEditProfile()) {
+            <button 
+              class="edit-profile-btn" 
+              (click)="openEditProfileModal()"
+              pTooltip="Modifier mon profil"
+              tooltipPosition="right"
+            >
+              <i class="pi pi-pencil"></i>
+            </button>
+          }
+        </div>
+
+        <!-- Profile Info -->
+        <div class="profile-info">
+          <h1 class="profile-name">{{ profile.pseudo }}</h1>
+
+          <p class="profile-meta">
+            <i class="pi pi-calendar"></i>
+            Membre depuis 
+            @if (joinedYear()) {
+              {{ joinedYear() }}
+            } @else {
+              {{ profile.createdAt | date:'longDate' }}
+            }
+          </p>
+
+          <!-- Stats -->
+          <div class="profile-stats">
+            <div class="stat">
+              <span class="stat-value">{{ profile.reviewsCount }}</span>
+              <span class="stat-label">Critique{{ profile.reviewsCount > 1 ? 's' : '' }}</span>
+            </div>
+            <div class="stat-separator"></div>
+            <div class="stat">
+              <span class="stat-value">{{ profile.listsCount }}</span>
+              <span class="stat-label">Liste{{ profile.listsCount > 1 ? 's' : '' }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tabs Section -->
+      <section class="tabs-section">
+        <p-tabs [value]="activeTab()">
+          <p-tablist>
+            @for (tab of tabs; track tab.value) {
+              <p-tab
+                [value]="tab.value"
+                (click)="activeTab.set(tab.value)"
+                styleClass="profile-tab"
+              >
+                <i [class]="tab.icon"></i>
+                <span>{{ tab.label }}</span>
+              </p-tab>
+            }
+          </p-tablist>
+
+          <p-tabpanels>
+            <p-tabpanel value="reviews">
+              @if (userProfile()?.id) {
+                <app-user-profile-reviews-section [userId]="userProfile()?.id" />
+              }
+            </p-tabpanel>
+            <p-tabpanel value="lists">
+              @if (userProfile()?.id) {
+                <app-user-profile-lists-section [userId]="userProfile()?.id" />
+              }
+            </p-tabpanel>
+          </p-tabpanels>
+        </p-tabs>
+      </section>
+    </div>
+  }
+</div>
