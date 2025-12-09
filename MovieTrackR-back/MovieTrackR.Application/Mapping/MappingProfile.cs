@@ -67,6 +67,7 @@ public class MappingProfile : Profile
             .ForMember(d => d.PosterUrl, opt => opt.MapFrom(s => s.Movie.PosterUrl))
             .ForMember(d => d.UserId, opt => opt.MapFrom(s => s.UserId))
             .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.User.Pseudo))
+            .ForMember(d => d.AvatarUrl, opt => opt.MapFrom(s => s.User.AvatarUrl))
             .ForMember(d => d.Rating, opt => opt.MapFrom(s => s.Rating))
             .ForMember(d => d.Content, opt => opt.MapFrom(s => s.Content))
             .ForMember(d => d.CreatedAt, opt => opt.MapFrom(s => s.CreatedAt))

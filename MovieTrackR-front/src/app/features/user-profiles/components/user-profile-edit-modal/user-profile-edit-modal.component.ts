@@ -12,6 +12,7 @@ import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { AuthService } from '../../../../core/auth/auth-service';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 interface UserFormDialogData {
   userId?: string;
@@ -20,7 +21,7 @@ interface UserFormDialogData {
 @Component({
   selector: 'app-user-profile-edit-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, CardModule, ButtonModule, SkeletonModule, InputTextModule, FileUploadModule ],
+  imports: [CommonModule, ProgressSpinnerModule, ReactiveFormsModule, CardModule, ButtonModule, SkeletonModule, InputTextModule, FileUploadModule ],
   templateUrl: './user-profile-edit-modal.component.html',
   styleUrl: './user-profile-edit-modal.component.scss',
 })

@@ -1,28 +1,183 @@
+// ============================================
+// MOVIES PAGE - CINEMATIC DESIGN
+// ============================================
+
+@use "sass:color";
+
+// Variables
+$color-background: #0a0a0f;
+$color-surface: rgba(18, 18, 24, 0.85);
+$color-surface-solid: #12121a;
+$color-accent: #e4b45f;
+$color-accent-light: #f5d190;
+$color-text-primary: #ffffff;
+$color-text-secondary: rgba(255, 255, 255, 0.7);
+$color-text-muted: rgba(255, 255, 255, 0.5);
+$color-border: rgba(255, 255, 255, 0.1);
+$color-error: #ef4444;
+$color-info: #3b82f6;
+
+$font-display: 'Playfair Display', Georgia, serif;
+$font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+$shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.3);
+$shadow-heavy: 0 8px 40px rgba(0, 0, 0, 0.5);
+$shadow-glow: 0 0 30px rgba(228, 180, 95, 0.2);
+
+$transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+$breakpoint-xl: 1400px;
+$breakpoint-lg: 1200px;
+$breakpoint-md: 992px;
+$breakpoint-sm: 768px;
+$breakpoint-xs: 576px;
+
+// ============================================
+// BASE STYLES
+// ============================================
+
+:host {
+  display: block;
+  min-height: 100vh;
+  background: $color-background;
+  color: $color-text-primary;
+}
+
 .movies-page {
-  h1 {
-    margin-bottom: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 3rem 4rem;
+
+  @media (max-width: $breakpoint-md) {
+    padding: 1.5rem 1.5rem 3rem;
+  }
+
+  @media (max-width: $breakpoint-xs) {
+    padding: 1rem 1rem 2rem;
   }
 }
 
+// ============================================
+// PAGE HEADER
+// ============================================
+
+.page-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+
+  h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    margin: 0 0 0.75rem;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, $color-text-primary 0%, $color-accent 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    font-size: 1.0625rem;
+    color: $color-text-muted;
+    margin: 0;
+  }
+}
+
+// ============================================
+// SEARCH PANEL
+// ============================================
+
 .search-panel {
-  // background: #111;
-  border-radius: 0.75rem;
-  padding: 1.5rem 1.75rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  background: $color-surface;
+  backdrop-filter: blur(20px);
+  border: 1px solid $color-border;
+  border-radius: 16px;
+  padding: 1.75rem 2rem;
+  margin-bottom: 2.5rem;
+  box-shadow: $shadow-soft;
+
+  @media (max-width: $breakpoint-sm) {
+    padding: 1.25rem 1rem;
+    border-radius: 12px;
+  }
 }
 
 .search-bar {
   display: flex;
   gap: 1rem;
+  align-items: stretch;
+
+  @media (max-width: $breakpoint-sm) {
+    flex-direction: column;
+  }
+}
+
+.search-input-wrapper {
+  flex: 1;
+  position: relative;
+  display: flex;
   align-items: center;
 
+  i {
+    position: absolute;
+    left: 1rem;
+    color: $color-text-muted;
+    font-size: 1rem;
+    pointer-events: none;
+    z-index: 1;
+  }
+
   .search-input {
-    flex: 1;
-    height: 2.75rem;
+    width: 100%;
+    height: 3rem;
+    padding: 0 1rem 0 2.75rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid $color-border;
+    border-radius: 10px;
+    color: $color-text-primary;
+    font-size: 1rem;
+    font-family: $font-body;
+    transition: $transition-smooth;
+
+    &::placeholder {
+      color: $color-text-muted;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: $color-accent;
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 0 3px rgba(228, 180, 95, 0.1);
+    }
+  }
+}
+
+::ng-deep .search-btn {
+  height: 3rem;
+  padding: 0 1.5rem;
+  background: $color-accent !important;
+  border-color: $color-accent !important;
+  color: $color-background !important;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: $transition-smooth;
+
+  &:hover {
+    background: $color-accent-light !important;
+    border-color: $color-accent-light !important;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  .p-button-icon {
+    font-size: 0.875rem;
+  }
+
+  @media (max-width: $breakpoint-sm) {
+    width: 100%;
   }
 }
 
@@ -31,76 +186,290 @@
   align-items: flex-end;
   gap: 1.5rem;
   flex-wrap: wrap;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid $color-border;
+}
 
-  .filter-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
+.filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 
-    label {
-      font-size: 0.85rem;
-      color: var(--text-color-secondary);
-    }
-
-    ::ng-deep .p-inputnumber input {
-      width: 8rem;
-      height: 2.5rem;
-    }
+  label {
+    font-size: 0.8125rem;
+    color: $color-text-muted;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
-  .link-reset {
-    border: none;
-    background: transparent;
-    color: var(--primary-color);
-    font-size: 0.85rem;
-    cursor: pointer;
-    padding: 0;
-    text-decoration: underline;
+  ::ng-deep {
+    .p-inputnumber {
+      .p-inputtext {
+        width: 7rem;
+        height: 2.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid $color-border;
+        border-radius: 8px;
+        color: $color-text-primary;
+        font-family: $font-body;
+        transition: $transition-smooth;
+
+        &::placeholder {
+          color: $color-text-muted;
+        }
+
+        &:focus {
+          outline: none;
+          border-color: $color-accent;
+          box-shadow: 0 0 0 3px rgba(228, 180, 95, 0.1);
+        }
+      }
+    }
   }
 }
+
+// ============================================
+// LOADING STATE
+// ============================================
 
 .loading-container {
   display: flex;
   justify-content: center;
-  padding: 3rem;
+  align-items: center;
+  padding: 5rem 2rem;
 }
+
+// ============================================
+// ERROR & NO RESULTS
+// ============================================
 
 .error-message,
 .no-results {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 1rem;
-  border-radius: var(--border-radius);
-  margin-bottom: 1rem;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
 
   i {
-    font-size: 1.25rem;
+    font-size: 1.5rem;
+    flex-shrink: 0;
   }
 }
 
 .error-message {
-  background-color: rgba(239, 68, 68, 0.1);
-  color: var(--red-400);
+  background: rgba($color-error, 0.1);
+  border: 1px solid rgba($color-error, 0.2);
+  color: color.adjust($color-error, $lightness: 15%);
 }
 
 .no-results {
-  background-color: rgba(59, 130, 246, 0.1);
-  color: var(--blue-400);
+  background: $color-surface;
+  border: 1px solid $color-border;
+  flex-direction: column;
+  text-align: center;
+  padding: 3rem 2rem;
+
+  i {
+    font-size: 3rem;
+    color: $color-accent;
+    opacity: 0.5;
+  }
+
+  .no-results-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    p {
+      margin: 0;
+      color: $color-text-secondary;
+    }
+
+    .search-term {
+      font-weight: 600;
+      color: $color-text-primary;
+    }
+  }
 }
 
-.results-info {
-  margin-bottom: 1rem;
-  color: var(--text-color-secondary);
+// ============================================
+// RESULTS
+// ============================================
+
+.results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid $color-border;
 }
+
+.results-count {
+  font-size: 0.9375rem;
+  color: $color-text-secondary;
+
+  strong {
+    color: $color-accent;
+    font-weight: 600;
+  }
+}
+
+// ============================================
+// MOVIES GRID
+// ============================================
 
 .movies-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 1.5rem;
+  margin-bottom: 2.5rem;
+
+  @media (max-width: $breakpoint-sm) {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+
+  @media (max-width: $breakpoint-xs) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+}
+
+// Style pour le composant movie-card (si nécessaire d'override)
+::ng-deep app-movie-card {
+  .movie-card {
+    background: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: $transition-smooth;
+
+    &:hover {
+      transform: translateY(-4px);
+      border-color: rgba(228, 180, 95, 0.3);
+      box-shadow: $shadow-soft, $shadow-glow;
+    }
+  }
+}
+
+// ============================================
+// PAGINATOR
+// ============================================
+
+.paginator-wrapper {
+  display: flex;
+  justify-content: center;
   margin-bottom: 2rem;
 }
 
-::ng-deep .p-paginator {
-  margin-bottom: 2rem; // Pour éviter que le footer le cache
+::ng-deep .custom-paginator {
+  background: transparent;
+  border: none;
+  padding: 0;
+
+  .p-paginator-element {
+    min-width: 2.5rem;
+    height: 2.5rem;
+    margin: 0 0.25rem;
+    border-radius: 8px;
+    background: $color-surface;
+    border: 1px solid $color-border;
+    color: $color-text-secondary;
+    transition: $transition-smooth;
+
+    &:hover:not(.p-disabled) {
+      background: rgba(228, 180, 95, 0.1);
+      border-color: rgba(228, 180, 95, 0.3);
+      color: $color-accent;
+    }
+
+    &.p-highlight {
+      background: $color-accent;
+      border-color: $color-accent;
+      color: $color-background;
+    }
+  }
+
+  .p-paginator-first,
+  .p-paginator-prev,
+  .p-paginator-next,
+  .p-paginator-last {
+    background: $color-surface;
+    border: 1px solid $color-border;
+    color: $color-text-secondary;
+
+    &:hover:not(.p-disabled) {
+      background: rgba(228, 180, 95, 0.1);
+      border-color: rgba(228, 180, 95, 0.3);
+      color: $color-accent;
+    }
+  }
+
+  .p-dropdown {
+    background: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: 8px;
+
+    .p-dropdown-label {
+      color: $color-text-secondary;
+    }
+
+    &:hover {
+      border-color: rgba(228, 180, 95, 0.3);
+    }
+  }
+
+  .p-paginator-current {
+    color: $color-text-muted;
+  }
+}
+
+// ============================================
+// EMPTY STATE
+// ============================================
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 5rem 2rem;
+
+  .empty-icon {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(228, 180, 95, 0.1) 0%, rgba(228, 180, 95, 0.05) 100%);
+    border: 1px solid rgba(228, 180, 95, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+
+    i {
+      font-size: 2.5rem;
+      color: $color-accent;
+      opacity: 0.7;
+    }
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem;
+    color: $color-text-primary;
+  }
+
+  p {
+    font-size: 1rem;
+    color: $color-text-muted;
+    margin: 0;
+    max-width: 300px;
+  }
 }

@@ -1,261 +1,387 @@
-::ng-deep {
-  .review-card {
-    .p-card {
-      background: var(--surface-card);
-      border: 1px solid var(--surface-border);
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      transition: box-shadow 0.2s;
+// ============================================
+// REVIEW CARD - CINEMATIC DESIGN
+// ============================================
 
-      &:hover {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-      }
-    }
+@use "sass:color";
 
-    .p-card-header {
-      padding: 1.25rem;
-      border-bottom: 1px solid var(--surface-border);
-    }
+// Variables
+$color-background: #0a0a0f;
+$color-surface: rgba(18, 18, 24, 0.85);
+$color-surface-light: rgba(255, 255, 255, 0.03);
+$color-accent: #e4b45f;
+$color-accent-light: #f5d190;
+$color-text-primary: #ffffff;
+$color-text-secondary: rgba(255, 255, 255, 0.7);
+$color-text-muted: rgba(255, 255, 255, 0.5);
+$color-border: rgba(255, 255, 255, 0.1);
+$color-star: #fbbf24;
+$color-star-empty: rgba(255, 255, 255, 0.2);
+$color-heart: #ec4899;
+$color-danger: #ef4444;
 
-    .p-card-body {
-      padding: 1.25rem;
-    }
+$font-display: 'Playfair Display', Georgia, serif;
+$font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
 
-    .p-card-footer {
-      padding: 1rem 1.25rem;
-      background: var(--surface-50);
-      border-top: 1px solid var(--surface-border);
-    }
+$shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.3);
+$shadow-glow: 0 0 20px rgba(228, 180, 95, 0.15);
+
+$transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+$breakpoint-sm: 768px;
+$breakpoint-xs: 576px;
+
+// ============================================
+// CARD BASE
+// ============================================
+
+:host {
+  display: block;
+}
+
+.review-card {
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: $transition-smooth;
+
+  &:hover {
+    border-color: rgba(228, 180, 95, 0.2);
+    box-shadow: $shadow-soft;
   }
 }
+
+// ============================================
+// HEADER
+// ============================================
 
 .review-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid $color-border;
   flex-wrap: wrap;
-}
-
-.review-author {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
 
   .author-avatar {
-    cursor: pointer;
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary-500), var(--primary-700));
-    color: white;
+    background: linear-gradient(135deg, $color-accent, color.adjust($color-accent, $lightness: -20%));
+    color: $color-background;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     font-weight: 700;
+    text-transform: uppercase;
+    border: 2px solid transparent;
+    transition: $transition-smooth;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
   }
 
-  .author-info {
-    display: flex;
-    flex-direction: column;
+  @media (max-width: $breakpoint-xs) {
+    padding: 1rem;
+  }
+}
+
+// Author
+.review-author {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  cursor: pointer;
+  transition: $transition-smooth;
+
+  &:hover {
+    .author-avatar {
+      border-color: $color-accent;
+      box-shadow: $shadow-glow;
+    }
 
     .author-name {
-      font-weight: 600;
-      font-size: 1rem;
-      color: var(--text-color);
-    }
-
-    .review-date {
-      font-size: 0.875rem;
-      color: var(--text-color-secondary);
-    }
-    .movie-title {
-      padding-top: 1rem;
-      font-size: 0.9rem;
-      color: var(--text-color-secondary);
-      cursor: pointer;
+      color: $color-accent;
     }
   }
 }
 
+.author-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, $color-accent, color.adjust($color-accent, $lightness: -20%));
+  color: $color-background;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  border: 2px solid transparent;
+  transition: $transition-smooth;
+}
+
+.author-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.author-name {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: $color-text-primary;
+  transition: $transition-smooth;
+}
+
+.review-date {
+  font-size: 0.8125rem;
+  color: $color-text-muted;
+}
+
+// Rating
 .review-rating {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+}
 
-  .stars {
-    display: flex;
-    gap: 0.25rem;
+.stars {
+  display: flex;
+  gap: 0.25rem;
 
-    i {
-      font-size: 1.125rem;
+  i {
+    font-size: 1rem;
+    transition: $transition-smooth;
 
-      &.star-full {
-        color: var(--yellow-500);
-      }
+    &.star-full {
+      color: $color-star;
+    }
 
-      &.star-half {
-        color: var(--yellow-500);
-      }
-
-      &.star-empty {
-        color: var(--surface-300);
-      }
+    &.star-empty {
+      color: $color-star-empty;
     }
   }
-
-  .rating-value {
-    font-weight: 700;
-    font-size: 1.125rem;
-    color: var(--text-color);
-  }
 }
+
+.rating-value {
+  font-weight: 700;
+  font-size: 1.0625rem;
+  color: $color-accent;
+}
+
+// ============================================
+// BODY
+// ============================================
 
 .review-body {
   display: flex;
   align-items: flex-start;
-  gap: 1.5rem;
-  margin-top: 1rem;
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem;
+
+  @media (max-width: $breakpoint-sm) {
+    flex-direction: column;
+    padding: 1rem;
+  }
 }
 
+// Poster
 .review-poster {
-  flex: 0 0 auto;
-  width: 92px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
   cursor: pointer;
-  border-radius: 8px;
-  overflow: hidden;
-  background: #000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-
-  img {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
+  transition: $transition-smooth;
+  text-align: center;
+  align-items: center;
 
   &:hover {
     transform: translateY(-2px);
-    transition: transform 0.15s ease-out;
+
+    img {
+      border-color: rgba(228, 180, 95, 0.4);
+      box-shadow: $shadow-glow;
+    }
+
+    .movie-title {
+      color: $color-accent;
+    }
+  }
+
+  img {
+    width: 80px;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid $color-border;
+    box-shadow: $shadow-soft;
+    transition: $transition-smooth;
+
+    @media (max-width: $breakpoint-xs) {
+      width: 70px;
+    }
   }
 }
 
+.movie-title {
+  font-size: 0.8125rem;
+  color: $color-text-muted;
+  max-width: 80px;
+  line-height: 1.3;
+  transition: $transition-smooth;
+
+  @media (max-width: $breakpoint-xs) {
+    max-width: 70px;
+  }
+}
+
+// Text Content
 .review-text {
-  flex: 1 1 auto;
+  flex: 1;
+  min-width: 0;
 }
 
 .review-content {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: $color-text-secondary;
+
   p {
-    margin: 0 0 0.5rem;
-    line-height: 1.7;
-    color: var(--text-color);
-    white-space: pre-wrap;
+    margin: 0 0 0.75rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
+
+  // Handle line breaks
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
-/* Titre film dans le header (ligne Interstellar) */
-.review-author .author-info .movie-title {
-  margin-top: 0.25rem;
-  font-size: 0.9rem;
-  color: var(--text-color-secondary);
-  cursor: pointer;
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-    color: var(--primary-300);
-  }
-}
-
-/* Responsive : on stack l’image au-dessus du texte sur mobile */
-@media (max-width: 768px) {
-  .review-body {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .review-poster {
-    width: 80px;
-  }
-}
+// ============================================
+// FOOTER
+// ============================================
 
 .review-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
-}
+  padding: 1rem 1.5rem;
+  background: $color-surface-light;
+  border-top: 1px solid $color-border;
 
-.review-actions {
-  display: flex;
-  gap: 1rem;
-
-  .action-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: transparent;
-    border: 1px solid var(--surface-border);
-    border-radius: 8px;
-    color: var(--text-color-secondary);
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 0.875rem;
-
-    i {
-      font-size: 1rem;
-    }
-
-    &:hover {
-      background: var(--surface-100);
-      border-color: var(--primary-color);
-      color: var(--primary-color);
-    }
-
-    &.liked {
-      color: var(--pink-500);
-      border-color: var(--pink-500);
-      background: var(--pink-50);
-
-      i {
-        animation: heartBeat 0.3s ease;
-      }
-    }
+  @media (max-width: $breakpoint-xs) {
+    padding: 0.875rem 1rem;
   }
 }
 
-.poster-wrapper {
-  flex: 0 0 auto;
-  width: 92px;
-  cursor: pointer;
-  border-radius: 8px;
-  overflow: hidden;
-  background: #000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+// Actions (Like, Comment)
+.review-actions {
+  display: flex;
+  gap: 0.75rem;
+}
 
-  img {
-    display: block;
-    width: 100%;
-    height: auto;
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  background: transparent;
+  border: 1px solid $color-border;
+  border-radius: 8px;
+  color: $color-text-muted;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  transition: $transition-smooth;
+
+  i {
+    font-size: 1rem;
   }
 
   &:hover {
-    transform: translateY(-2px);
-    transition: transform 0.15s ease-out;
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: $color-text-secondary;
+  }
+
+  &.liked {
+    color: $color-heart;
+    border-color: rgba($color-heart, 0.4);
+    background: rgba($color-heart, 0.1);
+
+    i {
+      animation: heartBeat 0.3s ease;
+    }
+
+    &:hover {
+      background: rgba($color-heart, 0.15);
+      border-color: rgba($color-heart, 0.5);
+    }
   }
 }
 
+// Owner Actions (Edit, Delete)
 .owner-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.375rem;
 }
+
+.owner-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: $transition-smooth;
+
+  i {
+    font-size: 0.875rem;
+  }
+
+  &.edit {
+    color: $color-text-muted;
+
+    &:hover {
+      color: $color-accent;
+      background: rgba(228, 180, 95, 0.1);
+      border-color: rgba(228, 180, 95, 0.3);
+    }
+  }
+
+  &.delete {
+    color: $color-text-muted;
+
+    &:hover {
+      color: color.adjust($color-danger, $lightness: 15%);
+      background: rgba($color-danger, 0.1);
+      border-color: rgba($color-danger, 0.3);
+    }
+  }
+}
+
+// ============================================
+// ANIMATIONS
+// ============================================
 
 @keyframes heartBeat {
   0%, 100% {
     transform: scale(1);
   }
   50% {
-    transform: scale(1.2);
+    transform: scale(1.25);
   }
 }

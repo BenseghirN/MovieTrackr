@@ -1,7 +1,6 @@
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
 import { TooltipModule } from 'primeng/tooltip';
 import { ReviewListItem } from '../../models/review.model';
 import { AuthService } from '../../../../core/auth/auth-service';
@@ -17,7 +16,7 @@ import { ReviewLikesService } from '../../services/review-likes.service';
 @Component({
   selector: 'app-review-card',
   standalone: true,
-  imports: [CommonModule, DatePipe, CardModule, ButtonModule, TooltipModule],
+  imports: [CommonModule, DatePipe, ButtonModule, TooltipModule],
   templateUrl: './review-card.component.html',
   styleUrl: './review-card.component.scss',
 })

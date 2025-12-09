@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/dynamicdialog';
@@ -11,7 +11,7 @@ import { RatingModule } from 'primeng/rating';
 import { MessageModule } from 'primeng/message';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NotificationService } from '../../../../core/services/notification.service';
-import { EditorModule, EditorTextChangeEvent } from 'primeng/editor';
+import { Editor, EditorModule, EditorTextChangeEvent } from 'primeng/editor';
 
 interface ReviewFormDialogData {
   movieId: string;
@@ -32,7 +32,9 @@ export class ReviewFormModalComponent implements OnInit {
   private readonly notificationService = inject(NotificationService);
   
   movieId!: string;
-  existingReview?: ReviewListItem;
+  // existingReview?: ReviewListItem;
+  readonly existingReview = signal<ReviewListItem | null>(null);
+  readonly reviewEditor = viewChild<Editor>('reviewEditor');
   
   private readonly formBuilder = inject(FormBuilder);
   readonly reviewForm = this.formBuilder.nonNullable.group({
@@ -67,17 +69,18 @@ export class ReviewFormModalComponent implements OnInit {
   
   ngOnInit(): void {
     this.movieId = this.dialogConfig.data?.movieId!;
-    this.existingReview = this.dialogConfig.data?.review;
+    const review = this.dialogConfig.data?.review ?? null;
+    this.existingReview.set(review);
     
     if (!this.movieId) {
       this.dialogRef.close();
       return;
     }
     
-    if (this.existingReview) {
+    if (review) {
       this.reviewForm.patchValue({
-        rating: this.existingReview.rating,
-        content: this.existingReview.content,
+        rating: review.rating,
+        content: review.content,
       });
     }
   }
@@ -88,6 +91,13 @@ export class ReviewFormModalComponent implements OnInit {
 
     if (textLength > 2000) {
       this.isInvalid('content');
+    }
+  }
+
+  onEditorInit(event: unknown): void {
+    // Quill est maintenant initialisé et le contenu patché
+    if (this.existingReview()) {
+      this.syncContentLengthFromEditor();
     }
   }
 
@@ -112,11 +122,11 @@ export class ReviewFormModalComponent implements OnInit {
       : { movieId: this.movieId, rating: rating, content: content } as CreateReviewModel;
 
     const action = this.isEditMode()
-      ? this.reviewService.updateReview(this.existingReview!.id, payload)
+      ? this.reviewService.updateReview(this.existingReview()!.id, payload)
       : this.reviewService.createReview(payload as CreateReviewModel);
       
     action.subscribe({
-      next: (review) => {
+      next: () => {
         this.loading.set(false);       
         this.dialogRef.close(true);
       },
@@ -146,5 +156,16 @@ export class ReviewFormModalComponent implements OnInit {
       );
       return;
     }
+  }
+
+  private syncContentLengthFromEditor(): void {
+    const editor = this.reviewEditor();
+    if (!editor) return;
+
+    const quill = editor.getQuill();
+    if (!quill) return;
+
+    const text = (quill.getText() ?? '').trim();
+    this.contentLength.set(text.length);
   }
 }

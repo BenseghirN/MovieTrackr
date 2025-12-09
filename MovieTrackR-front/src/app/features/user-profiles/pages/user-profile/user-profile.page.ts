@@ -14,11 +14,12 @@ import { UserProfileListsSectionComponent } from '../../components/user-profile-
 import { AuthService } from '../../../../core/auth/auth-service';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { UserProfileModalComponent } from '../../components/user-profile-edit-modal/user-profile-edit-modal.component';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-user-profile-page',
   standalone: true,
-  imports: [CommonModule, ProgressSpinnerModule, ButtonModule, TabsModule, UserProfileReviewsSectionComponent, UserProfileListsSectionComponent],
+  imports: [CommonModule, ProgressSpinnerModule, TooltipModule, ButtonModule, TabsModule, UserProfileReviewsSectionComponent, UserProfileListsSectionComponent],
   templateUrl: './user-profile.page.html',
   styleUrl: './user-profile.page.scss',
 })
@@ -30,8 +31,6 @@ export class UserProfilePage {
   private readonly notificationService = inject(NotificationService);
   private readonly dialogService = inject(DialogService);
   private DialogRef: DynamicDialogRef<UserProfileModalComponent> | null = null;
-  
-  
 
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);

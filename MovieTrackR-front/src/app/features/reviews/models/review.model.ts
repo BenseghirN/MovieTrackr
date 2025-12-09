@@ -8,6 +8,7 @@ export interface ReviewListItem {
   posterUrl: string;
   userId: string;
   userName: string;
+  avatarUrl: string
   rating: number;
   content: string;
   likesCount: number;

@@ -9,15 +9,16 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { AuthService } from '../../../../core/auth/auth-service';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { map, of, switchMap } from 'rxjs';
+import { map } from 'rxjs';
 import { UserListDetails } from '../../models/user-list.model';
 import { ListFormModalComponent } from '../../components/list-form-modal/list-form-modal.component';
 import { ReorderMoviesPopoverComponent } from '../../components/reorder-movies-popover/reorder-movies-popover.component';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-list-details-page',
   standalone: true,
-  imports: [CommonModule, ButtonModule, ProgressSpinnerModule, MovieCardComponent, ReorderMoviesPopoverComponent],
+  imports: [CommonModule, ButtonModule, ProgressSpinnerModule, TooltipModule, MovieCardComponent, ReorderMoviesPopoverComponent],
   templateUrl: './list-details.page.html',
   styleUrl: './list-details.page.scss',
 })
@@ -130,6 +131,10 @@ export class ListDetailsPage {
 
   onReordered(): void {
     this.reloadKey.update(x => x + 1);
+  }
+  
+  goToMovies(): void {
+    this.router.navigate(['/movies']);
   }
 
   private loadList(id: string) {

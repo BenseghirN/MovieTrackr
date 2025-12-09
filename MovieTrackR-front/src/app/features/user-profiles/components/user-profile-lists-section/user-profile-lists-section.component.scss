@@ -1,43 +1,149 @@
-.user-lists-section {
-  margin-top: 2rem;
+// ============================================
+// USER PROFILE LISTS SECTION - CINEMATIC DESIGN
+// ============================================
 
-  .section-header {
+@use "sass:color";
+
+// Variables
+$color-background: #0a0a0f;
+$color-surface: rgba(18, 18, 24, 0.85);
+$color-surface-solid: #12121a;
+$color-accent: #e4b45f;
+$color-accent-light: #f5d190;
+$color-text-primary: #ffffff;
+$color-text-secondary: rgba(255, 255, 255, 0.7);
+$color-text-muted: rgba(255, 255, 255, 0.5);
+$color-border: rgba(255, 255, 255, 0.1);
+$color-error: #ef4444;
+
+$font-display: 'Playfair Display', Georgia, serif;
+$font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+$shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.3);
+$shadow-glow: 0 0 30px rgba(228, 180, 95, 0.2);
+
+$transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+$breakpoint-md: 992px;
+$breakpoint-sm: 768px;
+$breakpoint-xs: 576px;
+
+// ============================================
+// SECTION HEADER
+// ============================================
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid $color-border;
+
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 1rem;
+    align-items: center;
+    gap: 0.5rem;
+    color: $color-text-primary;
 
-    h2 {
-      font-size: 1.4rem;
-      margin: 0;
+    i {
+      color: $color-accent;
+      font-size: 1.125rem;
     }
-  }
-
-  .section-loading {
-    display: flex;
-    justify-content: center;
-    padding: 2rem 0;
-  }
-
-  .lists-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .error {
-    color: #f44336;
-    margin-bottom: 1rem;
   }
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .user-lists-section {
-    .section-header {
-      flex-direction: column;
-      align-items: stretch;
+// ============================================
+// LOADING STATE
+// ============================================
+
+.section-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem;
+}
+
+// ============================================
+// ERROR MESSAGE
+// ============================================
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: rgba($color-error, 0.1);
+  border: 1px solid rgba($color-error, 0.2);
+  border-radius: 10px;
+  color: color.adjust($color-error, $lightness: 15%);
+  margin-bottom: 1rem;
+
+  i {
+    font-size: 1.125rem;
+    flex-shrink: 0;
+  }
+}
+
+// ============================================
+// EMPTY STATE
+// ============================================
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 2rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid $color-border;
+  border-radius: 12px;
+
+  i {
+    font-size: 2.5rem;
+    color: $color-accent;
+    opacity: 0.4;
+    margin-bottom: 0.75rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+    color: $color-text-muted;
+  }
+}
+
+// ============================================
+// LISTS GRID
+// ============================================
+
+.lists-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem;
+
+  @media (max-width: $breakpoint-sm) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+// User List Card Override
+::ng-deep app-user-list-card {
+  .list-card,
+  .user-list-card {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid $color-border;
+    border-radius: 12px;
+    transition: $transition-smooth;
+
+    &:hover {
+      border-color: rgba(228, 180, 95, 0.3);
+      box-shadow: $shadow-soft, $shadow-glow;
     }
   }
 }

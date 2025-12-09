@@ -1,7 +1,8 @@
-@use "sass:color";
 // ============================================
 // PERSON DETAILS PAGE - CINEMATIC DESIGN
 // ============================================
+
+@use "sass:color";
 
 // Variables (same as movie-details)
 $color-background: #0a0a0f;
@@ -38,7 +39,6 @@ $breakpoint-xs: 576px;
   min-height: 100vh;
   background: $color-background;
   color: $color-text-primary;
-  font-family: $font-body;
 }
 
 // ============================================

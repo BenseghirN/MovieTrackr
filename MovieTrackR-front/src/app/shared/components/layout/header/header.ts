@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, inject, OnInit } from '@angular/core';
+import { Component, effect, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
@@ -17,6 +17,8 @@ import { TooltipModule } from 'primeng/tooltip';
 export class Header implements OnInit {
   readonly authService = inject(AuthService);
   readonly router = inject(Router);
+
+  readonly mobileMenuOpen = signal(false);
 
   constructor() {    
     effect(() => {
@@ -37,6 +39,14 @@ export class Header implements OnInit {
     if (!currentUserId) return;
 
     this.router.navigate(['/me', currentUserId]);
+  }
+
+  toggleMobileMenu(): void {
+    this.mobileMenuOpen.update(v => !v);
+  }
+
+  closeMobileMenu(): void {
+    this.mobileMenuOpen.set(false);
   }
 
   login(): void {    

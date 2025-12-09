@@ -1,4 +1,4 @@
-<div class="movie-reviews">
+<!-- <div class="movie-reviews">
   <div class="reviews-header">
     <div class="reviews-title">
       <h2>Critiques</h2>
@@ -67,4 +67,90 @@
       }
     </div>
   }
-</div>
+</div> -->
+
+
+<section class="movie-reviews">
+  <!-- Header -->
+  <header class="reviews-header">
+    <div class="reviews-title">
+      <h2>
+        <i class="pi pi-star"></i>
+        Critiques
+      </h2>
+      @if (averageRating()) {
+        <div class="average-rating">
+          <i class="pi pi-star-fill"></i>
+          <span class="rating-value">{{ averageRating() | number:'1.1-1' }}/10</span>
+          <span class="reviews-count">({{ totalCount() }} avis)</span>
+        </div>
+      }
+    </div>
+
+    @if (isAuthenticated()) {
+      <p-button
+        label="Écrire une critique"
+        icon="pi pi-pencil"
+        styleClass="write-review-btn"
+        (onClick)="onWriteReview()"
+      />
+    }
+  </header>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="loading-container">
+      <p-progressSpinner strokeWidth="3" animationDuration="1s" />
+    </div>
+  }
+
+  <!-- Reviews List -->
+  @if (!loading() && hasReviews()) {
+    <div class="reviews-list">
+      @for (review of reviews(); track review.id) {
+        <app-review-card
+          [review]="review"
+          (edit)="onEdit()"
+          (delete)="onDelete()"
+        />
+      }
+    </div>
+
+    @if (totalPages() > 1) {
+      <div class="paginator-wrapper">
+        <p-paginator
+          [rows]="pageSize()"
+          [totalRecords]="totalCount()"
+          [first]="(currentPage() - 1) * pageSize()"
+          [rowsPerPageOptions]="[5, 10, 20]"
+          styleClass="reviews-paginator"
+          (onPageChange)="onPageChange($event)"
+        />
+      </div>
+    }
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && !hasReviews()) {
+    <div class="empty-state">
+      <div class="empty-icon">
+        <i class="pi pi-star"></i>
+      </div>
+      <h3>Aucune critique pour le moment</h3>
+      @if (isAuthenticated()) {
+        <p>Soyez le premier à donner votre avis sur ce film !</p>
+        <p-button
+          label="Écrire la première critique"
+          icon="pi pi-pencil"
+          styleClass="write-first-btn"
+          (onClick)="onWriteReview()"
+        />
+      } @else {
+        <p class="login-hint">
+          <a (click)="login()">Connectez-vous</a>
+          pour écrire la première critique
+        </p>
+      }
+    </div>
+  }
+</section>

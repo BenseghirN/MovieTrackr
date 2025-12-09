@@ -5,6 +5,7 @@ export interface AuthUser {
   pseudo: string
   givenName: string
   surname: string
+  avatarUrl: string
   role: 'User' | 'Admin';
 }
 

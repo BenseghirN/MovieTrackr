@@ -31,6 +31,15 @@ export class HomePageComponent {
     }
   }
 
+  goToMovies(): void {
+    this.router.navigate(['/movies']);
+  }
+
+  scrollToFeatures(): void {
+    const featuresSection = document.querySelector('.features');
+    featuresSection?.scrollIntoView({ behavior: 'smooth' });
+  }
+
   private redirectToSearch() {
     const query = this.searchQuery().trim();
     this.searchQuery.set('');

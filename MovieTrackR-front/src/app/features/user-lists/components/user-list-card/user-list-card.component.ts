@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
-import { CardModule } from 'primeng/card';
 import { UserListService } from '../../services/user-list.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { ButtonModule } from 'primeng/button';
@@ -14,7 +13,7 @@ import { AuthService } from '../../../../core/auth/auth-service';
 @Component({
   selector: 'app-user-list-card',
   standalone: true,
-  imports: [CommonModule, CardModule, ButtonModule, ConfirmDialogModule],
+  imports: [CommonModule, ButtonModule, ConfirmDialogModule],
   templateUrl: './user-list-card.component.html',
   styleUrl: './user-list-card.component.scss',
 })

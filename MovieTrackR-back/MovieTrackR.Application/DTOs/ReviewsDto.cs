@@ -47,6 +47,9 @@ public sealed class ReviewListItemDto
     /// <summary>Nom d'utilisateur de l'auteur de la critique.</summary>
     public string UserName { get; set; } = string.Empty;
 
+    /// <summary>URL de l'avatar de l'utilisateur</summary>
+    public string AvatarUrl { get; set; } = string.Empty;
+
     /// <summary>Note attribuée (0 à 10).</summary>
     public float Rating { get; set; }
 

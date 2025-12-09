@@ -1,48 +1,113 @@
 <header class="header">
   <div class="header-content">
+    <!-- Logo -->
     <div class="logo">
       <a routerLink="/">
         <img src="assets/images/logo.png" alt="MovieTrackR" class="logo-image">
-        <span class="logo-text">MovieTrackR</span>
+        <span class="logo-text">Movie<span class="accent">TrackR</span></span>
       </a>
     </div>
     
+    <!-- Navigation -->
     <nav class="nav-links">
       <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
         <i class="pi pi-home"></i>
-        Accueil
+        <span>Accueil</span>
       </a>
       <a routerLink="/movies" routerLinkActive="active" pTooltip="Rechercher un film" tooltipPosition="bottom">
         <i class="pi pi-video"></i>
-        Films
+        <span>Films</span>
       </a>
       <a routerLink="/people" routerLinkActive="active" pTooltip="Rechercher un acteur ou réalisateur" tooltipPosition="bottom">
-        <i class="pi pi-id-card"></i>
-        Personnes
+        <i class="pi pi-users"></i>
+        <span>Personnes</span>
       </a>
-      <!-- <a routerLink="/my-lists" routerLinkActive="active">
-        <i class="pi pi-bookmark"></i>
-        Mes listes
-      </a> -->
+      @if (authService.isAuthenticated()) {
+        <a routerLink="/my-lists" routerLinkActive="active" pTooltip="Mes listes de films" tooltipPosition="bottom">
+          <i class="pi pi-bookmark"></i>
+          <span>Mes listes</span>
+        </a>
+        <!-- <a routerLink="/me" routerLinkActive="active" pTooltip="Mon profil" tooltipPosition="bottom">
+          <i class="pi pi-user"></i>
+          <span>Mon profil</span>
+        </a> -->
+      }
     </nav>
     
+    <!-- Auth Section -->
     <div class="auth-section">
       @if (authService.isAuthenticated()) {
-        <p-avatar icon="pi pi-user" shape="circle" class="mr-2" (click)="onAvatarClick()" [style]="{ cursor: 'pointer' }"></p-avatar>
+        @if (authService.currentUser(); as user) {
+          <div class="user-menu" (click)="onAvatarClick()">
+            @if (user.avatarUrl) {
+              <img [src]="user.avatarUrl" [alt]="user.pseudo" class="user-avatar" />
+            } @else {
+              <p-avatar 
+                [label]="user.pseudo.charAt(0).toUpperCase()" 
+                shape="circle" 
+                styleClass="user-avatar-fallback"
+              />
+            }
+            <span class="user-name">{{ user.pseudo }}</span>
+          </div>
+        }
         <p-button 
-          label="Déconnexion" 
           icon="pi pi-sign-out" 
-          severity="secondary" 
           [text]="true"
-          (click)="logout()">
-        </p-button>
+          [rounded]="true"
+          styleClass="logout-btn"
+          pTooltip="Déconnexion"
+          tooltipPosition="bottom"
+          (onClick)="logout()"
+        />
       } @else {
         <p-button 
           label="Connexion" 
           icon="pi pi-sign-in" 
-          (click)="login()">
-        </p-button>
+          styleClass="login-btn"
+          (onClick)="login()"
+        />
       }
     </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" (click)="toggleMobileMenu()">
+      <i class="pi" [ngClass]="mobileMenuOpen() ? 'pi-times' : 'pi-bars'"></i>
+    </button>
   </div>
+
+  <!-- Mobile Navigation -->
+  <nav class="mobile-nav" [class.open]="mobileMenuOpen()">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMobileMenu()">
+      <i class="pi pi-home"></i>
+      Accueil
+    </a>
+    <a routerLink="/movies" routerLinkActive="active" (click)="closeMobileMenu()">
+      <i class="pi pi-video"></i>
+      Films
+    </a>
+    <a routerLink="/people" routerLinkActive="active" (click)="closeMobileMenu()">
+      <i class="pi pi-users"></i>
+      Personnes
+    </a>
+    @if (authService.isAuthenticated()) {
+      <a routerLink="/my-lists" routerLinkActive="active" (click)="closeMobileMenu()">
+        <i class="pi pi-bookmark"></i>
+        Mes listes
+      </a>
+      <a routerLink="/me" routerLinkActive="active" (click)="closeMobileMenu()">
+        <i class="pi pi-user"></i>
+        Mon profil
+      </a>
+      <button class="mobile-logout" (click)="logout(); closeMobileMenu()">
+        <i class="pi pi-sign-out"></i>
+        Déconnexion
+      </button>
+    } @else {
+      <button class="mobile-login" (click)="login(); closeMobileMenu()">
+        <i class="pi pi-sign-in"></i>
+        Connexion
+      </button>
+    }
+  </nav>
 </header>

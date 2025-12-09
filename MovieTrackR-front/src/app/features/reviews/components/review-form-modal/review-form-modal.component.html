@@ -1,106 +1,9 @@
-<!-- <div class="review-form-modal">
-  <form [formGroup]="reviewForm" (ngSubmit)="onSubmit()">
-    
-    <div class="form-section">
-      <label class="form-label">
-        Note
-        @if (rating() > 0) {
-          <span class="rating-value">{{ rating() }}/5</span>
-        }
-      </label>
-      
-      <div class="rating-container">
-        <p-rating
-          formControlName="rating"
-          [stars]="5"
-          [invalid]="isInvalid('rating')"
-        />
-        
-        @if (isInvalid('rating')) {
-          <p-message 
-            severity="error" 
-            size="small" 
-            variant="simple"
-            text="Veuillez donner une note"
-          />
-        }
-      </div>
-    </div>
-
-    <div class="form-section">
-      <label class="form-label">
-        Votre critique
-        <span class="char-count" [class.error]="contentLength() < 10">
-          {{ contentLength() }}/2000 caractères (min. 10)
-        </span>
-      </label>
-      
-      <p-editor 
-        id="review_content" 
-        formControlName="content" 
-        [invalid]="isInvalid('content')"
-        rows="8" 
-        [style]="{ resize: 'vertical', width: '100%' }" 
-        (onTextChange)="onEditorTextChange($event)"
-      />
-      <p-message severity="info">Text length: {{ contentLength() }}</p-message>
-      <p-message severity="info">HTML length: {{ contentHTMLLength() }}</p-message>
-      <p-message severity="info">HTML length: {{ contentLength() < 10 }}</p-message>
-      <p-message severity="info">HTML length: {{ contentLength() > 2000 }}</p-message>
-      @if (isInvalid('content')) {
-        <div class="error-message">
-          @if (reviewForm.get('content')?.hasError('required')) {
-            <p-message severity="error" variant="simple">Le contenu est obligatoire</p-message>
-          }
-        </div>
-      }
-      @if (contentLength() < 10) {
-        <div class="error-message">
-          <p-message severity="error" variant="simple">Le contenu doit contenir au moins 10 caractères</p-message>
-        </div>
-      }
-      @if (contentLength() > 2000) {
-        <div class="error-message">
-          <p-message severity="error" variant="simple">Le contenu ne peut pas dépasser 2000 caractères</p-message>
-        </div>
-      }
-      @if (validationErrors()['Content']) {
-        <div class="error-message">
-          @for (error of validationErrors()['Content']; track error) {
-            <p-message severity="error" variant="simple">{{ error }}</p-message>
-          }
-        </div>
-      }
-    </div>
-
-    <div class="form-actions">
-      <p-button
-        label="Annuler"
-        severity="secondary"
-        [outlined]="true"
-        type="button"
-        (onClick)="onCancel()"
-        [disabled]="loading()"
-      />
-      
-      <p-button
-        [label]="isEditMode() ? 'Modifier' : 'Publier'"
-        icon="pi pi-check"
-        type="submit"
-        [disabled]="!canSubmit()"
-        [loading]="loading()"
-      />
-    </div>
-  </form>
-</div> -->
-
 <div class="review-form-modal">
   <form [formGroup]="reviewForm" (ngSubmit)="onSubmit()">
-    <!-- NOTE -->
+    <!-- Rating Section -->
     <div class="form-section">
       <label class="form-label">
         <span>Note</span>
-
         @if (rating() > 0) {
           <span class="rating-value">{{ rating() }}/5</span>
         }
@@ -114,90 +17,77 @@
         />
 
         @if (isInvalid('rating')) {
-          <p-message
-            severity="error"
-            size="small"
-            variant="simple"
-            text="Veuillez donner une note"
-          />
+          <span class="field-error">
+            <i class="pi pi-exclamation-circle"></i>
+            Veuillez donner une note
+          </span>
         }
       </div>
     </div>
 
-    <!-- CONTENU -->
+    <!-- Content Section -->
     <div class="form-section">
       <div class="form-label">
         <span>Votre critique</span>
-
-        <span
+        <span 
           class="char-count"
           [class.error]="contentLength() < 10 || contentLength() > 2000"
         >
-          {{ contentLength() }}/2000 caractères (min. 10)
+          {{ contentLength() }}/2000 (min. 10)
         </span>
       </div>
 
       <p-editor
+        #reviewEditor
         id="review_content"
         formControlName="content"
-        [invalid]="
-          isInvalid('content') ||
-          contentLength() < 10 ||
-          contentLength() > 2000
-        "
+        [invalid]="isInvalid('content') || contentLength() < 10 || contentLength() > 2000"
         rows="8"
         [style]="{ width: '100%' }"
         (onTextChange)="onEditorTextChange($event)"
+        (onInit)="onEditorInit($event)"
       />
 
-      <!-- Messages d'erreurs / validation -->
+      <!-- Validation Messages -->
       <div class="field-messages">
         @if (isInvalid('content') && reviewForm.get('content')?.hasError('required')) {
-          <p-message
-            severity="error"
-            variant="simple"
-          >
+          <span class="field-error">
+            <i class="pi pi-exclamation-circle"></i>
             Le contenu est obligatoire.
-          </p-message>
+          </span>
         }
 
         @if (contentLength() > 0 && contentLength() < 10) {
-          <p-message
-            severity="error"
-            variant="simple"
-          >
+          <span class="field-error">
+            <i class="pi pi-exclamation-circle"></i>
             Le contenu doit contenir au moins 10 caractères.
-          </p-message>
+          </span>
         }
 
         @if (contentLength() > 2000) {
-          <p-message
-            severity="error"
-            variant="simple"
-          >
+          <span class="field-error">
+            <i class="pi pi-exclamation-circle"></i>
             Le contenu ne peut pas dépasser 2000 caractères.
-          </p-message>
+          </span>
         }
 
         @if (validationErrors()['Content']) {
           @for (error of validationErrors()['Content']; track error) {
-            <p-message
-              severity="error"
-              variant="simple"
-            >
+            <span class="field-error">
+              <i class="pi pi-exclamation-circle"></i>
               {{ error }}
-            </p-message>
+            </span>
           }
         }
       </div>
     </div>
 
-    <!-- ACTIONS -->
+    <!-- Actions -->
     <div class="form-actions">
       <p-button
         label="Annuler"
-        severity="secondary"
-        [outlined]="true"
+        [text]="true"
+        styleClass="cancel-btn"
         type="button"
         (onClick)="onCancel()"
         [disabled]="loading()"
@@ -206,6 +96,7 @@
       <p-button
         [label]="isEditMode() ? 'Modifier' : 'Publier'"
         icon="pi pi-check"
+        styleClass="submit-btn"
         type="submit"
         [disabled]="!canSubmit()"
         [loading]="loading()"

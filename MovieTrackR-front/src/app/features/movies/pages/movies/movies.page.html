@@ -1,25 +1,37 @@
 <div class="movies-page">
-  <h1>🔍 Recherche de films</h1>
+  <!-- Page Header -->
+  <header class="page-header">
+    <h1>Recherche de films</h1>
+    <p class="subtitle">Explorez notre catalogue et découvrez votre prochain film préféré</p>
+  </header>
+
+  <!-- Search Panel -->
   <div class="search-panel">
     <div class="search-bar">
-      <input
-        type="text"
-        pInputText
-        placeholder="Rechercher un film..."
-        (input)="onQueryChange($event)"
-        (keyup)="onSearchKeyup($event)"
-        class="search-input"
-      />
+      <div class="search-input-wrapper">
+        <i class="pi pi-search"></i>
+        <input
+          type="text"
+          pInputText
+          placeholder="Rechercher un film..."
+          [value]="searchQuery()"
+          (input)="onQueryChange($event)"
+          (keyup)="onSearchKeyup($event)"
+          class="search-input"
+        />
+      </div>
       <p-button
         label="Rechercher"
         icon="pi pi-search"
-        (click)="currentPage.set(1); search()"
+        styleClass="search-btn"
+        (onClick)="currentPage.set(1); search()"
         [loading]="loading()"
-      ></p-button>
+      />
     </div>
+
     <div class="filters-row">
       <div class="filter-item">
-        <label for="year">Année (optionnel)</label>
+        <label for="year">Année</label>
         <p-inputNumber
           id="year"
           [ngModel]="yearFilter()"
@@ -28,38 +40,47 @@
           [useGrouping]="false"
           [min]="1900"
           [max]="2030"
-        ></p-inputNumber>
+          styleClass="year-input"
+        />
       </div>
     </div>
   </div>
 
+  <!-- Loading State -->
   @if (loading()) {
     <div class="loading-container">
-      <p-progressSpinner></p-progressSpinner>
+      <p-progressSpinner strokeWidth="3" animationDuration="1s" />
     </div>
   }
 
+  <!-- Error State -->
   @if (error()) {
     <div class="error-message">
       <i class="pi pi-exclamation-triangle"></i>
-      {{ error() }}
+      <span>{{ error() }}</span>
     </div>
   }
 
+  <!-- No Results -->
   @if (showNoResults()) {
     <div class="no-results">
-      <i class="pi pi-info-circle"></i>
-      Aucun film trouvé pour "{{ searchQuery() }}"
+      <i class="pi pi-film"></i>
+      <div class="no-results-content">
+        <p>Aucun film trouvé pour</p>
+        <span class="search-term">"{{ searchQuery() }}"</span>
+      </div>
     </div>
   }
 
+  <!-- Results -->
   @if (hasResults()) {
-    <div class="results-info">
-      <span>{{ totalResults() }} résultat(s) trouvé(s)</span>
+    <div class="results-header">
+      <span class="results-count">
+        <strong>{{ totalResults() }}</strong> résultat(s) trouvé(s)
+      </span>
     </div>
 
-    <div 
-      class="movies-grid">
+    <div class="movies-grid">
       @for (movie of movies(); track movie.tmdbId) {
         <app-movie-card 
           [movie]="movie" 
@@ -68,12 +89,26 @@
       }
     </div>
 
-    <p-paginator
-      [rows]="pageSize()"
-      [totalRecords]="totalResults()"
-      [first]="(currentPage() - 1) * pageSize()"
-      [rowsPerPageOptions]="[10, 20, 50]"
-      (onPageChange)="onPageChange($event)"
-    ></p-paginator>
+    <div class="paginator-wrapper">
+      <p-paginator
+        [rows]="pageSize()"
+        [totalRecords]="totalResults()"
+        [first]="(currentPage() - 1) * pageSize()"
+        [rowsPerPageOptions]="[10, 20, 50]"
+        (onPageChange)="onPageChange($event)"
+        styleClass="custom-paginator"
+      />
+    </div>
+  }
+
+  <!-- Empty State (no search yet) -->
+  @if (!loading() && !searchQuery() && !hasResults()) {
+    <div class="empty-state">
+      <div class="empty-icon">
+        <i class="pi pi-video"></i>
+      </div>
+      <h2>Commencez votre recherche</h2>
+      <p>Entrez le titre d'un film pour explorer notre catalogue</p>
+    </div>
   }
 </div>

@@ -1,19 +1,36 @@
 <section class="user-lists-section">
+  <!-- Section Header -->
   <div class="section-header">
-    <h2>Listes utilisateur</h2>
+    <h2>
+      <i class="pi pi-list"></i>
+      Listes
+    </h2>
   </div>
-    @if (loading()) {
+
+  <!-- Loading -->
+  @if (loading()) {
     <div class="section-loading">
-      <p-progressSpinner />
+      <p-progressSpinner strokeWidth="3" animationDuration="1s" />
     </div>
   } @else {
+    <!-- Error -->
     @if (error()) {
-      <p class="error">{{ error() }}</p>
+      <div class="error-message">
+        <i class="pi pi-exclamation-circle"></i>
+        <span>{{ error() }}</span>
+      </div>
     }
 
+    <!-- Empty State -->
     @if (!error() && userLists().length === 0) {
-      <p>Aucune listes pour le moment.</p>
-    } @else if (!error() && userLists().length > 0) {
+      <div class="empty-state">
+        <i class="pi pi-list"></i>
+        <p>Aucune liste pour le moment.</p>
+      </div>
+    }
+
+    <!-- Lists Grid -->
+    @if (!error() && userLists().length > 0) {
       <div class="lists-grid">
         @for (list of userLists(); track list.id) {
           <app-user-list-card
