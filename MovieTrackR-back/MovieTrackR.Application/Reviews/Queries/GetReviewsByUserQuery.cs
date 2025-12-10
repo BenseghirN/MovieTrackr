@@ -31,6 +31,7 @@ public sealed class GetReviewsByUserHandler(IMovieTrackRDbContext dbContext, IMa
 
         IQueryable<Review> baseSql = dbContext.Reviews
             .AsNoTracking()
+            .AsSplitQuery()
             .Include(r => r.User)
             .Include(r => r.Likes)
             .Include(r => r.Comments)

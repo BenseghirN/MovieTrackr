@@ -4,12 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using MovieTrackR.Application.AzureStorage;
 using MovieTrackR.Application.AzureStorage.Interfaces;
-using MovieTrackR.Application.Common.Services;
-using MovieTrackR.Application.Interfaces;
-using MovieTrackR.Application.TMDB;
-using MovieTrackR.Application.TMDB.Interfaces;
 using MovieTrackR.Infrastructure.AzureStorage.Services;
-using MovieTrackR.Infrastructure.TMDB.Services;
 
 namespace MovieTrackR.Infrastructure.Configuration;
 
