@@ -43,6 +43,7 @@ $transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
   cursor: pointer;
   transition: $transition-smooth;
+  height: 100%;
 
   &:hover {
     transform: translateY(-6px);

@@ -6,6 +6,7 @@ public class ReviewComment
     public Guid ReviewId { get; private set; }
     public Guid UserId { get; private set; }
     public string Content { get; private set; } = string.Empty;
+    public bool PubliclyVisible { get; set; } = true;
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
     public Review Review { get; private set; } = null!;
@@ -26,4 +27,7 @@ public class ReviewComment
     {
         Content = newContent;
     }
+
+    public void SetVisibility(Boolean visible) => PubliclyVisible = visible;
+
 }

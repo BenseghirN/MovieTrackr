@@ -27,6 +27,13 @@ public static class MoviesEndpoints
             .Produces<MovieDetailsDto>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
+        group.MapGet("/", MoviesHandlers.GetAllMovies)
+            .RequireAuthorization(AuthorizationConfiguration.AdminPolicy)
+            .WithName("Movies_GetAll")
+            .WithSummary("Get list of all movies")
+            .Produces<IReadOnlyList<MovieDetailsDto>>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
         group.MapGet("/tmdb/{tmdbId:int}", MoviesHandlers.GetByTmdbId)
             .AllowAnonymous()
             .WithName("Movies_GetByTmdbId")

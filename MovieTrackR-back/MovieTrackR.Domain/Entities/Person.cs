@@ -17,13 +17,24 @@ public class Person
     public ICollection<MovieCrew> CrewRoles { get; private set; } = new List<MovieCrew>();
     private Person() { }
 
-    public static Person Create(string name, int? tmdbId = null, string? ProfilePictureUrl = null)
+    public static Person Create(
+        string name,
+        DateTime? birthDate,
+        DateTime? deathDate,
+        string? biography,
+        string? placeOfBirth,
+        int? tmdbId = null,
+        string? ProfilePictureUrl = null)
     {
         return new Person
         {
             Name = name,
             TmdbId = tmdbId,
             ProfilePictureUrl = ProfilePictureUrl,
+            BirthDate = birthDate,
+            DeathDate = deathDate,
+            Biography = biography,
+            PlaceOfBirth = placeOfBirth,
             CreatedAt = DateTime.UtcNow
         };
     }

@@ -1,0 +1,62 @@
+<div class="admin-page">
+  <header class="admin-header">
+    <div class="header-icon">
+      <i class="pi pi-shield"></i>
+    </div>
+    <div class="header-info">
+      <h1>Administration</h1>
+      <p>Gestion des référentiels MovieTrackR</p>
+    </div>
+  </header>
+
+  <section class="tabs-section">
+    <p-tabs lazy [value]="activeTab()">
+      <p-tablist>
+        @for (tab of tabs; track tab.value) {
+          <p-tab
+            [value]="tab.value"
+            (click)="activeTab.set(tab.value)"
+            styleClass="admin-tab"
+          >
+            <i [class]="tab.icon"></i>
+            <span>{{ tab.label }}</span>
+          </p-tab>
+        }
+      </p-tablist>
+
+      <p-tabpanels>
+        <p-tabpanel value="users">
+          <ng-template #content>
+            <app-admin-users-table />
+          </ng-template>
+        </p-tabpanel>
+
+        <p-tabpanel value="movies">
+          <ng-template #content>
+            <!-- <app-admin-movies-table /> -->
+            <div class="placeholder">
+              <i class="pi pi-video"></i>
+              <span>Table Films (à venir)</span>
+            </div>
+          </ng-template>
+        </p-tabpanel>
+
+        <p-tabpanel value="reviews">
+          <ng-template #content>
+            <app-admin-reviews-table />
+          </ng-template>
+        </p-tabpanel>
+
+        <p-tabpanel value="comments">
+          <ng-template #content>
+            <!-- <app-admin-comments-table /> -->
+            <div class="placeholder">
+              <i class="pi pi-comments"></i>
+              <span>Table Commentaires (à venir)</span>
+            </div>
+          </ng-template>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+  </section>
+</div>

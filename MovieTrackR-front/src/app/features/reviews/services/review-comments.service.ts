@@ -1,5 +1,4 @@
 import { Injectable, inject } from "@angular/core";
-import { environment } from "../../../../environments/environment";
 import { ApiService } from "../../../core/services/api.service";
 import { Observable } from "rxjs";
 import { PagedComments, PagedReviews } from "../models/review.model";

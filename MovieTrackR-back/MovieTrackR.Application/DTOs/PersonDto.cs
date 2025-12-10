@@ -35,3 +35,25 @@ public sealed class PersonMovieCreditDto
     public string? Job { get; set; } // Si crew (Director, Writer, etc.)
     public string CreditType { get; set; } = "cast"; // "cast" ou "crew"
 }
+
+public sealed record CreatePersonDto
+{
+    public int? TmdbId { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string? ProfilePath { get; set; }
+    public string? Biography { get; set; }
+    public DateTime? BirthDate { get; set; }
+    public DateTime? DeathDate { get; set; }
+    public string? PlaceOfBirth { get; set; }
+}
+
+public sealed record UpdatePersonDto
+{
+    public int? TmdbId { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string? ProfilePath { get; set; }
+    public string? Biography { get; set; }
+    public DateTime? BirthDate { get; set; }
+    public DateTime? DeathDate { get; set; }
+    public string? PlaceOfBirth { get; set; }
+}

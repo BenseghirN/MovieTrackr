@@ -41,16 +41,6 @@ export const routes: Routes = [
         path: 'me/:id', 
         loadComponent: () => import('./features/user-profiles/pages/user-profile/user-profile.page').then(m => m.UserProfilePage)
     },    
-    // {
-    //     path: 'profile',
-    //     canActivate: [authGuard],
-    //     loadComponent: () => import('./features/users/pages/profile-page/profile-page.component').then(m => m.ProfilePageComponent)
-    // },
-    // {
-    //     path: 'admin',
-    //     canActivate: [authGuard, adminGuard],
-    //     loadChildren: () => import('./features/admin/admin.routes')
-    // },
     {
         path: 'forbidden',
         loadComponent: () => import('./shared/pages/forbidden/forbidden.page').then(m => m.ForbiddenPageComponent)
@@ -58,6 +48,10 @@ export const routes: Routes = [
     {
         path: 'not-found',
         loadComponent: () => import('./shared/pages/not-found/not-found.page').then(m => m.NotFoundPageComponent)
+    },
+    {
+        path: 'admin',
+        loadChildren: () => import('./admin/admin.routes').then(m => m.adminRoutes)
     },
     {
         path: '**',

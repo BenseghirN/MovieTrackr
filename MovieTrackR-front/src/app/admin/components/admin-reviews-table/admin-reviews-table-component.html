@@ -1,0 +1,204 @@
+@if (loading() && !reviews().length) {
+  <div class="loading-container">
+    <p-progressSpinner strokeWidth="3" animationDuration="1s" />
+  </div>
+}
+
+@if (error()) {
+  <div class="error-container">
+    <i class="pi pi-exclamation-triangle"></i>
+    <p>{{ error() }}</p>
+  </div>
+}
+
+@if (reviews().length) {
+  <p-table
+    [value]="reviews()"
+    [loading]="loading()"
+    [rowHover]="true"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    styleClass="admin-table"
+  >
+    <ng-template #header>
+      <tr>
+        <th style="width: 70px">Poster</th>
+        <th style="width: 180px">Film</th>
+        <th style="width: 140px">Utilisateur</th>
+        <th style="width: 80px; text-align: center">Note</th>
+        <th style="width: 80px; text-align: center">Visible</th>
+        <th style="width: 70px; text-align: center">Likes</th>
+        <th style="width: 70px; text-align: center">Com.</th>
+        <th style="width: 120px">Date</th>
+        <th style="width: 80px; text-align: center">Détails</th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-review>
+      <tr>
+        <td>
+          @if (review.posterUrl) {
+            <a 
+              [href]="imageService.getPosterUrl(review.posterUrl, 'original')" 
+              target="_blank" 
+              class="poster-link"
+            >
+              <img 
+                [src]="imageService.getPosterUrl(review.posterUrl, 'w92')" 
+                [alt]="review.movieTitle"
+                class="poster-thumbnail"
+              />
+            </a>
+          } @else {
+            <div class="poster-placeholder">
+              <i class="pi pi-image"></i>
+            </div>
+          }
+        </td>
+
+        <td>
+          <a [routerLink]="['/movies', review.movieId]" class="movie-link">
+            {{ review.movieTitle }}
+          </a>
+        </td>
+
+        <td>
+          <a [routerLink]="['/profiles', review.userId]" class="user-link">
+            {{ review.userName }}
+          </a>
+        </td>
+
+        <td class="rating-cell">
+          <span class="rating-badge">
+            <i class="pi pi-star-fill"></i>
+            {{ review.rating | number:'1.1-1' }}
+          </span>
+        </td>
+
+        <td class="visibility-cell">
+          <button 
+            class="visibility-toggle"
+            (click)="onChangeVisibility(review)"
+            [pTooltip]="review.publiclyVisible ? 'Masquer la critique' : 'Rendre visible'"
+            tooltipPosition="top"
+            >
+            @if (review.publiclyVisible) {
+              <span class="visibility-badge visible">
+                <i class="pi pi-eye"></i>
+              </span>
+            } @else {
+              <span class="visibility-badge">
+                <i class="pi pi-eye-slash"></i>
+              </span>
+            }
+          </button>
+        </td>
+          
+        <td class="count-cell">
+          <span class="count-badge likes">
+            <i class="pi pi-heart-fill"></i>
+            {{ review.likesCount }}
+          </span>
+        </td>
+
+        <td class="count-cell">
+          <span class="count-badge comments">
+            <i class="pi pi-comment"></i>
+            {{ review.commentsCount }}
+          </span>
+        </td>
+
+        <td class="date-cell">
+          {{ review.createdAt | date:'dd/MM/yyyy' }}
+        </td>
+
+        <td class="details-cell">
+          <p-button 
+            icon="pi pi-search" 
+            [rounded]="true" 
+            [outlined]="true"
+            severity="secondary"
+            (onClick)="showReviewDetails($event, review, reviewPopover)"
+            pTooltip="Voir la critique"
+            tooltipPosition="left"
+          />
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="9" class="empty-message">
+          <i class="pi pi-star"></i>
+          <span>Aucune critique trouvée</span>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+}
+
+<p-popover #reviewPopover (onHide)="!selectedReview()" styleClass="review-popover">
+  @if (selectedReview(); as review) {
+    <div class="popover-content">
+      <div class="popover-header">
+        <div class="popover-movie">
+          @if (review.posterUrl) {
+            <img 
+              [src]="imageService.getPosterUrl(review.posterUrl, 'w92')" 
+              [alt]="review.movieTitle"
+              class="popover-poster"
+            />
+          }
+          <div class="popover-movie-info">
+            <h4>{{ review.movieTitle }}</h4>
+            <span class="popover-user">par {{ review.userName }}</span>
+          </div>
+        </div>
+        <div class="popover-rating">
+          <i class="pi pi-star-fill"></i>
+          <span>{{ review.rating | number:'1.1-1' }}</span>
+        </div>
+      </div>
+
+      <div class="popover-body">
+        <div class="review-text" [innerHTML]="review.content"></div>
+      </div>
+
+      <div class="popover-footer">
+        <div class="popover-stats">
+          <span class="stat likes">
+            <i class="pi pi-heart-fill"></i>
+            {{ review.likesCount }}
+          </span>
+          <span class="stat comments">
+            <i class="pi pi-comment"></i>
+            {{ review.commentsCount }}
+          </span>
+        </div>
+        <span class="popover-date">
+          {{ review.createdAt | date:'dd MMM yyyy à HH:mm' }}
+        </span>
+      </div>
+
+      <div class="popover-actions">
+        <p-button 
+          label="Voir le film" 
+          icon="pi pi-external-link"
+          [outlined]="true"
+          size="small"
+          [routerLink]="['/movies', review.movieId]"
+          (onClick)="reviewPopover.hide()"
+        />
+        <p-button 
+          label="Voir le profil" 
+          icon="pi pi-user"
+          [outlined]="true"
+          size="small"
+          [routerLink]="['/profiles', review.userId]"
+          (onClick)="reviewPopover.hide()"
+        />
+      </div>
+    </div>
+  }
+</p-popover>

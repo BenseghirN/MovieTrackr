@@ -217,7 +217,7 @@ public sealed class TmdbCatalogService(
 
         foreach (TmdbCast cast in castList)
             if (!knownCastPeople.Any(p => p.TmdbId == cast.Id))
-                knownCastPeople.Add(Person.Create(cast.Name ?? "(Inconnu)", cast.Id, cast.ProfilePath));
+                knownCastPeople.Add(Person.Create(cast.Name ?? "(Inconnu)", null, null, string.Empty, string.Empty, cast.Id, cast.ProfilePath));
 
         if (knownCastPeople.Any(p => p.Id == Guid.Empty))
             dbContext.People.AddRange(knownCastPeople.Where(p => p.Id == Guid.Empty));
@@ -245,7 +245,7 @@ public sealed class TmdbCatalogService(
 
         foreach (TmdbCrew crew in crewList)
             if (!knownCrewPeople.Any(p => p.TmdbId == crew.Id))
-                knownCrewPeople.Add(Person.Create(crew.Name ?? "(Inconnu)", crew.Id, crew.ProfilePath));
+                knownCrewPeople.Add(Person.Create(crew.Name ?? "(Inconnu)", null, null, string.Empty, string.Empty, crew.Id, crew.ProfilePath));
 
         if (knownCrewPeople.Any(p => p.Id == Guid.Empty))
             dbContext.People.AddRange(knownCrewPeople.Where(p => p.Id == Guid.Empty));
@@ -302,11 +302,11 @@ public sealed class TmdbCatalogService(
         // 4. Si n'existe pas → créer
         if (person == null)
         {
-            person = Person.Create(details.Name, tmdbId, details.ProfilePath);
+            person = Person.Create(details.Name ?? "(Inconnu)", null, null, string.Empty, string.Empty, details.Id, details.ProfilePath);
             dbContext.People.Add(person);
         }
         person.UpdateDetails(
-            name: details.Name,
+            name: details.Name ?? "(Inconnu)",
             profilePath: details.ProfilePath,
             birth: ParseDate(details.Birthday),
             death: ParseDate(details.Deathday),

@@ -1,5 +1,6 @@
 using Asp.Versioning;
 using Asp.Versioning.Builder;
+using MovieTrackR.API.Configuration;
 using MovieTrackR.API.Filters;
 using MovieTrackR.Application.DTOs;
 
@@ -18,6 +19,19 @@ public static class ReviewsEndpoints
       .MapToApiVersion(1, 0)
       .WithTags("Reviews")
       .WithOpenApi();
+
+    group.MapGet("/", ReviewsHandlers.GetAll)
+      .RequireAuthorization(AuthorizationConfiguration.AdminPolicy)
+      .WithSummary("Get all reviews")
+      .WithDescription("Returns the list of all reviews for administration")
+      .Produces<IReadOnlyList<ReviewListItemDto>>(StatusCodes.Status200OK);
+
+    group.MapPut("/{id:guid}/togglevisible", ReviewsHandlers.UpdateVisibility)
+      .RequireAuthorization(AuthorizationConfiguration.AdminPolicy)
+      .WithSummary("Change public visibility of the review (for moderation)")
+      .WithDescription("Change public visibility of the review (for moderation)")
+      .Produces(StatusCodes.Status204NoContent)
+      .ProducesProblem(StatusCodes.Status404NotFound);
 
     group.MapGet("{id:guid}", ReviewsHandlers.GetById)
       .AllowAnonymous()

@@ -7,6 +7,7 @@ public class Review
     public Guid MovieId { get; private set; }
     public float Rating { get; private set; }
     public string? Content { get; private set; }
+    public bool PubliclyVisible { get; set; } = true;
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
     public User User { get; private set; } = null!;
@@ -54,4 +55,6 @@ public class Review
         if (!Likes.Any(l => l.UserId == like.UserId))
             Likes.Add(like);
     }
+
+    public void SetVisibility(Boolean visible) => PubliclyVisible = visible;
 }

@@ -15,6 +15,7 @@ export interface ReviewListItem {
   commentsCount: number;
   createdAt: string;
   hasLiked: boolean;
+  publiclyVisible: boolean;
 }
 
 export interface ReviewDetails{
@@ -23,6 +24,7 @@ export interface ReviewDetails{
   userId: string;
   rating: number;
   content: string;
+  publiclyVisible: boolean;
   likesCount: number;
   commentsCount: number;
   createdAt: string;
@@ -36,6 +38,7 @@ export interface ReviewComment {
   userName: string;
   content: string;
   createdAt: string;
+  publiclyVisible: boolean;
 }
 
 export interface CreateReviewModel {

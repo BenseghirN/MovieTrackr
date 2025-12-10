@@ -17,11 +17,8 @@ internal sealed class PromoteToAdminHandler(IMovieTrackRDbContext dbContext, IMa
         User user = await dbContext.Users.FindAsync([command.Id], cancellationToken)
             ?? throw new KeyNotFoundException("User not found");
 
-        if (user.Role != UserRole.Admin)
-        {
-            user.PromoteToAdmin();
-            await dbContext.SaveChangesAsync(cancellationToken);
-        }
+        user.PromoteToAdmin();
+        await dbContext.SaveChangesAsync(cancellationToken);
 
         return mapper.Map<UserDto>(user);
     }

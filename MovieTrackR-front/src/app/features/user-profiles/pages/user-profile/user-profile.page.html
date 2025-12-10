@@ -93,11 +93,11 @@
 
       <!-- Tabs Section -->
       <section class="tabs-section">
-        <p-tabs [value]="activeTab()">
+        <p-tabs lazy [value]="activeTab()">
           <p-tablist>
             @for (tab of tabs; track tab.value) {
               <p-tab
-                [value]="tab.value"
+                value="tab.value"
                 (click)="activeTab.set(tab.value)"
                 styleClass="profile-tab"
               >
@@ -109,14 +109,18 @@
 
           <p-tabpanels>
             <p-tabpanel value="reviews">
-              @if (userProfile()?.id) {
-                <app-user-profile-reviews-section [userId]="userProfile()?.id" />
-              }
+              <ng-template #content>
+                @if (userProfile()?.id) {
+                  <app-user-profile-reviews-section [userId]="userProfile()?.id" />
+                }
+              </ng-template>
             </p-tabpanel>
             <p-tabpanel value="lists">
-              @if (userProfile()?.id) {
-                <app-user-profile-lists-section [userId]="userProfile()?.id" />
-              }
+              <ng-template #content>
+                @if (userProfile()?.id) {
+                  <app-user-profile-lists-section [userId]="userProfile()?.id" />
+                }
+              </ng-template>
             </p-tabpanel>
           </p-tabpanels>
         </p-tabs>

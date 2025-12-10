@@ -1,0 +1,240 @@
+// admin-users-table.component.scss
+@use "sass:color";
+
+// Variables
+$color-background: #0a0a0f;
+$color-surface: rgba(18, 18, 24, 0.85);
+$color-surface-hover: rgba(228, 180, 95, 0.05);
+$color-accent: #e4b45f;
+$color-accent-light: #f5d190;
+$color-text-primary: #ffffff;
+$color-text-secondary: rgba(255, 255, 255, 0.7);
+$color-text-muted: rgba(255, 255, 255, 0.5);
+$color-border: rgba(255, 255, 255, 0.1);
+$color-success: #22c55e;
+$color-error: #ef4444;
+
+$transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+// ============================================
+// LOADING & ERROR STATES
+// ============================================
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 2rem;
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 3rem 2rem;
+  text-align: center;
+  color: $color-error;
+
+  i {
+    font-size: 2rem;
+  }
+
+  p {
+    margin: 0;
+    color: $color-text-secondary;
+  }
+}
+
+// ============================================
+// TABLE STYLING
+// ============================================
+
+:host ::ng-deep .admin-table {
+  .p-datatable-table {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .p-datatable-thead > tr > th {
+    background: rgba(0, 0, 0, 0.3);
+    color: $color-text-muted;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 1rem;
+    border: none;
+    border-bottom: 1px solid $color-border;
+  }
+
+  .p-datatable-tbody > tr {
+    background: transparent;
+    transition: $transition-smooth;
+
+    &:hover {
+      background: $color-surface-hover;
+    }
+
+    > td {
+      padding: 0.875rem 1rem;
+      border: none;
+      border-bottom: 1px solid $color-border;
+      color: $color-text-secondary;
+      font-size: 0.9375rem;
+      vertical-align: middle;
+    }
+  }
+
+  // Paginator
+  .p-paginator {
+    background: rgba(0, 0, 0, 0.2);
+    border: none;
+    border-top: 1px solid $color-border;
+    padding: 1rem;
+
+    .p-paginator-page,
+    .p-paginator-first,
+    .p-paginator-prev,
+    .p-paginator-next,
+    .p-paginator-last {
+      color: $color-text-muted;
+      border: none;
+      min-width: 2.5rem;
+      height: 2.5rem;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: $color-text-primary;
+      }
+
+      &.p-highlight {
+        background: rgba($color-accent, 0.2);
+        color: $color-accent;
+      }
+    }
+
+    .p-paginator-current {
+      color: $color-text-muted;
+    }
+  }
+}
+
+// ============================================
+// AVATAR
+// ============================================
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.avatar-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, $color-accent, color.adjust($color-accent, $lightness: -20%));
+  color: $color-background;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+// ============================================
+// USER INFO
+// ============================================
+
+.user-pseudo {
+  font-weight: 600;
+  color: $color-text-primary;
+}
+
+.user-email {
+  color: $color-text-muted;
+  font-size: 0.875rem;
+}
+
+// ============================================
+// ROLE BADGE
+// ============================================
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  background: rgba(255, 255, 255, 0.1);
+  color: $color-text-muted;
+
+  &.admin {
+    background: rgba($color-accent, 0.15);
+    color: $color-accent;
+  }
+}
+
+// ============================================
+// TOGGLE CELL
+// ============================================
+
+.toggle-cell {
+  text-align: center;
+}
+
+::ng-deep {
+  .p-toggleswitch {
+    .p-toggleswitch-slider {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+
+      &::before {
+        background: $color-text-muted;
+      }
+    }
+
+    &.p-toggleswitch-checked {
+      .p-toggleswitch-slider {
+        background: $color-accent;
+
+        &::before {
+          background: $color-background;
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+// EMPTY STATE
+// ============================================
+
+.empty-message {
+  text-align: center;
+  padding: 3rem 2rem !important;
+  color: $color-text-muted;
+
+  i {
+    display: block;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: $color-accent;
+    opacity: 0.4;
+  }
+
+  span {
+    font-size: 0.9375rem;
+  }
+}

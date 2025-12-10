@@ -7,15 +7,14 @@
 
     @if (isMyList()) {
       <div class="card-actions" (click)="$event.stopPropagation()">
-        <button 
+        @if (!list().isSystemList) {
+          <button 
           class="action-btn edit"
           pTooltip="Modifier"
           (click)="onEditList(list(), $event)"
         >
           <i class="pi pi-pencil"></i>
         </button>
-
-        @if (!list().isSystemList) {
           <button 
           class="action-btn delete"
           pTooltip="Supprimer"
@@ -23,10 +22,10 @@
           >
           <i class="pi pi-trash"></i>
         </button>
-      }
-    </div>
-  }
-</header>
+        }
+      </div>
+    }
+  </header>
 
 <!-- Content -->
 <div class="card-content">

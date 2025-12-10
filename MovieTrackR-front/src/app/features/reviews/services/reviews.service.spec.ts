@@ -33,7 +33,8 @@ describe('ReviewService', () => {
     likesCount: 10,
     commentsCount: 3,
     createdAt: '2024-01-01T00:00:00Z',
-    hasLiked: false
+    hasLiked: false,
+    publiclyVisible: true
   };
 
   const mockReviewDetails: ReviewDetails = {
@@ -44,7 +45,8 @@ describe('ReviewService', () => {
     content: 'Great movie with amazing cinematography',
     likesCount: 10,
     commentsCount: 3,
-    createdAt: '2024-01-01T00:00:00Z'
+    createdAt: '2024-01-01T00:00:00Z',
+    publiclyVisible: true
   };
 
   const mockPagedReviews: PagedReviews = {

@@ -49,7 +49,7 @@ export class UserProfilePage {
   readonly canEditProfile = computed(() => {
     const profile = this.userProfile();
     const current = this.authService.currentUser();
-    if (!profile || !current) return false;
+    if (!profile?.id || !current?.id) return false;
 
     const isOwner = current.id === profile.id;
     const isAdmin = current.role === 'Admin';

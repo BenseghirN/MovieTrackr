@@ -1,5 +1,6 @@
 using Asp.Versioning;
 using Asp.Versioning.Builder;
+using MovieTrackR.API.Configuration;
 using MovieTrackR.Application.DTOs;
 
 namespace MovieTrackR.API.Endpoints.People;
@@ -17,6 +18,13 @@ public static class PeopleEndpoints
             .MapToApiVersion(1, 0)
             .WithTags("People")
             .WithOpenApi();
+
+        group.MapGet("/", PeopleHandlers.GetAll)
+            .RequireAuthorization(AuthorizationConfiguration.AdminPolicy)
+            .WithName("People_GetAll")
+            .WithSummary("Get list of all people")
+            .Produces<IReadOnlyList<PersonDetailsDto>>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapGet("/search", PeopleHandlers.Search)
             .AllowAnonymous()
@@ -43,6 +51,32 @@ public static class PeopleEndpoints
             .WithName("People_GetMovieCredits")
             .WithSummary("Get credits for a person")
             .Produces<IReadOnlyList<PersonMovieCreditDto>>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
+        group.MapPost("/", PeopleHandlers.Create)
+            .WithName("Create_Person")
+            .WithSummary("Create a person")
+            .RequireAuthorization(AuthorizationConfiguration.AdminPolicy)
+            .Accepts<CreatePersonDto>("application/json")
+            .Produces(StatusCodes.Status201Created)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status409Conflict);
+
+        group.MapPut("/{id:guid}", PeopleHandlers.Update)
+            .WithName("Update_Person")
+            .WithSummary("Update a person")
+            .RequireAuthorization(AuthorizationConfiguration.AdminPolicy)
+            .Accepts<UpdatePersonDto>("application/json")
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict);
+
+        group.MapDelete("/{id:guid}", PeopleHandlers.Delete)
+            .WithName("Delete_Person")
+            .WithSummary("Delete a person")
+            .RequireAuthorization(AuthorizationConfiguration.AdminPolicy)
+            .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         return app;

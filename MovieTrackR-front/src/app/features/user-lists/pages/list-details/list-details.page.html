@@ -80,14 +80,14 @@
             [movies]="list.movies"
             (reordered)="onReordered()"
           />
-          <p-button
-            icon="pi pi-pencil"
-            label="Modifier"
-            [outlined]="true"
-            styleClass="edit-btn"
-            (onClick)="onEditList()"
-          />
           @if (!list.isSystemList) {
+            <p-button
+              icon="pi pi-pencil"
+              label="Modifier"
+              [outlined]="true"
+              styleClass="edit-btn"
+              (onClick)="onEditList()"
+            />
             <p-button
               icon="pi pi-trash"
               label="Supprimer"
