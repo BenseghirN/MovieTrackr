@@ -19,6 +19,7 @@ public sealed class GetMovieByIdHandler(IMovieTrackRDbContext dbContext, IMapper
             .Include(m => m.Cast).ThenInclude(mc => mc.Person)
             .Include(m => m.Crew).ThenInclude(mc => mc.Person)
             .AsNoTracking()
+            .AsSplitQuery()
             .FirstOrDefaultAsync(m => m.Id == query.Id, cancellationToken);
 
         if (movie is null) return null;

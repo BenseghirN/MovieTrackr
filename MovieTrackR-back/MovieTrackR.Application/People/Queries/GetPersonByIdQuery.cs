@@ -18,6 +18,7 @@ public sealed class GetPersonByIdHandler(IMovieTrackRDbContext dbContext, ITmdbC
     {
         Person? person = await dbContext.People
             .AsNoTracking()
+            .AsSplitQuery()
             .Include(p => p.CastRoles).ThenInclude(c => c.Movie)
             .Include(p => p.CrewRoles).ThenInclude(c => c.Movie)
             .FirstOrDefaultAsync(p => p.Id == query.PersonId, cancellationToken);
