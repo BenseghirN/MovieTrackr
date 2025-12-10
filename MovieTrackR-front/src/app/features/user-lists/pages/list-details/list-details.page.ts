@@ -14,11 +14,13 @@ import { UserListDetails } from '../../models/user-list.model';
 import { ListFormModalComponent } from '../../components/list-form-modal/list-form-modal.component';
 import { ReorderMoviesPopoverComponent } from '../../components/reorder-movies-popover/reorder-movies-popover.component';
 import { TooltipModule } from 'primeng/tooltip';
+import { ConfirmationService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @Component({
   selector: 'app-list-details-page',
   standalone: true,
-  imports: [CommonModule, ButtonModule, ProgressSpinnerModule, TooltipModule, MovieCardComponent, ReorderMoviesPopoverComponent],
+  imports: [CommonModule, ButtonModule, ProgressSpinnerModule, TooltipModule, MovieCardComponent, ReorderMoviesPopoverComponent, ConfirmDialogModule],
   templateUrl: './list-details.page.html',
   styleUrl: './list-details.page.scss',
 })
@@ -29,6 +31,7 @@ export class ListDetailsPage {
   private readonly notificationService = inject(NotificationService);
   private readonly authService = inject(AuthService);
   private readonly dialogService = inject(DialogService);
+  private readonly confirmationService = inject(ConfirmationService);
 
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
@@ -65,15 +68,22 @@ export class ListDetailsPage {
   onRemoveMovie(movieId: string): void {
     const list = this.listDetails();
     if (!list) return;
-
-    if (!confirm('Êtes-vous sûr de vouloir retirer ce film de la liste ?')) return;
-
-    this.listService.removeMovieFromList(list.id, movieId).subscribe({
-      next: () => {
-        this.notificationService.success('Film retiré de la liste');
-        this.reloadKey.update((x) => x + 1)
-      },
-      error: () => this.notificationService.error('Impossible de retirer le film')
+    
+    this.confirmationService.confirm({
+      header: 'Confirmation',
+      message: `Êtes-vous sûr de vouloir retirer ce film de la liste ?`,
+      acceptLabel: 'Supprimer',
+      rejectLabel: 'Annuler',
+      closeOnEscape: true,
+      accept: () => {
+        this.listService.removeMovieFromList(list.id, movieId).subscribe({
+          next: () => {
+            this.notificationService.success('Film retiré de la liste');
+            this.reloadKey.update((x) => x + 1)
+          },
+          error: () => this.notificationService.error('Impossible de retirer le film')
+        });
+      }
     });
   }
 
@@ -103,16 +113,23 @@ export class ListDetailsPage {
   onDeleteList(): void {
     const list = this.listDetails();
     if (!list) return;
-    
-    if (!confirm(`Êtes-vous sûr de vouloir supprimer la liste "${list.title}" ?`)) return;
-    
-    this.listService.deleteList(list.id).subscribe({
-      next: () => {
-        this.notificationService.success('Liste supprimée');
-        this.router.navigate(['/my-lists']);
-      },
-      error: () => {
-        this.notificationService.error('Impossible de supprimer la liste');
+
+    this.confirmationService.confirm({
+      header: 'Confirmation',
+      message: `Êtes-vous sûr de vouloir supprimer la liste "${list.title}" ?`,
+      acceptLabel: 'Supprimer',
+      rejectLabel: 'Annuler',
+      closeOnEscape: true,
+      accept: () => {
+        this.listService.deleteList(list.id).subscribe({
+          next: () => {
+            this.notificationService.success('Liste supprimée');
+            this.router.navigate(['/my-lists']);
+          },
+          error: () => {
+            this.notificationService.error('Impossible de supprimer la liste');
+          }
+        });
       }
     });
   }

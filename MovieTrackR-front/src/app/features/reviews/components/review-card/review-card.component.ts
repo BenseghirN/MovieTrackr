@@ -12,11 +12,13 @@ import { CommentsModalComponent } from '../comments-modal/comments-modal.compone
 import { ReviewFormModalComponent } from '../review-form-modal/review-form-modal.component';
 import { ReviewService } from '../../services/reviews.service';
 import { ReviewLikesService } from '../../services/review-likes.service';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-review-card',
   standalone: true,
-  imports: [CommonModule, DatePipe, ButtonModule, TooltipModule],
+  imports: [CommonModule, DatePipe, ButtonModule, TooltipModule, ConfirmDialogModule],
   templateUrl: './review-card.component.html',
   styleUrl: './review-card.component.scss',
 })
@@ -31,8 +33,8 @@ export class ReviewCardComponent {
   private readonly dialogService = inject(DialogService);
   private readonly reviewService = inject(ReviewService);
   private readonly likesService = inject(ReviewLikesService);
+  private readonly confirmationService = inject(ConfirmationService);
 
-  
   readonly router = inject(Router);
   readonly imageService = inject(TmdbImageService);
   
@@ -118,17 +120,24 @@ export class ReviewCardComponent {
     const current = this.reviewState();
     if (!current) return;
 
-    if (!confirm('Êtes-vous certain de vouloir supprimer cette critique ?')) return;
-
-    this.reviewService.deleteReview(current.id).subscribe({
-      next: () => {
-        this.notificationService.success('Critique supprimée');
-        this.delete.emit();      
-      },
-      error: () => {
-        this.notificationService.error('Impossible de supprimer la critique');
+    this.confirmationService.confirm({
+      header: 'Confirmation',
+      message: `Êtes-vous certain de vouloir supprimer cette critique ?`,
+      acceptLabel: 'Supprimer',
+      rejectLabel: 'Annuler',
+      closeOnEscape: true,
+      accept: () => {
+        this.reviewService.deleteReview(current.id).subscribe({
+          next: () => {
+            this.notificationService.success('Critique supprimée');
+            this.delete.emit();      
+          },
+          error: () => {
+            this.notificationService.error('Impossible de supprimer la critique');
+          }
+        });    
       }
-    });    
+    });
   }
 
   onComments(event: Event): void {

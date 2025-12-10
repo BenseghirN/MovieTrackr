@@ -120,45 +120,46 @@
                         <i class="pi pi-pencil"></i>
                       </button>
                       <button 
-                        class="action-btn delete"
-                        pTooltip="Supprimer"
-                        (click)="onDelete(comment.id)"
+                      class="action-btn delete"
+                      pTooltip="Supprimer"
+                      (click)="onDelete(comment.id)"
                       >
-                        <i class="pi pi-trash"></i>
-                      </button>
-                    </div>
-                  }
-                </div>
-
-                <div class="comment-content">
-                  <p>{{ comment.content }}</p>
-                </div>
-              </article>
-            }
-          </div>
-        </p-scrollPanel>
-
-        @if (totalPages() > 1) {
-          <div class="paginator-wrapper">
-            <p-paginator
-              [rows]="pageSize()"
-              [totalRecords]="totalCount()"
-              [first]="(currentPage() - 1) * pageSize()"
-              [rowsPerPageOptions]="[10, 20, 50]"
-              styleClass="comments-paginator"
-              (onPageChange)="onPageChange($event)"
-            />
-          </div>
-        }
-      } @else {
-        <div class="empty-state">
-          <i class="pi pi-comments"></i>
-          <p>Aucun commentaire pour le moment</p>
-          @if (isAuthenticated()) {
-            <span class="hint">Soyez le premier à commenter !</span>
+                      <i class="pi pi-trash"></i>
+                    </button>
+                  </div>
+                }
+              </div>
+              
+              <div class="comment-content">
+                <p>{{ comment.content }}</p>
+              </div>
+            </article>
           }
         </div>
+      </p-scrollPanel>
+      
+      @if (totalPages() > 1) {
+        <div class="paginator-wrapper">
+          <p-paginator
+          [rows]="pageSize()"
+          [totalRecords]="totalCount()"
+          [first]="(currentPage() - 1) * pageSize()"
+          [rowsPerPageOptions]="[10, 20, 50]"
+          styleClass="comments-paginator"
+          (onPageChange)="onPageChange($event)"
+          />
+        </div>
       }
-    </div>
+    } @else {
+      <div class="empty-state">
+        <i class="pi pi-comments"></i>
+        <p>Aucun commentaire pour le moment</p>
+        @if (isAuthenticated()) {
+          <span class="hint">Soyez le premier à commenter !</span>
+        }
+      </div>
+    }
   </div>
 </div>
+</div>
+<p-confirm-dialog/>
