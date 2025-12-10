@@ -8,7 +8,7 @@ import { TmdbImageService } from '../../../../core/services/tmdb-image.service';
 import { MovieService } from '../../services/movie.service';
 import { CarouselModule } from 'primeng/carousel';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { map, switchMap, of, catchError, tap } from 'rxjs';
+import { map, switchMap, of, catchError, tap, finalize } from 'rxjs';
 import { MovieReviewsComponents } from '../../../reviews/components/movie-reviews/movie-reviews.components';
 import { CardModule } from 'primeng/card';
 import { SafeUrlPipe } from '../../../../shared/pipes/safe-url.pipe';
@@ -53,6 +53,10 @@ export class MovieDetailsPage {
   readonly movie = toSignal(
     this.route.paramMap.pipe(
       map(p => p.get('id')),
+      tap(() => {
+        this.loading.set(true);  // Mettre ici au début du pipe
+        this.error.set(null);
+      }),
       switchMap(id => {
         if (!id){
           this.loading.set(false);
@@ -70,7 +74,8 @@ export class MovieDetailsPage {
             this.loading.set(false);
             this.error.set('Impossible de charger les informations du film');
             return of(null);
-          })
+          }),
+          finalize(() => this.loading.set(false))
         );
       })
     ),
@@ -144,6 +149,19 @@ export class MovieDetailsPage {
     { breakpoint: '576px', numVisible: 2, numScroll: 2 }
   ];
 
+  constructor() {
+    effect(() => {
+      const m = this.movie();
+      if (!m?.tmdbId){
+        this.streamingOffers.set(null);
+        this.posterFlipped.set(false);
+        return;
+      }
+
+      this.loadStreamingOffers(m.tmdbId);
+    });
+  }
+
   formatDuration(minutes: number | null): string {
     if (!minutes) return 'N/A';
     const hours = Math.floor(minutes / 60);
@@ -171,20 +189,6 @@ export class MovieDetailsPage {
     event.stopPropagation();
     if (!url) return;
     window.open(url, '_blank');
-  }
-
-  constructor() {
-    effect(() => {
-      const m = this.movie();
-      if (!m?.tmdbId){
-        this.streamingOffers.set(null);
-        this.posterFlipped.set(false);
-        return;
-      }
-
-      this.loadStreamingOffers(m.tmdbId);
-    });
-    
   }
 
   onPersonClick(personId: string): void {
