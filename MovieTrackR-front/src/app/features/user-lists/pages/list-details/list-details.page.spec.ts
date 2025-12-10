@@ -8,6 +8,7 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { UserListDetails, UserListType } from '../../models/user-list.model';
 import { of, throwError } from 'rxjs';
 import { signal } from '@angular/core';
+import { ConfirmationService } from 'primeng/api';
 
 describe('ListDetailsPage', () => {
   let component: ListDetailsPage;
@@ -18,6 +19,7 @@ describe('ListDetailsPage', () => {
   let mockRouter: jasmine.SpyObj<Router>;
   let mockDialogService: jasmine.SpyObj<DialogService>;
   let mockActivatedRoute: any;
+  let confirmationService: ConfirmationService;
 
   const mockListDetails: UserListDetails = {
     id: 'list-1',
@@ -40,14 +42,12 @@ describe('ListDetailsPage', () => {
     ]
   };
 
-  function setupTest(
-    listResponse: any = of(mockListDetails),
-    paramMapValue: Map<string, string> = new Map([['id', 'list-1']])
-  ) {
+  function setupTest(listResponse: any = of(mockListDetails), paramMapValue: Map<string, string> = new Map([['id', 'list-1']]))
+  {
     mockListService = jasmine.createSpyObj('UserListService', [
-      'getListDetails',
-      'removeMovieFromList',
-      'deleteList'
+    'getListDetails',
+    'removeMovieFromList',
+    'deleteList'
     ]);
     mockNotificationService = jasmine.createSpyObj('NotificationService', ['success', 'error']);
     mockAuthService = jasmine.createSpyObj('AuthService', [], {
@@ -55,13 +55,13 @@ describe('ListDetailsPage', () => {
     });
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
     mockDialogService = jasmine.createSpyObj('DialogService', ['open']);
-
+  
     mockActivatedRoute = {
       paramMap: of(paramMapValue)
     };
-
+  
     mockListService.getListDetails.and.returnValue(listResponse);
-
+  
     TestBed.configureTestingModule({
       imports: [ListDetailsPage],
       providers: [
@@ -70,18 +70,19 @@ describe('ListDetailsPage', () => {
         { provide: AuthService, useValue: mockAuthService },
         { provide: Router, useValue: mockRouter },
         { provide: DialogService, useValue: mockDialogService },
-        { provide: ActivatedRoute, useValue: mockActivatedRoute }
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
+        ConfirmationService
       ]
     });
-
+  
     fixture = TestBed.createComponent(ListDetailsPage);
     component = fixture.componentInstance;
+    confirmationService = TestBed.inject(ConfirmationService);
   }
-
   afterEach(() => {
     TestBed.resetTestingModule();
   });
-
+  
   describe('Component Initialization', () => {
     it('should create', () => {
       setupTest();
@@ -95,7 +96,7 @@ describe('ListDetailsPage', () => {
       expect(component.reloadKey()).toBe(0);
       expect(component.listDetails()).toBeNull();
     });
-
+    
     it('should load list on init', (done) => {
       setupTest();
       fixture.detectChanges();
@@ -117,7 +118,7 @@ describe('ListDetailsPage', () => {
       }, 100);
     });
   });
-
+  
   describe('loadList()', () => {
     it('should load list details on success', (done) => {
       setupTest();
@@ -162,7 +163,7 @@ describe('ListDetailsPage', () => {
       }, 100);
     });
   });
-
+  
   describe('hasMovies computed', () => {
     it('should return true when list has movies', (done) => {
       setupTest();
@@ -190,79 +191,96 @@ describe('ListDetailsPage', () => {
       expect(component.hasMovies()).toBe(false);
     });
   });
-
+  
   describe('onRemoveMovie()', () => {
-    it('should confirm before removal', (done) => {
+    it('should confirm before removal', () => {
       setupTest();
+      component.listDetails.set(mockListDetails);
       mockListService.removeMovieFromList.and.returnValue(of(void 0));
-      spyOn(window, 'confirm').and.returnValue(true);
-      fixture.detectChanges();
 
-      setTimeout(() => {
-        component.onRemoveMovie('1');
-        expect(window.confirm).toHaveBeenCalled();
-        done();
-      }, 100);
+      const confirmSpy = spyOn(confirmationService, 'confirm');
+
+      component.onRemoveMovie('1');
+
+      expect(confirmSpy).toHaveBeenCalled();
     });
 
-    it('should not remove if user cancels', (done) => {
+    it('should not remove if user cancels', () => {
       setupTest();
-      spyOn(window, 'confirm').and.returnValue(false);
-      fixture.detectChanges();
+      component.listDetails.set(mockListDetails);
 
-      setTimeout(() => {
-        component.onRemoveMovie('1');
-        expect(mockListService.removeMovieFromList).not.toHaveBeenCalled();
-        done();
-      }, 100);
+      spyOn(confirmationService, 'confirm').and.callFake(
+        (options: any): ConfirmationService => {
+          if (options && typeof options.reject === 'function') {
+            options.reject();
+          }
+          return confirmationService;
+        }
+      );
+
+      component.onRemoveMovie('1');
+
+      expect(mockListService.removeMovieFromList).not.toHaveBeenCalled();
     });
 
-    it('should remove movie on confirm', (done) => {
+
+    it('should remove movie on confirm', () => {
       setupTest();
+      component.listDetails.set(mockListDetails);
       mockListService.removeMovieFromList.and.returnValue(of(void 0));
-      spyOn(window, 'confirm').and.returnValue(true);
-      fixture.detectChanges();
 
-      setTimeout(() => {
-        component.onRemoveMovie('1');
+      spyOn(confirmationService, 'confirm').and.callFake(
+        (options: any): ConfirmationService => {
+          if (options && typeof options.accept === 'function') {
+            options.accept();
+          }
+          return confirmationService;
+        }
+      );
 
-        setTimeout(() => {
-          expect(mockListService.removeMovieFromList).toHaveBeenCalledWith('list-1', '1');
-          done();
-        }, 50);
-      }, 100);
+      component.onRemoveMovie('1');
+
+      expect(mockListService.removeMovieFromList).toHaveBeenCalledWith('list-1', '1');
     });
 
-    it('should show success notification after removal', (done) => {
+    it('should show success notification after removal', () => {
       setupTest();
+      component.listDetails.set(mockListDetails);
       mockListService.removeMovieFromList.and.returnValue(of(void 0));
-      spyOn(window, 'confirm').and.returnValue(true);
-      fixture.detectChanges();
 
-      setTimeout(() => {
-        component.onRemoveMovie('1');
+      spyOn(confirmationService, 'confirm').and.callFake(
+        (options: any): ConfirmationService => {
+          if (options && typeof options.accept === 'function') {
+            options.accept();
+          }
+          return confirmationService;
+        }
+      );
 
-        setTimeout(() => {
-          expect(mockNotificationService.success).toHaveBeenCalledWith('Film retiré de la liste');
-          done();
-        }, 50);
-      }, 100);
+      component.onRemoveMovie('1');
+
+      expect(mockNotificationService.success).toHaveBeenCalledWith('Film retiré de la liste');
     });
 
-    it('should handle removal error', (done) => {
+    it('should handle removal error', () => {
       setupTest();
-      mockListService.removeMovieFromList.and.returnValue(throwError(() => new Error('Remove failed')));
-      spyOn(window, 'confirm').and.returnValue(true);
-      fixture.detectChanges();
+      component.listDetails.set(mockListDetails);
+      mockListService.removeMovieFromList.and.returnValue(
+        throwError(() => new Error('Remove failed'))
+      );
 
-      setTimeout(() => {
-        component.onRemoveMovie('1');
+      spyOn(confirmationService, 'confirm').and.callFake(
+        (options: any): ConfirmationService => {
+          if (options && typeof options.accept === 'function') {
+            options.accept();
+          }
+          return confirmationService;
+        }
+      );
 
-        setTimeout(() => {
-          expect(mockNotificationService.error).toHaveBeenCalled();
-          done();
-        }, 50);
-      }, 100);
+      component.onRemoveMovie('1');
+
+      expect(mockNotificationService.error).toHaveBeenCalled();
     });
   });
 
@@ -297,50 +315,54 @@ describe('ListDetailsPage', () => {
       }, 100);
     });
   });
-
+  
   describe('onDeleteList()', () => {
-    it('should confirm before deletion', (done) => {
+    it('should confirm before deletion', () => {
       setupTest();
+      component.listDetails.set(mockListDetails);
       mockListService.deleteList.and.returnValue(of(void 0));
-      spyOn(window, 'confirm').and.returnValue(true);
-      fixture.detectChanges();
+      const confirmSpy = spyOn(confirmationService, 'confirm');
 
-      setTimeout(() => {
-        component.onDeleteList();
-        expect(window.confirm).toHaveBeenCalled();
-        done();
-      }, 100);
+      component.onDeleteList();
+
+      expect(confirmSpy).toHaveBeenCalled();
     });
-
-    it('should not delete if user cancels', (done) => {
+    
+    it('should not delete if user cancels', () => {
       setupTest();
-      spyOn(window, 'confirm').and.returnValue(false);
-      fixture.detectChanges();
+      component.listDetails.set(mockListDetails);
 
-      setTimeout(() => {
-        component.onDeleteList();
-        expect(mockListService.deleteList).not.toHaveBeenCalled();
-        done();
-      }, 100);
+      spyOn(confirmationService, 'confirm').and.callFake(
+        (options: any): ConfirmationService => {
+          if (options && typeof options.reject === 'function') {
+            options.reject(); // simulate "Annuler"
+          }
+          return confirmationService;
+        }
+      );  
+      component.onDeleteList();
+      expect(mockListService.deleteList).not.toHaveBeenCalled();
     });
-
-    it('should navigate to my-lists after deletion', (done) => {
+    it('should navigate to my-lists after deletion', () => {
       setupTest();
+      component.listDetails.set(mockListDetails);
       mockListService.deleteList.and.returnValue(of(void 0));
-      spyOn(window, 'confirm').and.returnValue(true);
-      fixture.detectChanges();
 
-      setTimeout(() => {
-        component.onDeleteList();
+      spyOn(confirmationService, 'confirm').and.callFake(
+        (options: any): ConfirmationService => {
+          if (options && typeof options.accept === 'function') {
+            options.accept(); // simulate "OK"
+          }
+          return confirmationService;
+        }
+      );
 
-        setTimeout(() => {
-          expect(mockRouter.navigate).toHaveBeenCalledWith(['/my-lists']);
-          done();
-        }, 50);
-      }, 100);
+      component.onDeleteList();
+
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/my-lists']);
     });
   });
-
+  
   describe('onViewMovie()', () => {
     it('should navigate to movie details', (done) => {
       setupTest();
@@ -366,7 +388,7 @@ describe('ListDetailsPage', () => {
       }, 100);
     });
   });
-
+  
   describe('onReload()', () => {
     it('should increment reload key', (done) => {
       setupTest();
@@ -380,7 +402,7 @@ describe('ListDetailsPage', () => {
       }, 100);
     });
   });
-
+  
   describe('onReordered()', () => {
     it('should increment reload key', (done) => {
       setupTest();
@@ -394,7 +416,7 @@ describe('ListDetailsPage', () => {
       }, 100);
     });
   });
-
+  
   describe('goToMovies()', () => {
     it('should navigate to movies page', (done) => {
       setupTest();
@@ -420,7 +442,7 @@ describe('ListDetailsPage', () => {
       }, 100);
     });
   });
-
+  
   describe('Edge Cases', () => {
     it('should handle list with no movies', (done) => {
       const emptyList = { ...mockListDetails, movies: [] };
