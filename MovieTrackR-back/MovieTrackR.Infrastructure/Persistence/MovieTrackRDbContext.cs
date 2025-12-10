@@ -140,6 +140,7 @@ public class MovieTrackRDbContext : DbContext, IMovieTrackRDbContext
         {
             e.ToTable("movie_cast", t => t.HasCheckConstraint("CK_movie_cast_order_non_negative", "\"order\" >= 0"));
             e.Property(x => x.Order).HasColumnName("order"); // mot réservé
+            e.HasIndex(x => x.MovieId);
             e.HasIndex(x => new { x.MovieId, x.PersonId });
             e.HasOne(x => x.Movie).WithMany(m => m.Cast).HasForeignKey(x => x.MovieId).OnDelete(DeleteBehavior.Cascade);
             e.HasOne(x => x.Person).WithMany(p => p.CastRoles).HasForeignKey(x => x.PersonId).OnDelete(DeleteBehavior.Cascade);
@@ -149,6 +150,7 @@ public class MovieTrackRDbContext : DbContext, IMovieTrackRDbContext
         b.Entity<MovieCrew>(e =>
         {
             e.ToTable("movie_crew");
+            e.HasIndex(x => x.MovieId);
             e.HasIndex(x => new { x.MovieId, x.PersonId, x.Department, x.Job }).IsUnique();
             e.HasOne(x => x.Movie).WithMany(m => m.Crew).HasForeignKey(x => x.MovieId).OnDelete(DeleteBehavior.Cascade);
             e.HasOne(x => x.Person).WithMany(p => p.CrewRoles).HasForeignKey(x => x.PersonId).OnDelete(DeleteBehavior.Cascade);
