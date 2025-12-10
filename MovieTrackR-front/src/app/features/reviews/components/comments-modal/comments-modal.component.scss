@@ -519,3 +519,49 @@ $breakpoint-sm: 768px;
     }
   }
 }
+
+// ============================================
+// CONFIRM DIALOG OVERRIDE
+// ============================================
+
+::ng-deep .p-confirmdialog {
+  .p-dialog-header {
+    background: $color-surface;
+    border-bottom: 1px solid $color-border;
+    color: $color-text-primary;
+  }
+
+  .p-dialog-content {
+    background: $color-surface;
+    color: $color-text-secondary;
+  }
+
+  .p-dialog-footer {
+    background: $color-surface;
+    border-top: 1px solid $color-border;
+
+    .p-button {
+      &.p-confirm-dialog-reject {
+        background: transparent;
+        border: 1px solid $color-border;
+        color: $color-text-secondary;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.05);
+          border-color: rgba(255, 255, 255, 0.2);
+        }
+      }
+
+      &.p-confirm-dialog-accept {
+        background: $color-danger;
+        border-color: $color-danger;
+        color: white;
+
+        &:hover {
+          background: color.adjust($color-danger, $lightness: 10%);
+          border-color: color.adjust($color-danger, $lightness: 10%);
+        }
+      }
+    }
+  }
+}

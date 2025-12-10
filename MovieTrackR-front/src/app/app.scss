@@ -8,5 +8,9 @@
 .main-content {
   flex: 1;
   padding-top: 80px;
-  padding-bottom: 2rem;
+  padding-bottom: 60px;
+
+  @media (max-width: 768px) {
+    padding-bottom: 0;
+  }
 }

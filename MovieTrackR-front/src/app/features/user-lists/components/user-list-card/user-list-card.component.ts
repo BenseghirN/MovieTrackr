@@ -3,7 +3,7 @@ import { Component, computed, effect, inject, input, output, signal } from '@ang
 import { UserListService } from '../../services/user-list.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { ButtonModule } from 'primeng/button';
-import { UserListDetails, UserListSummary } from '../../models/user-list.model';
+import { UserListSummary } from '../../models/user-list.model';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ListFormModalComponent } from '../list-form-modal/list-form-modal.component';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';

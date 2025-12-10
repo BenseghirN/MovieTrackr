@@ -124,32 +124,33 @@
               <!-- Remove Button -->
               @if (isAuthenticated()) {
                 <button 
-                  class="remove-movie-btn"
-                  (click)="onRemoveMovie(item.movieId); $event.stopPropagation()"
-                  pTooltip="Retirer de la liste"
+                class="remove-movie-btn"
+                (click)="onRemoveMovie(item.movieId); $event.stopPropagation()"
+                pTooltip="Retirer de la liste"
                 >
-                  <i class="pi pi-times"></i>
-                </button>
-              }
-            </div>
-          }
-        </div>
-      } @else {
-        <!-- Empty State -->
-        <div class="empty-state">
-          <div class="empty-icon">
-            <i class="pi pi-film"></i>
+                <i class="pi pi-times"></i>
+              </button>
+            }
           </div>
-          <h2>Aucun film dans cette liste</h2>
-          <p>Commencez à ajouter des films à votre liste depuis les pages de films</p>
-          <p-button
-            label="Parcourir les films"
-            icon="pi pi-search"
-            styleClass="browse-btn"
-            (onClick)="goToMovies()"
-          />
+        }
+      </div>
+    } @else {
+      <!-- Empty State -->
+      <div class="empty-state">
+        <div class="empty-icon">
+          <i class="pi pi-film"></i>
         </div>
-      }
-    </section>
-  }
+        <h2>Aucun film dans cette liste</h2>
+        <p>Commencez à ajouter des films à votre liste depuis les pages de films</p>
+        <p-button
+        label="Parcourir les films"
+        icon="pi pi-search"
+        styleClass="browse-btn"
+        (onClick)="goToMovies()"
+        />
+      </div>
+    }
+  </section>
+}
 </div>
+<p-confirm-dialog />

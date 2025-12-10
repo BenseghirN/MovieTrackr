@@ -12,6 +12,8 @@ import { ReviewComment } from '../../models/review.model';
 import { AuthService } from '../../../../core/services/auth.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
+import { ConfirmationService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 
 interface CommentFormDialogData {
@@ -29,7 +31,8 @@ interface CommentFormDialogData {
     TextareaModule, 
     ProgressSpinnerModule,
     PaginatorModule,
-    ScrollPanelModule
+    ScrollPanelModule,
+    ConfirmDialogModule
   ],
   templateUrl: './comments-modal.component.html',
   styleUrl: './comments-modal.component.scss',
@@ -39,6 +42,7 @@ export class CommentsModalComponent implements OnInit {
   private readonly dialogConfig = inject(DynamicDialogConfig<CommentFormDialogData>);
   private readonly commentService = inject(ReviewCommentsService);
   private readonly notificationService = inject(NotificationService);
+  private readonly confirmationService = inject(ConfirmationService);
   private readonly authService = inject(AuthService);
 
   reviewId!: string;
@@ -161,14 +165,21 @@ export class CommentsModalComponent implements OnInit {
   }
 
   onDelete(commentId: string): void {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?')) return;
-
-    this.commentService.deleteComment(this.reviewId, commentId).subscribe({
-      next: () => {
-        this.notificationService.success('Commentaire supprimé avec succès.');
-        this.loadComments();
-      },
-      error: () => this.notificationService.error('Impossible de supprimer le commentaire.')
+    this.confirmationService.confirm({
+      header: 'Confirmation',
+      message: `Êtes-vous sûr de vouloir supprimer ce commentaire ?`,
+      acceptLabel: 'Supprimer',
+      rejectLabel: 'Annuler',
+      closeOnEscape: true,
+      accept: () => {
+        this.commentService.deleteComment(this.reviewId, commentId).subscribe({
+          next: () => {
+            this.notificationService.success('Commentaire supprimé avec succès.');
+            this.loadComments();
+          },
+          error: () => this.notificationService.error('Impossible de supprimer le commentaire.')
+        });
+      }
     });
   }
 

@@ -19,7 +19,8 @@ describe('MovieDetailsPage', () => {
   let mockRouter: jasmine.SpyObj<Router>;
   let mockLocation: jasmine.SpyObj<Location>;
   let paramMapSubject: BehaviorSubject<ParamMap>;
-
+  let mockDialogService: jasmine.SpyObj<DialogService>;
+  
   const mockMovieDetails: MovieDetails = {
     id: '1',
     tmdbId: 123,
@@ -97,6 +98,7 @@ describe('MovieDetailsPage', () => {
     ]);
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
     mockLocation = jasmine.createSpyObj('Location', ['back']);
+    mockDialogService = jasmine.createSpyObj('DialogService', ['open']);
 
     mockMovieService.getMovieByRouteId.and.returnValue(movieResponse);
     mockMovieService.getStreamingOffers.and.returnValue(streamingResponse);
@@ -110,13 +112,13 @@ describe('MovieDetailsPage', () => {
         { provide: TmdbImageService, useValue: mockTmdbImageService },
         { provide: Router, useValue: mockRouter },
         { provide: Location, useValue: mockLocation },
+        { provide: DialogService, useValue: mockDialogService },
         {
           provide: ActivatedRoute,
           useValue: {
             paramMap: paramMapSubject
           }
-        },
-        DialogService
+        }
       ]
     });
 
