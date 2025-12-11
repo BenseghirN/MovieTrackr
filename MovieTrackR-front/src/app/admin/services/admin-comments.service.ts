@@ -2,7 +2,7 @@ import { Injectable, inject } from "@angular/core";
 import { Observable } from "rxjs";
 import { ApiService } from "../../core/services/api.service";
 import { ConfigService } from "../../core/services/config.service";
-import { ReviewComment, ReviewDetails, UpdateReviewModel } from "../../features/reviews/models/review.model";
+import { ReviewComment } from "../../features/reviews/models/review.model";
 
 @Injectable({ providedIn: 'root' })
 export class AdminCommentsService {
@@ -25,8 +25,9 @@ export class AdminCommentsService {
     }
 
     changeCommentVisibility(id: string): Observable<void> {
-        return this.api.put(
+        return this.api.put<void>(
             `${this.config.apiUrl}/comments/${id}`,
+            {},
             { withCredentials: true }
         );
     }

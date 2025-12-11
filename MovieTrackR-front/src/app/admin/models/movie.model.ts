@@ -1,3 +1,19 @@
+import { Genre } from "../../core/models/genre.model"
+
+export interface MovieForAdministration {
+  id: string
+  tmdbId: number
+  title: string
+  originalTitle: string
+  directorId: string
+  directorName: string
+  year: number
+  posterUrl: string
+  releaseDate: string
+  createdAt: string
+  genres: Genre[]
+}
+
 export interface CreateMovieModelForAdministration {
   title: string;
   tmdbId: number;

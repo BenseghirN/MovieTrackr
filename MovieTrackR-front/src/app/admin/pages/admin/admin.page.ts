@@ -4,6 +4,8 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TabsModule } from 'primeng/tabs';
 import { AdminUsersTableComponent } from '../../components/admin-users-table/admin-users-table.component';
 import { AdminReviewsTableComponent } from '../../components/admin-reviews-table/admin-reviews-table-component';
+import { AdminMoviesTableComponent } from '../../components/admin-movies-table/admin-movies-table-component';
+import { AdminCommentsTableComponent } from '../../components/admin-comments-table/admin-comments-table-component';
 
 interface AdminTab {
   value: string;
@@ -13,7 +15,7 @@ interface AdminTab {
 
 @Component({
   selector: 'app-admin-page',
-  imports: [CommonModule, ProgressSpinnerModule, TabsModule, AdminUsersTableComponent, AdminReviewsTableComponent],
+  imports: [CommonModule, ProgressSpinnerModule, TabsModule, AdminUsersTableComponent, AdminReviewsTableComponent, AdminMoviesTableComponent, AdminCommentsTableComponent],
   templateUrl: './admin.page.html',
   styleUrl: './admin.page.scss',
 })

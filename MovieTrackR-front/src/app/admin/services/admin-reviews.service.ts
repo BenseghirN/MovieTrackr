@@ -24,7 +24,7 @@ export class AdminReviewsService {
     }
 
     updateReview(id: string, updatedReview: UpdateReviewModel): Observable<void> {
-        return this.api.put(
+        return this.api.put<void>(
             `${this.config.apiUrl}/reviews/${id}`,
             updatedReview,
             { withCredentials: true }
@@ -34,6 +34,7 @@ export class AdminReviewsService {
     changeReviewVisibility(id: string): Observable<ReviewListItem> {
         return this.api.put<ReviewListItem>(
             `${this.config.apiUrl}/reviews/${id}/togglevisible`,
+            {},
             { withCredentials: true }
         );
     }

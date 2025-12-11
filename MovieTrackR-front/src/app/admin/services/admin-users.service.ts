@@ -37,6 +37,7 @@ export class AdminUsersService {
         console.log('PROMOTE');
         return this.api.put<UserForAdministration>(
             `${this.config.apiUrl}/users/${id}/promote`,
+            {},
             { withCredentials: true }
         );
     }
@@ -45,6 +46,7 @@ export class AdminUsersService {
         console.log('DEMOTE');
         return this.api.put<UserForAdministration>(
             `${this.config.apiUrl}/users/${id}/demote`,
+            {},
             { withCredentials: true }
         );
     }

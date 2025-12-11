@@ -31,7 +31,7 @@ public static class MoviesEndpoints
             .RequireAuthorization(AuthorizationConfiguration.AdminPolicy)
             .WithName("Movies_GetAll")
             .WithSummary("Get list of all movies")
-            .Produces<IReadOnlyList<MovieDetailsDto>>(StatusCodes.Status200OK)
+            .Produces<IReadOnlyList<MovieAdminDto>>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapGet("/tmdb/{tmdbId:int}", MoviesHandlers.GetByTmdbId)

@@ -179,3 +179,41 @@ public sealed class CrewMemberDto
     /// <summary>Chemin vers l'image de profil.</summary>
     public string? ProfilePath { get; init; }
 }
+
+
+/// <summary>Vue simplifiée d'un film pour administration</summary>
+public sealed class MovieAdminDto
+{
+    /// <summary>Identifiant unique du film dans la base locale.</summary>
+    public Guid Id { get; set; }
+
+    /// <summary>Identifiant externe TMDb (si disponible).</summary>
+    public int? TmdbId { get; set; }
+
+    /// <summary>Titre principal du film.</summary>
+    public string Title { get; set; } = string.Empty;
+
+    /// <summary>Titre original du film (langue d'origine).</summary>
+    public string? OriginalTitle { get; set; }
+
+    /// <summary>Réalisateur du film</summary>
+    public string DirectorName { get; set; } = string.Empty;
+
+    /// <summary>ID du Réalisateur du film</summary>
+    public Guid DirectorId { get; set; }
+
+    /// <summary>Année de sortie du film (si connue).</summary>
+    public int? Year { get; set; }
+
+    /// <summary>URL vers l'affiche du film.</summary>
+    public string? PosterUrl { get; set; }
+
+    /// <summary>Date de sortie officielle (si connue).</summary>
+    public DateTime? ReleaseDate { get; set; }
+
+    /// <summary>Date et heure de création de l'entrée en base.</summary>
+    public DateTime CreatedAt { get; set; }
+
+    /// <summary>Liste des genres associés au film.</summary>
+    public IReadOnlyList<GenreDto> Genres { get; set; } = [];
+}

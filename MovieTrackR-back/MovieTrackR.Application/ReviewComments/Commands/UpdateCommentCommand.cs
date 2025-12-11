@@ -5,6 +5,7 @@ using MovieTrackR.Application.Common.Exceptions;
 using MovieTrackR.Application.DTOs;
 using MovieTrackR.Application.Interfaces;
 using MovieTrackR.Domain.Entities;
+using MovieTrackR.Domain.Enums;
 
 namespace MovieTrackR.Application.ReviewComments.Commands;
 
@@ -20,7 +21,15 @@ public sealed class UpdateCommentHandler(IMovieTrackRDbContext dbContext, ISende
         ReviewComment comment = await dbContext.ReviewComments.FirstOrDefaultAsync(x => x.Id == command.CommentId && x.ReviewId == command.ReviewId, cancellationToken)
             ?? throw new NotFoundException("Comment not found.");
 
-        if (comment.UserId != userId) throw new ForbiddenException();
+        UserRole userRole = await dbContext.Users
+            .AsNoTracking()
+            .Where(u => u.Id == userId)
+            .Select(u => u.Role)
+            .FirstAsync(cancellationToken);
+
+        bool isAdmin = userRole == UserRole.Admin;
+
+        if (comment.UserId != userId && !isAdmin) throw new ForbiddenException();
 
         comment.Edit(command.Dto.Content);
         await dbContext.SaveChangesAsync(cancellationToken);

@@ -1,1 +1,159 @@
-<p>admin-comments-table-component works!</p>
+<!-- admin-comments-table.component.html -->
+@if (loading() && !comments().length) {
+  <div class="loading-container">
+    <p-progressSpinner strokeWidth="3" animationDuration="1s" />
+  </div>
+}
+
+@if (error()) {
+  <div class="error-container">
+    <i class="pi pi-exclamation-triangle"></i>
+    <p>{{ error() }}</p>
+  </div>
+}
+
+@if (comments().length) {
+  <p-table
+    [value]="comments()"
+    [loading]="loading()"
+    [rowHover]="true"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    styleClass="admin-table"
+  >
+    <ng-template #header>
+      <tr>
+        <th style="width: 150px">Utilisateur</th>
+        <th>Commentaire</th>
+        <th style="width: 80px; text-align: center">Visible</th>
+        <th style="width: 130px">Date</th>
+        <th style="width: 80px; text-align: center">Détails</th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-comment>
+      <tr>
+        <!-- Utilisateur -->
+        <td>
+          <a [routerLink]="['/profiles', comment.userId]" class="user-link">
+            {{ comment.userName }}
+          </a>
+        </td>
+
+        <!-- Commentaire (tronqué) -->
+        <td>
+          <span class="comment-content">
+            {{ truncateContent(comment.content) }}
+          </span>
+        </td>
+
+        <!-- Visible -->
+        <td class="visibility-cell">
+          <button
+            class="visibility-toggle"
+            (click)="onChangeVisibility(comment)"
+            [pTooltip]="comment.publiclyVisible ? 'Masquer le commentaire' : 'Rendre visible'"
+            tooltipPosition="top"
+          >
+            @if (comment.publiclyVisible) {
+              <span class="visibility-badge visible">
+                <i class="pi pi-eye"></i>
+              </span>
+            } @else {
+              <span class="visibility-badge">
+                <i class="pi pi-eye-slash"></i>
+              </span>
+            }
+          </button>
+        </td>
+
+        <!-- Date -->
+        <td class="date-cell">
+          {{ comment.createdAt | date:'dd/MM/yyyy HH:mm' }}
+        </td>
+
+        <!-- Détails -->
+        <td class="details-cell">
+          <p-button
+            icon="pi pi-search"
+            [rounded]="true"
+            [outlined]="true"
+            severity="secondary"
+            (onClick)="showCommentDetails($event, comment, commentPopover)"
+            pTooltip="Voir le commentaire"
+            tooltipPosition="left"
+          />
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="5" class="empty-message">
+          <i class="pi pi-comments"></i>
+          <span>Aucun commentaire trouvé</span>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+}
+
+<!-- Comment Details Popover -->
+<p-popover #commentPopover (onHide)="selectedComment.set(null)" styleClass="comment-popover">
+  @if (selectedComment(); as comment) {
+    <div class="popover-content">
+      <!-- Header -->
+      <div class="popover-header">
+        <div class="popover-user-info">
+          <i class="pi pi-user"></i>
+          <span class="popover-username">{{ comment.userName }}</span>
+        </div>
+        <span class="popover-date">
+          {{ comment.createdAt | date:'dd MMM yyyy à HH:mm' }}
+        </span>
+      </div>
+
+      <!-- Content -->
+      <div class="popover-body">
+        <div class="comment-text">{{ comment.content }}</div>
+      </div>
+
+      <!-- Footer -->
+      <div class="popover-footer">
+        <div class="visibility-status">
+          @if (comment.publiclyVisible) {
+            <span class="status visible">
+              <i class="pi pi-eye"></i>
+              Visible
+            </span>
+          } @else {
+            <span class="status ">
+              <i class="pi pi-eye-slash"></i>
+              Masqué
+            </span>
+          }
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="popover-actions">
+        <p-button
+          label="Voir le profil"
+          icon="pi pi-user"
+          [outlined]="true"
+          size="small"
+          [routerLink]="['/profiles', comment.userId]"
+          (onClick)="commentPopover.hide()"
+        />
+        <p-button
+          [label]="comment.publiclyVisible ? 'Masquer' : 'Rendre visible'"
+          [icon]="comment.publiclyVisible ? 'pi pi-eye-slash' : 'pi pi-eye'"
+          [outlined]="true"
+          size="small"
+          (onClick)="onChangeVisibility(comment); commentPopover.hide()"
+        />
+      </div>
+    </div>
+  }
+</p-popover>

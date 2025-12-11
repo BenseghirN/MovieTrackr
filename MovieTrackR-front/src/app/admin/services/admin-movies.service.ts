@@ -4,7 +4,7 @@ import { ConfigService } from '../../core/services/config.service';
 import { Observable } from 'rxjs';
 import { UpdatedUserModel, UserProfile } from '../../features/user-profiles/models/user-profiles.models';
 import { MovieDetails } from '../../features/movies/models/movie-details.model';
-import { CreateMovieModelForAdministration, UpdateMovieModelForAdministration } from '../models/movie.model';
+import { CreateMovieModelForAdministration, MovieForAdministration, UpdateMovieModelForAdministration } from '../models/movie.model';
 
 
 @Injectable({ providedIn: 'root' })
@@ -12,8 +12,8 @@ export class AdminMoviesService {
     private readonly api = inject(ApiService);
     private readonly config = inject(ConfigService);
 
-    getAllMovies(): Observable<MovieDetails[]> {
-        return this.api.get<MovieDetails[]>(
+    getAllMovies(): Observable<MovieForAdministration[]> {
+        return this.api.get<MovieForAdministration[]>(
             `${this.config.apiUrl}/movies`,
             { withCredentials: true }
         );
@@ -35,7 +35,7 @@ export class AdminMoviesService {
     }
 
     updateMovie(id: string, updateMovie: UpdateMovieModelForAdministration): Observable<void> {
-        return this.api.put(
+        return this.api.put<void>(
             `${this.config.apiUrl}/movies/${id}`,
             updateMovie,
             { withCredentials: true }

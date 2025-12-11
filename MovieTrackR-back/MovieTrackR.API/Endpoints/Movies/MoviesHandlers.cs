@@ -64,7 +64,7 @@ public static class MoviesHandlers
 
     public static async Task<IResult> GetAllMovies(IMediator mediator, CancellationToken cancellationToken)
     {
-        IReadOnlyList<MovieDetailsDto> result =
+        IReadOnlyList<MovieAdminDto> result =
         await mediator.Send(new GetAllMoviesQuery(), cancellationToken);
         return TypedResults.Ok(result);
     }

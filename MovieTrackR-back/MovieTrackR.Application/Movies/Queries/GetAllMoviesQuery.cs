@@ -8,19 +8,18 @@ using MovieTrackR.Application.Interfaces;
 namespace MovieTrackR.Application.Movies.Queries;
 
 public sealed record GetAllMoviesQuery()
-    : IRequest<IReadOnlyList<MovieDetailsDto>>;
+    : IRequest<IReadOnlyList<MovieAdminDto>>;
 
 public sealed class GetAllMoviesHandler(IMovieTrackRDbContext dbContext, IMapper mapper)
-    : IRequestHandler<GetAllMoviesQuery, IReadOnlyList<MovieDetailsDto>>
+    : IRequestHandler<GetAllMoviesQuery, IReadOnlyList<MovieAdminDto>>
 {
-    public async Task<IReadOnlyList<MovieDetailsDto>> Handle(GetAllMoviesQuery query, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<MovieAdminDto>> Handle(GetAllMoviesQuery query, CancellationToken cancellationToken)
     {
         return await dbContext.Movies
             .AsNoTracking()
             .AsSplitQuery()
-            .Include(m => m.MovieGenres).ThenInclude(mg => mg.Genre)
             .OrderBy(m => m.Title).ThenBy(m => m.CreatedAt)
-            .ProjectTo<MovieDetailsDto>(mapper.ConfigurationProvider)
+            .ProjectTo<MovieAdminDto>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
     }
 }

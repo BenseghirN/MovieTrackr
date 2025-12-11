@@ -5,7 +5,7 @@ import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { MovieService } from '../../../movies/services/movie.service';
 import { TmdbImageService } from '../../../../core/services/tmdb-image.service';
-import { SearchMovieResponse, SearchMovieResult } from '../../../movies/models/movie.model';
+import { PageMeta, SearchMovieResponse, SearchMovieResult } from '../../../movies/models/movie.model';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CarouselModule } from 'primeng/carousel';
@@ -25,6 +25,9 @@ export class HomePageComponent {
   
   private readonly searchQuery = signal('');
   readonly popularMovies = signal<SearchMovieResult[]>([]);
+  readonly popularMoviesMeta = signal<PageMeta | null>(null);
+  readonly popularCarouselPage = signal(0);
+
   readonly trendingMovies = signal<SearchMovieResult[]>([]);
  
   readonly loadingPopular = signal(false);
@@ -83,6 +86,17 @@ export class HomePageComponent {
     featuresSection?.scrollIntoView({ behavior: 'smooth' });
   }
 
+  onLoadMore(): void{
+    const meta = this.popularMoviesMeta();
+    if (!meta || !meta.hasMore || this.loadingPopular()) return;
+    const nextPage = meta.page + 1;
+    this.loadPopularMovies(nextPage, true);
+  }
+
+  onPopularCarouselPageEvent(event: any): void {
+    this.popularCarouselPage.set(event.page);
+  }
+
   private redirectToSearch() {
     const query = this.searchQuery().trim();
     this.searchQuery.set('');
@@ -95,18 +109,26 @@ export class HomePageComponent {
     });
   }
 
-  private loadPopularMovies(): void {
+  private loadPopularMovies(pageNumber: number = 1, append: boolean = false): void {
     this.loadingPopular.set(true);
     this.error.set(null);
 
-    this.movieService.getPopularMovies({page: 1, pageSize: 20}).subscribe({
+    this.movieService.getPopularMovies({page: pageNumber}).subscribe({
       next: (result: SearchMovieResponse) => {
-        this.popularMovies.set(result.items);
+        if (append) {
+          this.popularMovies.update((movies) => [...movies, ...result.items])
+          setTimeout(() => {
+            this.popularCarouselPage.update(page => page);
+          });
+        } else 
+          this.popularMovies.set(result.items);
+          
+        this.popularMoviesMeta.set(result.meta);
         this.loadingPopular.set(false);
       },
       error: () => {
         this.loadingPopular.set(false);
-        this.popularMovies.set([]);
+        if (!append) this.popularMovies.set([]);
         this.error.set('Impossible de charger les films populaires');
         this.notificationService.error(this.error()!);
       }
