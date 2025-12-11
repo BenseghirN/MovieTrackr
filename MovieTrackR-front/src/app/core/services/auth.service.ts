@@ -47,20 +47,17 @@ export class AuthService {
     }
 
     checkAuth(): Observable<boolean> {
-        console.log('SERVICE CheckAuth');
         return this.http.get<MeClaims>(
             `${this.config.apiUrl}/me`,
             { withCredentials: true }
             ).pipe(
             map(() => {
                 this.isAuthenticatedSignal.set(true);
-                console.log('SERVICE isAuthenticatedSignal', this.isAuthenticatedSignal());
                 return true;
             }),
             catchError((err) => {
                 this.isAuthenticatedSignal.set(false);
                 this.currentUserSignal.set(null);
-                console.log('SERVICE CATCHERROR', this.isAuthenticatedSignal());
                 return of(false);
             })
         );

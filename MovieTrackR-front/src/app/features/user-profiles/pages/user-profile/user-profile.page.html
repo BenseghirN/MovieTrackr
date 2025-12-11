@@ -97,7 +97,7 @@
           <p-tablist>
             @for (tab of tabs; track tab.value) {
               <p-tab
-                value="tab.value"
+                [value]="tab.value"
                 (click)="activeTab.set(tab.value)"
                 styleClass="profile-tab"
               >
