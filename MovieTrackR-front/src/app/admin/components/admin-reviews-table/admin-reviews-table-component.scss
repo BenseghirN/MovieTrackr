@@ -1,0 +1,492 @@
+// admin-reviews-table.component.scss
+@use "sass:color";
+
+// Variables
+$color-background: #0a0a0f;
+$color-surface: rgba(18, 18, 24, 0.85);
+$color-surface-solid: #12121a;
+$color-surface-hover: rgba(228, 180, 95, 0.05);
+$color-accent: #e4b45f;
+$color-accent-light: #f5d190;
+$color-text-primary: #ffffff;
+$color-text-secondary: rgba(255, 255, 255, 0.7);
+$color-text-muted: rgba(255, 255, 255, 0.5);
+$color-border: rgba(255, 255, 255, 0.1);
+$color-success: #22c55e;
+$color-error: #ef4444;
+$color-pink: #ec4899;
+
+$transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+// ============================================
+// LOADING & ERROR STATES
+// ============================================
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 2rem;
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 3rem 2rem;
+  text-align: center;
+  color: $color-error;
+
+  i {
+    font-size: 2rem;
+  }
+
+  p {
+    margin: 0;
+    color: $color-text-secondary;
+  }
+}
+
+// ============================================
+// TABLE STYLING
+// ============================================
+
+:host ::ng-deep .admin-table {
+  .p-datatable-table {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .p-datatable-thead > tr > th {
+    background: rgba(0, 0, 0, 0.3);
+    color: $color-text-muted;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 1rem;
+    border: none;
+    border-bottom: 1px solid $color-border;
+  }
+
+  .p-datatable-tbody > tr {
+    background: transparent;
+    transition: $transition-smooth;
+
+    &:hover {
+      background: $color-surface-hover;
+    }
+
+    > td {
+      padding: 0.75rem 1rem;
+      border: none;
+      border-bottom: 1px solid $color-border;
+      color: $color-text-secondary;
+      font-size: 0.875rem;
+      vertical-align: middle;
+    }
+  }
+
+  // Paginator
+  .p-paginator {
+    background: rgba(0, 0, 0, 0.2);
+    border: none;
+    border-top: 1px solid $color-border;
+    padding: 1rem;
+
+    .p-paginator-page,
+    .p-paginator-first,
+    .p-paginator-prev,
+    .p-paginator-next,
+    .p-paginator-last {
+      color: $color-text-muted;
+      border: none;
+      min-width: 2.5rem;
+      height: 2.5rem;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: $color-text-primary;
+      }
+
+      &.p-highlight {
+        background: rgba($color-accent, 0.2);
+        color: $color-accent;
+      }
+    }
+  }
+}
+
+// ============================================
+// POSTER
+// ============================================
+
+.poster-link {
+  display: block;
+  transition: $transition-smooth;
+
+  &:hover {
+    transform: scale(1.05);
+
+    .poster-thumbnail {
+      box-shadow: 0 4px 12px rgba($color-accent, 0.3);
+    }
+  }
+}
+
+.poster-thumbnail {
+  width: 45px;
+  height: 68px;
+  object-fit: cover;
+  border-radius: 4px;
+  transition: $transition-smooth;
+}
+
+.poster-placeholder {
+  width: 45px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  color: $color-text-muted;
+
+  i {
+    font-size: 1rem;
+  }
+}
+
+// ============================================
+// LINKS
+// ============================================
+
+.movie-link {
+  color: $color-text-primary;
+  font-weight: 600;
+  text-decoration: none;
+  transition: $transition-smooth;
+
+  &:hover {
+    color: $color-accent;
+  }
+}
+
+.user-link {
+  color: $color-text-secondary;
+  text-decoration: none;
+  transition: $transition-smooth;
+
+  &:hover {
+    color: $color-accent;
+  }
+}
+
+// ============================================
+// RATING BADGE
+// ============================================
+
+.rating-cell {
+  text-align: center;
+}
+
+.rating-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background: rgba($color-accent, 0.15);
+  border-radius: 4px;
+  color: $color-accent;
+  font-weight: 600;
+  font-size: 0.8125rem;
+
+  i {
+    font-size: 0.6875rem;
+  }
+}
+
+// ============================================
+// VISIBILITY BADGE
+// ============================================
+
+.visibility-cell {
+  text-align: center;
+}
+
+.visibility-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: $transition-smooth;
+
+  &:hover {
+    transform: scale(1.1);
+
+    .visibility-badge {
+      &.visible {
+        background: rgba($color-error, 0.25);
+      }
+
+      &.hidden {
+        background: rgba($color-success, 0.25);
+      }
+    }
+  }
+}
+
+.visibility-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+
+  i {
+    font-size: 0.875rem;
+  }
+
+  &.visible {
+    background: rgba($color-success, 0.15);
+    color: $color-success;
+  }
+
+  &.hidden {
+    background: rgba($color-error, 0.15);
+    color: $color-error;
+  }
+}
+
+// ============================================
+// COUNT BADGES
+// ============================================
+
+.count-cell {
+  text-align: center;
+}
+
+.count-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+
+  i {
+    font-size: 0.75rem;
+  }
+
+  &.likes {
+    color: $color-pink;
+  }
+
+  &.comments {
+    color: $color-text-muted;
+  }
+}
+
+// ============================================
+// DATE & DETAILS
+// ============================================
+
+.date-cell {
+  color: $color-text-muted;
+  font-size: 0.8125rem;
+}
+
+.details-cell {
+  text-align: center;
+}
+
+// ============================================
+// EMPTY STATE
+// ============================================
+
+.empty-message {
+  text-align: center;
+  padding: 3rem 2rem !important;
+  color: $color-text-muted;
+
+  i {
+    display: block;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: $color-accent;
+    opacity: 0.4;
+  }
+
+  span {
+    font-size: 0.9375rem;
+  }
+}
+
+// ============================================
+// REVIEW POPOVER
+// ============================================
+
+::ng-deep .review-popover {
+  .p-popover-content {
+    padding: 0;
+    background: $color-surface-solid;
+    border: 1px solid $color-border;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+}
+
+.popover-content {
+  width: 380px;
+  max-width: 90vw;
+}
+
+.popover-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid $color-border;
+}
+
+.popover-movie {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  min-width: 0;
+}
+
+.popover-poster {
+  width: 45px;
+  height: 68px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.popover-movie-info {
+  min-width: 0;
+
+  h4 {
+    margin: 0 0 0.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: $color-text-primary;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.popover-user {
+  font-size: 0.8125rem;
+  color: $color-text-muted;
+}
+
+.popover-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  background: rgba($color-accent, 0.15);
+  border-radius: 20px;
+  flex-shrink: 0;
+
+  i {
+    color: $color-accent;
+    font-size: 0.875rem;
+  }
+
+  span {
+    color: $color-accent;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+}
+
+.popover-body {
+  padding: 1rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.review-text {
+  color: $color-text-secondary;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+
+  p {
+    margin: 0 0 0.75rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.popover-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid $color-border;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.popover-stats {
+  display: flex;
+  gap: 1rem;
+
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+
+    i {
+      font-size: 0.75rem;
+    }
+
+    &.likes {
+      color: $color-pink;
+    }
+
+    &.comments {
+      color: $color-text-muted;
+    }
+  }
+}
+
+.popover-date {
+  font-size: 0.75rem;
+  color: $color-text-muted;
+}
+
+.popover-actions {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid $color-border;
+}
+
+::ng-deep .popover-actions {
+  .p-button {
+    flex: 1;
+    justify-content: center;
+
+    &.p-button-outlined {
+      border-color: $color-border;
+      color: $color-text-secondary;
+
+      &:hover {
+        background: rgba($color-accent, 0.1);
+        border-color: $color-accent;
+        color: $color-accent;
+      }
+    }
+  }
+}

@@ -1,6 +1,5 @@
 using System.Text.Json.Serialization;
 using FluentValidation;
-using Microsoft.Extensions.FileProviders;
 using MovieTrackR.api.middleware;
 using MovieTrackR.API.Configuration;
 using MovieTrackR.API.Endpoints.Auth;
@@ -37,9 +36,14 @@ builder.Services
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     })
     .Services
-    .AddHealthChecks()
-    .AddNpgSql(builder.Configuration.GetConnectionString("MovieTrackRDatabase")
-        ?? throw new InvalidOperationException("Connection string 'MovieTrackRDatabase' not found."));
+        .AddHealthChecks()
+        .AddNpgSql(builder.Configuration.GetConnectionString("MovieTrackRDatabase")
+            ?? throw new InvalidOperationException("Connection string 'MovieTrackRDatabase' not found."));
+
+builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
+{
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
 WebApplication app = builder.Build();
 

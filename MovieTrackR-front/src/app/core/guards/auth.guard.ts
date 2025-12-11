@@ -8,7 +8,7 @@ export const authGuard: CanActivateFn = () => {
     const authService = inject(AuthService);
     const router = inject(Router);
 
-    return authService.checkAuth().pipe(
+    return authService.init().pipe(
         map((isAuth: boolean) => (isAuth ? true : router.createUrlTree(['/forbidden']))),
         catchError(() => of(router.createUrlTree(['/forbidden'])))
     );

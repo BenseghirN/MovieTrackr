@@ -17,7 +17,7 @@ public sealed class GetReviewDetailsHandler(IMovieTrackRDbContext dbContext, IMa
     {
         ReviewDetailsDto? review = await dbContext.Reviews
             .AsNoTracking()
-            .Where(r => r.Id == query.ReviewId)
+            .Where(r => r.Id == query.ReviewId && r.PubliclyVisible)
             .ProjectTo<ReviewDetailsDto>(mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(cancellationToken);
 

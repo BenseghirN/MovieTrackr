@@ -1,0 +1,113 @@
+@if (loading() && !users().length) {
+  <div class="loading-container">
+    <p-progressSpinner strokeWidth="3" animationDuration="1s" />
+  </div>
+}
+
+@if (error()) {
+  <div class="error-container">
+    <i class="pi pi-exclamation-triangle"></i>
+    <p>{{ error() }}</p>
+  </div>
+}
+
+@if (users().length) {
+  <p-table
+    [value]="users()"
+    [loading]="loading()"
+    [rowHover]="true"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    styleClass="admin-table"
+  >
+    <ng-template #header>
+      <tr>
+        <th style="width: 60px">Avatar</th>
+        <th>Pseudo</th>
+        <th>Email</th>
+        <th>Prénom</th>
+        <th>Nom</th>
+        <th style="width: 100px">Rôle</th>
+        <th style="width: 80px; text-align: center">Admin</th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-user>
+      <tr>
+        <!-- Avatar -->
+        <td>
+          <div class="user-avatar">
+            @if (user.avatarUrl) {
+              <a 
+                [href]="user.avatarUrl" 
+                target="_blank" 
+                class="user-avatar-link" 
+                pTooltip="Voir en grand"
+                tooltipPosition="top"
+              >
+                <div class="user-avatar">
+                  <img [src]="user.avatarUrl" [alt]="user.pseudo" />
+                </div>
+              </a>
+                <img [src]="user.avatarUrl" [alt]="user.pseudo" />
+            } @else {
+              <div class="avatar-fallback">
+                {{ getInitial(user) }}
+              </div>
+            }
+          </div>
+        </td>
+
+        <!-- Pseudo -->
+        <td>
+          <a 
+            [routerLink]="['/profiles', user.id]" 
+            class="user-avatar-link" 
+            pTooltip="Voir le profile"
+            tooltipPosition="top"
+          >
+            <span class="user-pseudo">{{ user.pseudo || '—' }}</span>
+          </a>
+        </td>
+
+        <!-- Email -->
+        <td>
+          <span class="user-email">{{ user.email }}</span>
+        </td>
+
+        <!-- Prénom -->
+        <td>{{ user.givenName || '—' }}</td>
+
+        <!-- Nom -->
+        <td>{{ user.surname || '—' }}</td>
+
+        <!-- Rôle -->
+        <td>
+          <span class="role-badge" [class.admin]="isAdmin(user)">
+            {{ user.role }}
+          </span>
+        </td>
+
+        <!-- Toggle Admin -->
+        <td class="toggle-cell">
+          <p-toggleswitch
+            [ngModel]="isAdmin(user)"
+            (onChange)="onToggleRole(user)"
+            pTooltip="{{ isAdmin(user) ? 'Rétrograder en User' : 'Promouvoir Admin' }}"
+            tooltipPosition="left"
+          />
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="7" class="empty-message">
+          <i class="pi pi-users"></i>
+          <span>Aucun utilisateur trouvé</span>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+}

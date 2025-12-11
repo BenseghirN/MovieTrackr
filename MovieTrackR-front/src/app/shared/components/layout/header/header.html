@@ -27,10 +27,12 @@
           <i class="pi pi-bookmark"></i>
           <span>Mes listes</span>
         </a>
-        <!-- <a routerLink="/me" routerLinkActive="active" pTooltip="Mon profil" tooltipPosition="bottom">
-          <i class="pi pi-user"></i>
-          <span>Mon profil</span>
-        </a> -->
+        @if (authService.isAdmin()){
+          <a routerLink="/admin" routerLinkActive="active" pTooltip="Gestion des référentiels MovieTrackR" tooltipPosition="bottom">
+            <i class="pi pi-shield"></i>
+            <span>Administration</span>
+          </a>
+        }
       }
     </nav>
     

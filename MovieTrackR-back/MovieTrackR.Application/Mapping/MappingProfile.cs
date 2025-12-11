@@ -22,9 +22,18 @@ public class MappingProfile : Profile
                     .OrderBy(c => CrewHelpers.GetJobPriority(c.Job))
                     .Take(10)));
 
+        CreateMap<Movie, MovieAdminDto>()
+            .ForMember(d => d.Genres, opt => opt.MapFrom(s => s.MovieGenres.Select(mg => mg.Genre)))
+            .ForMember(d => d.DirectorName, opt => opt.MapFrom(s =>
+                s.Crew.Where(mc => mc.Job == "Director" && mc.Department == "Directing").Select(mc => mc.Person.Name).FirstOrDefault()
+            ))
+            .ForMember(d => d.DirectorId, opt => opt.MapFrom(s =>
+                s.Crew.Where(mc => mc.Job == "Director" && mc.Department == "Directing").Select(mc => mc.PersonId).FirstOrDefault()
+            ));
+
         CreateMap<User, PublicUserProfileDto>()
-            .ForMember(dest => dest.ReviewsCount, opt => opt.MapFrom(src => src.Reviews.Count))
-            .ForMember(dest => dest.ListsCount, opt => opt.MapFrom(src => src.Lists.Count));
+            .ForMember(d => d.ReviewsCount, opt => opt.MapFrom(s => s.Reviews.Count))
+            .ForMember(d => d.ListsCount, opt => opt.MapFrom(s => s.Lists.Count));
 
         CreateMap<MovieCast, CastMemberDto>()
             .ForMember(d => d.PersonId, opt => opt.MapFrom(s => s.Person.Id))

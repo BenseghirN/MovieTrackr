@@ -1,0 +1,135 @@
+<!-- admin-movies-table.component.html -->
+@if (loading() && !movies().length) {
+  <div class="loading-container">
+    <p-progressSpinner strokeWidth="3" animationDuration="1s" />
+  </div>
+}
+
+@if (error()) {
+  <div class="error-container">
+    <i class="pi pi-exclamation-triangle"></i>
+    <p>{{ error() }}</p>
+  </div>
+}
+
+@if (movies().length) {
+  <p-table
+    [value]="movies()"
+    [loading]="loading()"
+    [rowHover]="true"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    styleClass="admin-table"
+  >
+    <ng-template #header>
+      <tr>
+        <th style="width: 70px">Poster</th>
+        <th style="width: 200px">Titre</th>
+        <th style="width: 150px">Réalisateur</th>
+        <th style="width: 80px; text-align: center">Année</th>
+        <th>Genres</th>
+        <th style="width: 110px">Sortie</th>
+        <th style="width: 120px">Ajouté le</th>
+        <th style="width: 80px; text-align: center">Actions</th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-movie>
+      <tr>
+        <!-- Poster -->
+        <td>
+          @if (movie.posterUrl) {
+            <a 
+              [href]="imageService.getPosterUrl(movie.posterUrl, 'original')" 
+              target="_blank" 
+              class="poster-link"
+              pTooltip="Voir en grand"
+              tooltipPosition="right"
+            >
+              <img 
+                [src]="imageService.getPosterUrl(movie.posterUrl, 'w92')" 
+                [alt]="movie.title"
+                class="poster-thumbnail"
+              />
+            </a>
+          } @else {
+            <div class="poster-placeholder">
+              <i class="pi pi-image"></i>
+            </div>
+          }
+        </td>
+
+        <!-- Titre -->
+        <td>
+          <a [routerLink]="['/movies', movie.id]" class="movie-link">
+            <span class="movie-title">{{ movie.title }}</span>
+          </a>
+          @if (movie.originalTitle && movie.originalTitle !== movie.title) {
+            <span class="original-title">{{ movie.originalTitle }}</span>
+          }
+        </td>
+
+        <!-- Réalisateur -->
+        <td>
+          @if (movie.directorId) {
+            <a [routerLink]="['/people', movie.directorId]" class="director-link">
+              {{ movie.directorName }}
+            </a>
+          } @else {
+            <span class="no-data">—</span>
+          }
+        </td>
+
+        <!-- Année -->
+        <td class="year-cell">
+          <span class="year-badge">{{ movie.year }}</span>
+
+        </td>
+        <!-- Date de sortie -->
+        <td class="date-cell">
+          {{ movie.releaseDate | date:'dd/MM/yyyy' }}
+        </td>
+
+        <!-- Genres -->
+        <td>
+          <div class="genres-list">
+            @for (genre of movie.genres; track genre.id) {
+              <span class="genre-chip">{{ genre.name }}</span>
+            } @empty {
+              <span class="no-data">—</span>
+            }
+          </div>
+        </td>
+        
+        <!-- Date d'ajout -->
+        <td class="date-cell">
+          {{ movie.createdAt | date:'dd/MM/yyyy' }}
+        </td>
+
+        <!-- Actions -->
+        <td class="actions-cell">
+          <p-button 
+            icon="pi pi-trash" 
+            [rounded]="true" 
+            severity="danger"
+            [outlined]="true"
+            (onClick)="onDeleteMovie($event, movie)"
+            pTooltip="Supprimer le film"
+            tooltipPosition="left"
+          />
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="7" class="empty-message">
+          <i class="pi pi-video"></i>
+          <span>Aucun film trouvé</span>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+}
+<p-confirmDialog />

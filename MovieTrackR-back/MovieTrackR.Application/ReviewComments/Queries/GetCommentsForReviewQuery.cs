@@ -17,7 +17,7 @@ public sealed class GetCommentsForReviewHandler(IMovieTrackRDbContext dbContext,
         IQueryable<Domain.Entities.ReviewComment> baseSql = dbContext.ReviewComments
             .AsNoTracking()
             .Include(c => c.User)
-            .Where(c => c.ReviewId == query.ReviewId);
+            .Where(c => c.ReviewId == query.ReviewId && c.PubliclyVisible);
 
         int total = await baseSql.CountAsync(ct);
 

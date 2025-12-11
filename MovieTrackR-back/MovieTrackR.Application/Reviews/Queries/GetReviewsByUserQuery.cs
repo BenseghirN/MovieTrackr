@@ -36,7 +36,7 @@ public sealed class GetReviewsByUserHandler(IMovieTrackRDbContext dbContext, IMa
             .Include(r => r.Likes)
             .Include(r => r.Comments)
             .Include(r => r.Movie)
-            .Where(r => r.UserId == query.UserId);
+            .Where(r => r.UserId == query.UserId && r.PubliclyVisible);
 
         if (query.RatingFilter is not null)
             baseSql = baseSql.Where(r => r.Rating == query.RatingFilter);

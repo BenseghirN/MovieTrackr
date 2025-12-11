@@ -30,7 +30,7 @@ public sealed class GetReviewsByMovieHandler(IMovieTrackRDbContext dbContext, IM
 
         IQueryable<Review> baseSql = dbContext.Reviews
                     .AsNoTracking()
-                    .Where(r => r.MovieId == query.MovieId);
+                    .Where(r => r.MovieId == query.MovieId && r.PubliclyVisible);
 
         if (query.RatingFilter is not null)
             baseSql.Where(r => r.Rating == query.RatingFilter);

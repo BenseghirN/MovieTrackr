@@ -18,6 +18,9 @@ public sealed class CommentDto
     /// <summary>Contenu textuel du commentaire.</summary>
     public string Content { get; set; } = default!;
 
+    /// <summary>Définis si le commentaire est visible publiquement ou pas (modération)</summary>
+    public bool PubliclyVisible { get; set; } = true;
+
     /// <summary>Date de création (UTC).</summary>
     public DateTime CreatedAt { get; set; }
 }

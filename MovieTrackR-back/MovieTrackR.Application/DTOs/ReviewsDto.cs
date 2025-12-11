@@ -56,6 +56,9 @@ public sealed class ReviewListItemDto
     /// <summary>Texte de la critique (optionnel).</summary>
     public string? Content { get; set; }
 
+    /// <summary>Définis si la review est visible publiquement ou pas (modération)</summary>
+    public bool PubliclyVisible { get; set; } = true;
+
     /// <summary>Nombre total de likes sur cette critique.</summary>
     public int LikesCount { get; set; }
 
@@ -78,6 +81,9 @@ public sealed class ReviewDetailsDto
     /// <summary>Identifiant du film.</summary>
     public Guid MovieId { get; set; }
 
+    /// <summary>Titre du film.</summary>
+    public string MovieTitle { get; set; } = string.Empty;
+
     /// <summary>Identifiant de l'auteur de la critique.</summary>
     public Guid UserId { get; set; }
 
@@ -86,6 +92,9 @@ public sealed class ReviewDetailsDto
 
     /// <summary>Texte de la critique (optionnel).</summary>
     public string? Content { get; set; }
+
+    /// <summary>Définis si la review est visible publiquement ou pas (modération)</summary>
+    public bool PubliclyVisible { get; set; } = true;
 
     /// <summary>Nombre total de likes.</summary>
     public int LikesCount { get; set; }

@@ -18,7 +18,8 @@ describe('ReviewCommentsService', () => {
     userId: 'user-1',
     userName: 'John Doe',
     content: 'Great review!',
-    createdAt: '2024-01-01T00:00:00Z'
+    createdAt: '2024-01-01T00:00:00Z',
+    publiclyVisible: true
   };
 
   const mockPagedComments: PagedComments = {

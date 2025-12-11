@@ -345,6 +345,33 @@ $breakpoint-xs: 576px;
   }
 }
 
+::ng-deep .carousel-title .p-button {
+  background: transparent !important;
+  border: 1px solid rgba(228, 180, 95, 0.3) !important;
+  color: $color-accent !important;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  transition: $transition-smooth;
+  margin-left: 0.5rem;
+
+  .p-button-icon {
+    font-size: 0.75rem;
+  }
+
+  &:hover:not(:disabled) {
+    background: rgba(228, 180, 95, 0.1) !important;
+    border-color: $color-accent !important;
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
 .carousel-subtitle {
   font-size: 0.9375rem;
   color: $color-text-muted;

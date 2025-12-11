@@ -1,5 +1,4 @@
 <div class="home-page">
-  <!-- Hero Section -->
   <section class="hero">
     <div class="hero-background">
       <div class="hero-gradient"></div>
@@ -23,7 +22,6 @@
         Des millions de films à portée de main.
       </p>
 
-      <!-- Search Box -->
       <div class="search-container">
         <div class="search-box">
           <i class="pi pi-search"></i>
@@ -50,21 +48,28 @@
       </div>
     </div>
 
-    <!-- Scroll Indicator -->
     <div class="scroll-indicator" (click)="scrollToCarousels()">
       <span>Découvrir</span>
       <i class="pi pi-chevron-down"></i>
     </div>
   </section>
 
-  <!-- Carousels Section -->
   <section class="carousels-section" id="carousels">
-    <!-- Popular Movies Carousel -->
     <div class="carousel-block">
       <div class="carousel-header">
         <div class="carousel-title">
           <i class="pi pi-star"></i>
-          <h2>Nouveautés</h2>
+          <h2>Populaires</h2>
+          @if (popularMoviesMeta()?.hasMore) {
+            <button
+              pButton
+              type="button"
+              icon="pi pi-plus"
+              label="Voir plus"
+              (click)="onLoadMore()"
+              [disabled]="loadingPopular()"
+            ></button>
+          }
         </div>
         <span class="carousel-subtitle">Les dernières sorties à découvrir</span>
       </div>
@@ -87,6 +92,8 @@
           [responsiveOptions]="carouselResponsiveOptions"
           [circular]="false"
           [showIndicators]="false"
+          [page]="popularCarouselPage()"
+          (onPage)="onPopularCarouselPageEvent($event)"
           styleClass="movies-carousel"
         >
           <ng-template let-movie pTemplate="item">
@@ -124,7 +131,6 @@
       }
     </div>
 
-    <!-- Trending Movies Carousel -->
     <div class="carousel-block">
       <div class="carousel-header">
         <div class="carousel-title">
@@ -190,7 +196,6 @@
     </div>
   </section>
 
-  <!-- Features Section -->
   <section class="features">
     <div class="features-header">
       <span class="section-badge">Fonctionnalités</span>
@@ -199,7 +204,6 @@
     </div>
 
     <div class="features-grid">
-      <!-- Feature 1 -->
       <div class="feature-card">
         <div class="feature-icon-wrapper">
           <i class="pi pi-search"></i>
@@ -208,7 +212,6 @@
         <p>Explorez des millions de films et découvrez de nouveaux titres grâce à notre moteur de recherche puissant.</p>
       </div>
 
-      <!-- Feature 2 -->
       <div class="feature-card">
         <div class="feature-icon-wrapper">
           <i class="pi pi-bookmark"></i>
@@ -217,7 +220,6 @@
         <p>Créez vos propres listes de films à voir, vos favoris, et organisez votre collection comme vous le souhaitez.</p>
       </div>
 
-      <!-- Feature 3 -->
       <div class="feature-card">
         <div class="feature-icon-wrapper">
           <i class="pi pi-star"></i>
@@ -226,7 +228,6 @@
         <p>Partagez votre avis, notez les films que vous avez vus et lisez les critiques de la communauté.</p>
       </div>
 
-      <!-- Feature 4 -->
       <div class="feature-card">
         <div class="feature-icon-wrapper">
           <i class="pi pi-users"></i>
@@ -235,7 +236,6 @@
         <p>Découvrez les filmographies complètes de vos acteurs et réalisateurs préférés.</p>
       </div>
 
-      <!-- Feature 5 -->
       <div class="feature-card">
         <div class="feature-icon-wrapper">
           <i class="pi pi-play"></i>
@@ -244,7 +244,6 @@
         <p>Trouvez où regarder vos films en streaming, avec les plateformes disponibles dans votre région.</p>
       </div>
 
-      <!-- Feature 6 -->
       <div class="feature-card">
         <div class="feature-icon-wrapper">
           <i class="pi pi-chart-line"></i>
@@ -255,7 +254,6 @@
     </div>
   </section>
 
-  <!-- CTA Section -->
   <section class="cta-section">
     <div class="cta-content">
       <h2>Prêt à commencer ?</h2>

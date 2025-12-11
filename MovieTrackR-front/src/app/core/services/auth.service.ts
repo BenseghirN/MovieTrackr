@@ -1,5 +1,5 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { Observable, tap, catchError, map, of } from 'rxjs';
+import { Observable, tap, catchError, map, of, switchMap } from 'rxjs';
 import { AuthUser, MeClaims } from '../auth/models/auth-user.model';
 import { HttpBackend, HttpClient } from '@angular/common/http';
 import { ConfigService } from './config.service';
@@ -16,9 +16,13 @@ export class AuthService {
     readonly isAuthenticated = this.isAuthenticatedSignal.asReadonly();
     readonly isAdmin = computed(() => this.currentUserSignal()?.role === 'Admin');
 
-    constructor() {
-        this.checkAuthStatus();
+    // constructor() {
+    //     this.checkAuthStatus();
+    // }
+    init(): Observable<boolean> {
+        return this.checkAuth();
     }
+
 
     login(returnUrl: string = '/'): void {
         const finalReturnUrl = !this.config.isProduction
@@ -43,17 +47,20 @@ export class AuthService {
     }
 
     checkAuth(): Observable<boolean> {
+        console.log('SERVICE CheckAuth');
         return this.http.get<MeClaims>(
             `${this.config.apiUrl}/me`,
             { withCredentials: true }
             ).pipe(
             map(() => {
                 this.isAuthenticatedSignal.set(true);
+                console.log('SERVICE isAuthenticatedSignal', this.isAuthenticatedSignal());
                 return true;
             }),
             catchError((err) => {
                 this.isAuthenticatedSignal.set(false);
                 this.currentUserSignal.set(null);
+                console.log('SERVICE CATCHERROR', this.isAuthenticatedSignal());
                 return of(false);
             })
         );
@@ -77,7 +84,8 @@ export class AuthService {
         );
     }
 
-    private checkAuthStatus(): void {
-        this.checkAuth().subscribe();
-    }
+    // private checkAuthStatus(): void {
+    //     this.checkAuth().subscribe();
+    //     this.getUserInfo().subscribe();
+    // }
 }

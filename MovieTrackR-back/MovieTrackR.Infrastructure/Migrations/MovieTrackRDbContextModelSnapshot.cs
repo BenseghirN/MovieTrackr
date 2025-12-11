@@ -387,6 +387,10 @@ namespace MovieTrackR.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("movie_id");
 
+                    b.Property<bool>("PubliclyVisible")
+                        .HasColumnType("boolean")
+                        .HasColumnName("publicly_visible");
+
                     b.Property<float>("Rating")
                         .HasColumnType("real")
                         .HasColumnName("rating");
@@ -432,6 +436,10 @@ namespace MovieTrackR.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<bool>("PubliclyVisible")
+                        .HasColumnType("boolean")
+                        .HasColumnName("publicly_visible");
 
                     b.Property<Guid>("ReviewId")
                         .HasColumnType("uuid")

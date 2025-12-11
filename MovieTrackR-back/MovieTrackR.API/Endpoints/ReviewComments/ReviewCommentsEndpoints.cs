@@ -1,7 +1,7 @@
 using Asp.Versioning;
 using Asp.Versioning.Builder;
+using MovieTrackR.API.Configuration;
 using MovieTrackR.API.Filters;
-using MovieTrackR.API.Validators.ReviewComments;
 using MovieTrackR.Application.DTOs;
 
 namespace MovieTrackR.API.Endpoints.ReviewComments;
@@ -53,6 +53,24 @@ public static class ReviewCommentsEndpoints
                         .Produces(StatusCodes.Status204NoContent)
                         .ProducesProblem(StatusCodes.Status401Unauthorized)
                         .ProducesProblem(StatusCodes.Status403Forbidden)
+                        .ProducesProblem(StatusCodes.Status404NotFound);
+
+                RouteGroupBuilder adminGroup = app.MapGroup("/api/v{version:apiVersion}/comments/")
+                        .WithApiVersionSet(vset)
+                        .MapToApiVersion(1, 0)
+                        .WithTags("ReviewComments")
+                        .RequireAuthorization(AuthorizationConfiguration.AdminPolicy)
+                        .WithOpenApi();
+
+                adminGroup.MapGet("/", ReviewCommentsHandlers.GetAll)
+                        .WithSummary("List of all comments")
+                        .WithDescription("Returns a list of all comments for moderation")
+                        .Produces<IReadOnlyList<CommentDto>>(StatusCodes.Status200OK);
+
+                adminGroup.MapPut("/{id:Guid}", ReviewCommentsHandlers.UpdateVisibility)
+                        .WithSummary("Change public visibility of the comment (for moderation)")
+                        .WithDescription("Change public visibility of the comment (for moderation)")
+                        .Produces(StatusCodes.Status204NoContent)
                         .ProducesProblem(StatusCodes.Status404NotFound);
 
                 return app;

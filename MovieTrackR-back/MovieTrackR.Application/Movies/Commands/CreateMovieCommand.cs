@@ -14,7 +14,6 @@ public sealed class CreateMovieHandler(IMovieTrackRDbContext dbContext)
 {
     public async Task<Guid> Handle(CreateMovieCommand createCommand, CancellationToken cancellationToken)
     {
-        // unicité (Title+Year) — Year nullable : OK (DB considère NULL distinct)
         bool exists = await dbContext.Movies.AnyAsync(
             m => m.Title == createCommand.Dto.Title && m.Year == createCommand.Dto.Year, cancellationToken);
         if (exists) throw new ConflictException("Movie already exists (title+year).");

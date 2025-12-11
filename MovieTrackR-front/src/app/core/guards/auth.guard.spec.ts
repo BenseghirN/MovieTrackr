@@ -12,7 +12,7 @@ describe('authGuard', () => {
   let mockRouterState: RouterStateSnapshot;
 
   beforeEach(() => {
-    mockAuthService = jasmine.createSpyObj('AuthService', ['checkAuth']);
+    mockAuthService = jasmine.createSpyObj('AuthService', ['init']);
     mockRouter = jasmine.createSpyObj('Router', ['createUrlTree']);
     mockUrlTree = {} as UrlTree;
     mockRoute = {} as ActivatedRouteSnapshot;
@@ -28,259 +28,87 @@ describe('authGuard', () => {
     mockRouter.createUrlTree.and.returnValue(mockUrlTree);
   });
 
-  describe('authGuard', () => {
-    it('should allow access when user is authenticated', (done) => {
-      mockAuthService.checkAuth.and.returnValue(of(true));
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
 
-      TestBed.runInInjectionContext(() => {
-        const result = authGuard(mockRoute, mockRouterState) as any;
+  it('should allow access when user is authenticated', (done) => {
+    mockAuthService.init.and.returnValue(of(true));
 
-        if (result.subscribe) {
-          result.subscribe((canActivate: any) => {
-            expect(canActivate).toBe(true);
-            done();
-          });
-        } else {
-          expect(result).toBe(true);
-          done();
-        }
-      });
-    });
+    TestBed.runInInjectionContext(() => {
+      const result = authGuard(mockRoute, mockRouterState);
 
-    it('should deny access when user is not authenticated', (done) => {
-      mockAuthService.checkAuth.and.returnValue(of(false));
-
-      TestBed.runInInjectionContext(() => {
-        const result = authGuard(mockRoute, mockRouterState) as any;
-
-        if (result.subscribe) {
-          result.subscribe((canActivate: any) => {
-            expect(canActivate).toBe(mockUrlTree);
-            expect(mockRouter.createUrlTree).toHaveBeenCalledWith(['/forbidden']);
-            done();
-          });
-        } else {
-          expect(result).toBe(mockUrlTree);
-          done();
-        }
-      });
-    });
-
-    it('should redirect to forbidden page on auth check failure', (done) => {
-      mockAuthService.checkAuth.and.returnValue(
-        throwError(() => new Error('Auth check failed'))
-      );
-
-      TestBed.runInInjectionContext(() => {
-        const result = authGuard(mockRoute, mockRouterState) as any;
-
-        if (result.subscribe) {
-          result.subscribe((canActivate: any) => {
-            expect(canActivate).toBe(mockUrlTree);
-            done();
-          });
-        } else {
-          done();
-        }
-      });
-    });
-
-    it('should call authService.checkAuth', (done) => {
-      mockAuthService.checkAuth.and.returnValue(of(true));
-
-      TestBed.runInInjectionContext(() => {
-        const result = authGuard(mockRoute, mockRouterState) as any;
-
-        if (result.subscribe) {
-          result.subscribe(() => {
-            expect(mockAuthService.checkAuth).toHaveBeenCalled();
-            done();
-          });
-        } else {
-          expect(mockAuthService.checkAuth).toHaveBeenCalled();
-          done();
-        }
-      });
-    });
-
-    it('should inject AuthService and Router', () => {
-      mockAuthService.checkAuth.and.returnValue(of(true));
-
-      TestBed.runInInjectionContext(() => {
-        authGuard(mockRoute, mockRouterState);
-        expect(mockAuthService.checkAuth).toHaveBeenCalled();
-      });
-    });
-
-    it('should not allow access on 401 error', (done) => {
-      mockAuthService.checkAuth.and.returnValue(
-        throwError(() => ({ status: 401 }))
-      );
-
-      TestBed.runInInjectionContext(() => {
-        const result = authGuard(mockRoute, mockRouterState) as any;
-
-        if (result.subscribe) {
-          result.subscribe((canActivate: any) => {
-            expect(mockRouter.createUrlTree).toHaveBeenCalledWith(['/forbidden']);
-            done();
-          });
-        } else {
-          done();
-        }
-      });
-    });
-
-    it('should not allow access on 403 error', (done) => {
-      mockAuthService.checkAuth.and.returnValue(
-        throwError(() => ({ status: 403 }))
-      );
-
-      TestBed.runInInjectionContext(() => {
-        const result = authGuard(mockRoute, mockRouterState) as any;
-
-        if (result.subscribe) {
-          result.subscribe((canActivate: any) => {
-            expect(mockRouter.createUrlTree).toHaveBeenCalledWith(['/forbidden']);
-            done();
-          });
-        } else {
-          done();
-        }
-      });
-    });
-
-    it('should handle network error gracefully', (done) => {
-      mockAuthService.checkAuth.and.returnValue(
-        throwError(() => new Error('Network error'))
-      );
-
-      TestBed.runInInjectionContext(() => {
-        const result = authGuard(mockRoute, mockRouterState) as any;
-
-        if (result.subscribe) {
-          result.subscribe((canActivate: any) => {
-            expect(canActivate).toBe(mockUrlTree);
-            done();
-          });
-        } else {
-          done();
-        }
+      (result as any).subscribe((canActivate: boolean | UrlTree) => {
+        expect(canActivate).toBe(true);
+        done();
       });
     });
   });
 
-  describe('Guard Return Types', () => {
-    it('should return true when authenticated', (done) => {
-      mockAuthService.checkAuth.and.returnValue(of(true));
+  it('should deny access when user is not authenticated', (done) => {
+    mockAuthService.init.and.returnValue(of(false));
 
-      TestBed.runInInjectionContext(() => {
-        const result = authGuard(mockRoute, mockRouterState) as any;
+    TestBed.runInInjectionContext(() => {
+      const result = authGuard(mockRoute, mockRouterState);
 
-        if (result.subscribe) {
-          result.subscribe((canActivate: any) => {
-            expect(canActivate).toBe(true);
-            done();
-          });
-        } else {
-          expect(result).toBe(true);
-          done();
-        }
-      });
-    });
-
-    it('should return UrlTree when not authenticated', (done) => {
-      mockAuthService.checkAuth.and.returnValue(of(false));
-
-      TestBed.runInInjectionContext(() => {
-        const result = authGuard(mockRoute, mockRouterState) as any;
-
-        if (result.subscribe) {
-          result.subscribe((canActivate: any) => {
-            expect(canActivate).toBe(mockUrlTree);
-            done();
-          });
-        } else {
-          expect(result).toBe(mockUrlTree);
-          done();
-        }
+      (result as any).subscribe((canActivate: boolean | UrlTree) => {
+        expect(canActivate).toBe(mockUrlTree);
+        expect(mockRouter.createUrlTree).toHaveBeenCalledWith(['/forbidden']);
+        done();
       });
     });
   });
 
-  describe('Observable Operators', () => {
-    it('should handle true response from checkAuth', (done) => {
-      mockAuthService.checkAuth.and.returnValue(of(true));
+  it('should redirect to forbidden on init error', (done) => {
+    mockAuthService.init.and.returnValue(throwError(() => new Error('Auth failed')));
 
-      TestBed.runInInjectionContext(() => {
-        const result = authGuard(mockRoute, mockRouterState) as any;
+    TestBed.runInInjectionContext(() => {
+      const result = authGuard(mockRoute, mockRouterState);
 
-        if (result.subscribe) {
-          result.subscribe((canActivate: any) => {
-            expect(canActivate).toBe(true);
-            done();
-          });
-        } else {
-          expect(result).toBe(true);
-          done();
-        }
-      });
-    });
-
-    it('should handle error from checkAuth with catchError', (done) => {
-      mockAuthService.checkAuth.and.returnValue(
-        throwError(() => new Error('Test error'))
-      );
-
-      TestBed.runInInjectionContext(() => {
-        const result = authGuard(mockRoute, mockRouterState) as any;
-
-        if (result.subscribe) {
-          result.subscribe((canActivate: any) => {
-            expect(canActivate).toBe(mockUrlTree);
-            done();
-          });
-        } else {
-          done();
-        }
+      (result as any).subscribe((canActivate: boolean | UrlTree) => {
+        expect(canActivate).toBe(mockUrlTree);
+        expect(mockRouter.createUrlTree).toHaveBeenCalledWith(['/forbidden']);
+        done();
       });
     });
   });
 
-  describe('Security Behavior', () => {
-    it('should create forbidden url tree on auth failure', (done) => {
-      mockAuthService.checkAuth.and.returnValue(of(false));
+  it('should call authService.init()', (done) => {
+    mockAuthService.init.and.returnValue(of(true));
 
-      TestBed.runInInjectionContext(() => {
-        const result = authGuard(mockRoute, mockRouterState) as any;
+    TestBed.runInInjectionContext(() => {
+      const result = authGuard(mockRoute, mockRouterState);
 
-        if (result.subscribe) {
-          result.subscribe(() => {
-            expect(mockRouter.createUrlTree).toHaveBeenCalledWith(['/forbidden']);
-            done();
-          });
-        } else {
-          expect(mockRouter.createUrlTree).toHaveBeenCalledWith(['/forbidden']);
-          done();
-        }
+      (result as any).subscribe(() => {
+        expect(mockAuthService.init).toHaveBeenCalled();
+        done();
       });
     });
+  });
 
-    it('should not allow unauthenticated access', (done) => {
-      mockAuthService.checkAuth.and.returnValue(of(false));
+  it('should handle 401 error gracefully', (done) => {
+    mockAuthService.init.and.returnValue(throwError(() => ({ status: 401 })));
 
-      TestBed.runInInjectionContext(() => {
-        const result = authGuard(mockRoute, mockRouterState) as any;
+    TestBed.runInInjectionContext(() => {
+      const result = authGuard(mockRoute, mockRouterState);
 
-        if (result.subscribe) {
-          result.subscribe((canActivate: any) => {
-            expect(canActivate).not.toBe(true);
-            done();
-          });
-        } else {
-          expect(result).not.toBe(true);
-          done();
-        }
+      (result as any).subscribe((canActivate: boolean | UrlTree) => {
+        expect(canActivate).toBe(mockUrlTree);
+        expect(mockRouter.createUrlTree).toHaveBeenCalledWith(['/forbidden']);
+        done();
+      });
+    });
+  });
+
+  it('should handle network error gracefully', (done) => {
+    mockAuthService.init.and.returnValue(throwError(() => new Error('Network error')));
+
+    TestBed.runInInjectionContext(() => {
+      const result = authGuard(mockRoute, mockRouterState);
+
+      (result as any).subscribe((canActivate: boolean | UrlTree) => {
+        expect(canActivate).toBe(mockUrlTree);
+        done();
       });
     });
   });

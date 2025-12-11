@@ -62,6 +62,13 @@ public static class MoviesHandlers
         return TypedResults.Ok(result);
     }
 
+    public static async Task<IResult> GetAllMovies(IMediator mediator, CancellationToken cancellationToken)
+    {
+        IReadOnlyList<MovieAdminDto> result =
+        await mediator.Send(new GetAllMoviesQuery(), cancellationToken);
+        return TypedResults.Ok(result);
+    }
+
     public static async Task<IResult> Create(CreateMovieDto dto, IMediator mediator, CancellationToken cancellationToken)
     {
         Guid id = await mediator.Send(new CreateMovieCommand(dto), cancellationToken);

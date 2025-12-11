@@ -8,12 +8,14 @@ using MovieTrackR.Application.ReviewComments.Queries;
 
 namespace MovieTrackR.API.Endpoints.ReviewComments;
 
-/// <summary>Handlers HTTP pour la feature ReviewsComments.</summary>
 public static class ReviewCommentsHandlers
 {
-    /// <summary>
-    /// Liste paginée des commentaires d'une review.
-    /// </summary>
+    public static async Task<Ok<IReadOnlyList<CommentDto>>> GetAll(ISender sender, CancellationToken cancellationToken)
+    {
+        IReadOnlyList<CommentDto> dto = await sender.Send(new GetAllCommentsQuery(), cancellationToken);
+        return TypedResults.Ok(dto);
+    }
+
     public static async Task<Ok<PagedResult<CommentDto>>> GetComments(
         Guid reviewId, int page, int pageSize, ISender sender, CancellationToken cancellationToken)
     {
@@ -21,10 +23,6 @@ public static class ReviewCommentsHandlers
         return TypedResults.Ok(result);
     }
 
-    /// <summary>
-    /// Crée un commentaire sur une review.
-    /// </summary>
-    /// <remarks>Erreurs (middleware) : 400, 401, 404.</remarks>
     public static async Task<Created<object>> CreateComment(
         Guid reviewId, ClaimsPrincipal user, CommentCreateDto dto, ISender sender, CancellationToken cancellationToken)
     {
@@ -33,10 +31,6 @@ public static class ReviewCommentsHandlers
         return TypedResults.Created<object>($"/api/v1/reviews/{reviewId}/comments/{commentId}", new { id = commentId });
     }
 
-    /// <summary>
-    /// Met à jour un commentaire.
-    /// </summary>
-    /// <remarks>Erreurs (middleware) : 400, 401, 403, 404.</remarks>
     public static async Task<NoContent> UpdateComment(
         Guid reviewId, Guid commentId, ClaimsPrincipal user, CommentUpdateDto dto, ISender sender, CancellationToken cancellationToken)
     {
@@ -45,15 +39,17 @@ public static class ReviewCommentsHandlers
         return TypedResults.NoContent();
     }
 
-    /// <summary>
-    /// Supprime un commentaire.
-    /// </summary>
-    /// <remarks>Erreurs (middleware) : 401, 403, 404.</remarks>
     public static async Task<NoContent> DeleteComment(
         Guid reviewId, Guid commentId, ClaimsPrincipal user, ISender sender, CancellationToken cancellationToken)
     {
         CurrentUserDto current = user.ToCurrentUserDto();
         await sender.Send(new DeleteCommentCommand(reviewId, commentId, current), cancellationToken);
+        return TypedResults.NoContent();
+    }
+
+    public static async Task<NoContent> UpdateVisibility(Guid id, ISender sender, CancellationToken cancellationToken)
+    {
+        await sender.Send(new UpdateCommentVisibilityCommand(id), cancellationToken);
         return TypedResults.NoContent();
     }
 }

@@ -17,11 +17,9 @@ internal sealed class DemoteToUserHandler(IMovieTrackRDbContext dbContext, IMapp
         User user = await dbContext.Users.FindAsync([command.Id], cancellationToken)
                         ?? throw new KeyNotFoundException("User not found");
 
-        if (user.Role != UserRole.Admin)
-        {
-            user.DemoteToUser();
-            await dbContext.SaveChangesAsync(cancellationToken);
-        }
+        user.DemoteToUser();
+
+        await dbContext.SaveChangesAsync(cancellationToken);
 
         return mapper.Map<UserDto>(user);
     }
