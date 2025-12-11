@@ -34,7 +34,6 @@ export class AdminUsersService {
     }
 
     promoteToAdmin(id: string): Observable<UserForAdministration> {
-        console.log('PROMOTE');
         return this.api.put<UserForAdministration>(
             `${this.config.apiUrl}/users/${id}/promote`,
             {},
@@ -43,7 +42,6 @@ export class AdminUsersService {
     }
 
     demoteToUser(id: string): Observable<UserForAdministration> {
-        console.log('DEMOTE');
         return this.api.put<UserForAdministration>(
             `${this.config.apiUrl}/users/${id}/demote`,
             {},

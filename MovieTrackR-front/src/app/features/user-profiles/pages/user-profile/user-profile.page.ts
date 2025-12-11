@@ -36,10 +36,17 @@ export class UserProfilePage {
   readonly error = signal<string | null>(null);
 
   readonly userProfile = signal<UserProfile | null>(null);
-  private readonly userId = toSignal(
+  private readonly routeUserId = toSignal(
     this.route.paramMap.pipe(map((params) => params.get('id'))),
     { initialValue: null }
   );
+
+  private readonly userId = computed(() => {
+    const fromRoute = this.routeUserId();
+    if (fromRoute) return fromRoute;
+    return this.authService.currentUser()?.id ?? null;
+  });
+
   readonly joinedYear = computed(() => {
     const p = this.userProfile();
     if (!p) return null;

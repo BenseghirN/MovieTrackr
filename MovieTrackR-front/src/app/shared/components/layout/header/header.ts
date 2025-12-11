@@ -38,7 +38,7 @@ export class Header implements OnInit {
     const currentUserId = this.authService.currentUser()?.id;
     if (!currentUserId) return;
 
-    this.router.navigate(['/me', currentUserId]);
+    this.router.navigate(['/me']);
   }
 
   toggleMobileMenu(): void {
