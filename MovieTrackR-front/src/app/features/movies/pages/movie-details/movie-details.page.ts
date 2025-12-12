@@ -20,17 +20,17 @@ import { TooltipModule } from 'primeng/tooltip';
 @Component({
   selector: 'app-movie-details-page',
   imports: [
-    DecimalPipe, 
-    Chip, 
-    Button, 
-    ProgressSpinner, 
-    CarouselModule, 
-    MovieReviewsComponents, 
-    CardModule, 
-    DialogModule, 
+    DecimalPipe,
+    Chip,
+    Button,
+    ProgressSpinner,
+    CarouselModule,
+    MovieReviewsComponents,
+    CardModule,
+    DialogModule,
     SafeUrlPipe,
     AddToListPopoverComponent,
-    TooltipModule
+    TooltipModule,
   ],
   templateUrl: './movie-details.page.html',
   styleUrl: './movie-details.page.scss',
@@ -43,33 +43,30 @@ export class MovieDetailsPage {
   private readonly moviesService = inject(MovieService);
   readonly imageService = inject(TmdbImageService);
 
-  readonly movieId = toSignal(
-    this.route.paramMap,
-    { initialValue: null }
-  );
-  
+  readonly movieId = toSignal(this.route.paramMap, { initialValue: null });
+
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
   readonly movie = toSignal(
     this.route.paramMap.pipe(
-      map(p => p.get('id')),
+      map((p) => p.get('id')),
       tap(() => {
-        this.loading.set(true);  // Mettre ici au début du pipe
+        this.loading.set(true);
         this.error.set(null);
       }),
-      switchMap(id => {
-        if (!id){
+      switchMap((id) => {
+        if (!id) {
           this.loading.set(false);
           this.error.set('ID du film manquant');
           return of(null);
-        }  
-        
+        }
+
         this.loading.set(true);
         this.error.set(null);
 
         return this.moviesService.getMovieByRouteId(id).pipe(
           tap(() => this.loading.set(false)),
-          catchError(err => {
+          catchError((err) => {
             console.error('Erreur chargement film', err);
             this.loading.set(false);
             this.error.set('Impossible de charger les informations du film');
@@ -95,27 +92,27 @@ export class MovieDetailsPage {
   readonly director = computed(() => {
     const m = this.movie();
     if (!m) return null;
-    return m.crew.find(c => c.job === 'Director') ?? null;
+    return m.crew.find((c) => c.job === 'Director') ?? null;
   });
-  
+
   readonly crewByDepartment = computed(() => {
     const movie = this.movie();
     if (!movie?.crew) return {};
 
     const deptMap: Record<string, string> = {
-      'Directing': 'Réalisation',
-      'Writing': 'Scénario',
-      'Production': 'Production',
-      'Camera': 'Photographie',
-      'Editing': 'Montage',
-      'Sound': 'Musique & Son',
-      'Art': 'Direction artistique',
-      'Costume & Make-Up': 'Costumes & Maquillage'
+      Directing: 'Réalisation',
+      Writing: 'Scénario',
+      Production: 'Production',
+      Camera: 'Photographie',
+      Editing: 'Montage',
+      Sound: 'Musique & Son',
+      Art: 'Direction artistique',
+      'Costume & Make-Up': 'Costumes & Maquillage',
     };
 
     const grouped: Record<string, Array<{ personId: string; name: string; job: string }>> = {};
 
-    movie.crew.forEach(member => {
+    movie.crew.forEach((member) => {
       const frenchDept = deptMap[member.department!];
       if (!frenchDept) return;
 
@@ -124,12 +121,12 @@ export class MovieDetailsPage {
       }
 
       // Éviter les doublons (même personne avec plusieurs jobs dans le même département)
-      const exists = grouped[frenchDept].some(m => m.personId === member.personId);
+      const exists = grouped[frenchDept].some((m) => m.personId === member.personId);
       if (!exists) {
         grouped[frenchDept].push({
           personId: member.personId,
           name: member.name,
-          job: member.job
+          job: member.job,
         });
       }
     });
@@ -146,13 +143,13 @@ export class MovieDetailsPage {
     { breakpoint: '1200px', numVisible: 5, numScroll: 5 },
     { breakpoint: '992px', numVisible: 4, numScroll: 4 },
     { breakpoint: '768px', numVisible: 3, numScroll: 3 },
-    { breakpoint: '576px', numVisible: 2, numScroll: 2 }
+    { breakpoint: '576px', numVisible: 2, numScroll: 2 },
   ];
 
   constructor() {
     effect(() => {
       const m = this.movie();
-      if (!m?.tmdbId){
+      if (!m?.tmdbId) {
         this.streamingOffers.set(null);
         this.posterFlipped.set(false);
         return;
@@ -182,7 +179,7 @@ export class MovieDetailsPage {
   }
 
   togglePosterFlip(): void {
-    this.posterFlipped.update(v => !v);
+    this.posterFlipped.update((v) => !v);
   }
 
   openStreamingLink(url: string | null, event: MouseEvent): void {
@@ -198,7 +195,7 @@ export class MovieDetailsPage {
   }
 
   goBack(): void {
-    this.location.back()
+    this.location.back();
   }
 
   formatDate(dateString?: string | null): string {
@@ -207,7 +204,7 @@ export class MovieDetailsPage {
     return date.toLocaleDateString('fr-FR', {
       day: 'numeric',
       month: 'long',
-      year: 'numeric'
+      year: 'numeric',
     });
   }
 
@@ -221,8 +218,7 @@ export class MovieDetailsPage {
       if (key) {
         return `https://www.youtube.com/embed/${key}`;
       }
-    } catch {
-    }
+    } catch {}
     return rawUrl;
   }
 
@@ -231,7 +227,7 @@ export class MovieDetailsPage {
     this.streamingError.set(null);
 
     this.moviesService.getStreamingOffers(tmdbId, 'BE').subscribe({
-      next: result => {
+      next: (result) => {
         this.streamingOffers.set(result);
         this.streamingLoading.set(false);
       },
@@ -239,7 +235,7 @@ export class MovieDetailsPage {
         this.streamingError.set('Impossible de charger les offres de streaming.');
         this.streamingLoading.set(false);
         this.streamingOffers.set(null);
-      }
+      },
     });
   }
 }
