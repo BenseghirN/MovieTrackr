@@ -3,7 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\MovieTrackR.Application\MovieTrackR.Application.csproj" />
     <ProjectReference Include="..\MovieTrackR.Infrastructure\MovieTrackR.Infrastructure.csproj" />
-    <ProjectReference Include="..\MovieTrackR.IA\MovieTrackR.IA.csproj" />
+    <ProjectReference Include="..\MovieTrackR.AI\MovieTrackR.AI.csproj" />
   </ItemGroup>
 
   <ItemGroup>

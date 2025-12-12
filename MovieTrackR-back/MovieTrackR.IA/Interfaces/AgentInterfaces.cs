@@ -1,8 +1,0 @@
-namespace MovieTrackR.IA.Interfaces;
-
-public interface IIssAgent : IAgent { }
-public interface IUserAgent : IAgent { }
-public interface IBingAgent : IAgent { }
-public interface IRedactorAgent : IAgent { }
-public interface IOcrAgent : IAgent { }
-public interface IPersonSeekerAgent : IAgent { }

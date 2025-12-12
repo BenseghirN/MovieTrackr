@@ -13,7 +13,7 @@ using MovieTrackR.API.Endpoints.UserLists;
 using MovieTrackR.API.Endpoints.Users;
 using MovieTrackR.Application.Configuration;
 using MovieTrackR.Application.Interfaces;
-using MovieTrackR.IA.Configuration;
+using MovieTrackR.AI.Configuration;
 using MovieTrackR.Infrastructure.Configuration;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
