@@ -12,6 +12,7 @@ import { PersonDetails, MovieCredit, PersonMovieCredits } from '../../models/per
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { TooltipModule } from 'primeng/tooltip';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-person-details-page',
@@ -23,6 +24,7 @@ import { TooltipModule } from 'primeng/tooltip';
 export class PersonDetailsPage {
   private readonly route = inject(ActivatedRoute);
   private readonly location = inject(Location);
+  private readonly title = inject(Title);
   private readonly router = inject(Router);
   private readonly peopleService = inject(PeopleService);
   private readonly notificationService = inject(NotificationService);
@@ -89,7 +91,7 @@ export class PersonDetailsPage {
         this.loadPersonDetails(personId);
       }
     });
-  
+
   }
 
   goBack(): void {
@@ -135,6 +137,7 @@ export class PersonDetailsPage {
     this.peopleService.getPersonByRouteId(personId).subscribe({
       next: (person: PersonDetails) => {
         this.personDetails.set(person);
+        this.title.setTitle(`${person.name} | MovieTrackR`);
         this.loading.set(false);
         
         this.loadMovieCredits(person.id);

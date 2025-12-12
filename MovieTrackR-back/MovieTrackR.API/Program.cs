@@ -13,6 +13,7 @@ using MovieTrackR.API.Endpoints.UserLists;
 using MovieTrackR.API.Endpoints.Users;
 using MovieTrackR.Application.Configuration;
 using MovieTrackR.Application.Interfaces;
+using MovieTrackR.IA.Configuration;
 using MovieTrackR.Infrastructure.Configuration;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -28,7 +29,8 @@ builder.Services
     .AddAppAuthorization() // custom Authorization policies
     .AddEndpointsApiExplorer()
     .AddInfrastructure(builder.Configuration) //custom service from Infrastructure project
-    .AddApplication(builder.Configuration) //custom service from Application project
+    .AddApplication() //custom service from Application project
+    .AddAI(builder.Configuration) //custom service from AI project
     .AddValidatorsFromAssembly(typeof(Program).Assembly) // Register FluentValidation validators
     .AddControllers()
     .AddJsonOptions(options =>

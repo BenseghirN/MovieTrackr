@@ -16,6 +16,7 @@ import { ReorderMoviesPopoverComponent } from '../../components/reorder-movies-p
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-list-details-page',
@@ -27,6 +28,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 export class ListDetailsPage {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly title = inject(Title);
   private readonly listService = inject(UserListService);
   private readonly notificationService = inject(NotificationService);
   private readonly authService = inject(AuthService);
@@ -62,6 +64,10 @@ export class ListDetailsPage {
       }
 
       this.loadList(id);
+    });
+    effect(() => {
+      const list = this.listDetails();
+      this.title.setTitle(`${list?.title} | MovieTrackR`);
     });
   }
 

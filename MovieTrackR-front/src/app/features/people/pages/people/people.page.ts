@@ -13,6 +13,7 @@ import { TmdbImageService } from '../../../../core/services/tmdb-image.service';
 import { SearchPeopleParams, SearchPeopleResponse, SearchPeopleResult } from '../../models/people.model';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { PersonCardComponent } from '../../components/person-card/person-card.component';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-people-page',
@@ -34,6 +35,7 @@ import { PersonCardComponent } from '../../components/person-card/person-card.co
 export class PeoplePage {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly title = inject(Title);
   private readonly peopleService = inject(PeopleService);
   private readonly imageService = inject(TmdbImageService);
 
@@ -73,7 +75,8 @@ export class PeoplePage {
         this.totalResults.set(0);
         return
       }
-
+      
+      this.title.setTitle(`${queryParam} | MovieTrackR`);
       this.fetchPeople(queryParam, page);
     });
   }

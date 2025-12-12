@@ -13,6 +13,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { MovieCardComponent } from '../../components/movie-card/movie-card.component';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-movies-page',
@@ -34,6 +35,7 @@ import { CommonModule } from '@angular/common';
 export class MoviesPage {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly title = inject(Title);
   private readonly moviesService = inject(MovieService);
   readonly imageService = inject(TmdbImageService);
 
@@ -81,6 +83,7 @@ export class MoviesPage {
         return;
       }
 
+      this.title.setTitle(`${queryParam} | MovieTrackR`);
       this.fetchMovies(queryParam, page);
     });
   }

@@ -15,8 +15,6 @@ import { AuthService } from './core/services/auth.service';
 export class App implements OnInit {
   private readonly authService = inject(AuthService);
 
-  readonly title = signal('MovieTrackR');
-
   ngOnInit(): void {
     this.authService.init().subscribe();
   }
