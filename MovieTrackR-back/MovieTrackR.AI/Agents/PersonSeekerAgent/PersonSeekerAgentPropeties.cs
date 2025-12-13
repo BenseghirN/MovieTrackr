@@ -45,11 +45,11 @@ public class PersonSeekerProperties
                                         STRICT OUTPUT FORMAT:
                                            You must respond ONLY with a valid JSON object, with no text before or after:
                                             {
-                                            "message": "text displayed to the user (IN FRENCH)",
-                                            "additional_context": { ... } or null
+                                                "message": "text displayed to the user (IN FRENCH)",
+                                                "additional_context": "some context" or null
                                             }
                                             - message: what the user should read (in French).
-                                            - additional_context: a JSON object containing identifiers or useful context for the next step.
+                                            - additional_context: a STRING containing identifiers or useful context for the next step.
                                             Use null if there is nothing to transmit.
 
                                         IDENTIFICATION STRATEGY:
@@ -69,7 +69,7 @@ public class PersonSeekerProperties
                                             Example 1 — single match:
                                                 {
                                                 "message": "J’ai trouvé Keanu Reeves. Est-ce bien cette personne ?",
-                                                "additional_context": { "tmdbPersonId": 6384 }
+                                                "additional_context": "tmdbPersonId: 6384"
                                                 }
 
                                             Example 2 — multiple matches:

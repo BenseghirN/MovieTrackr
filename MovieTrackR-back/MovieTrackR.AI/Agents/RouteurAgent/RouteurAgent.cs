@@ -90,11 +90,11 @@ public sealed class Routeur(
             }
         }
 
-        if (responses.Count > 0)
-        {
-            agentContext.Add("combinedResponses", string.Join("\n", responses));
-            await redactor.ProcessRequestAsync(chatHistory, agentContext, cancellationToken: cancellationToken);
-            chatHistory.AddAssistantMessage(agentContext.Result);
-        }
+        // if (responses.Count > 0)
+        // {
+        //     agentContext.Add("combinedResponses", string.Join("\n", responses));
+        //     await redactor.ProcessRequestAsync(chatHistory, agentContext, cancellationToken: cancellationToken);
+        //     chatHistory.AddAssistantMessage(agentContext.Result);
+        // }
     }
 }
