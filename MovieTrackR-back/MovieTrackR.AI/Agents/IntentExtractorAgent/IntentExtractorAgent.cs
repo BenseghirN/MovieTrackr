@@ -7,15 +7,11 @@ using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using MovieTrackR.Domain.Entities.AI;
 using MovieTrackR.Domain.Enums.AI;
-using MovieTrackR.AI.Builder;
 
 namespace MovieTrackR.AI.Agents.IntentExtractorAgent;
 
-public sealed class IntentExtractor(SemanticKernelBuilder builder)
+public sealed class IntentExtractor(Kernel kernel)
 {
-    private readonly Kernel _kernel =
-        builder.BuildKernel(IntentExtractorAgentProperties.Service);
-
     private ChatCompletionAgent BuildAgent()
     {
         return new ChatCompletionAgent
@@ -23,11 +19,11 @@ public sealed class IntentExtractor(SemanticKernelBuilder builder)
             Name = IntentExtractorAgentProperties.Name,
             Description = IntentExtractorAgentProperties.Description,
             Instructions = IntentExtractorAgentProperties.Instructions,
-            Kernel = _kernel,
+            Kernel = kernel,
             Arguments = new KernelArguments(
                 new OpenAIPromptExecutionSettings()
                 {
-                    ServiceId = IntentExtractorAgentProperties.Service,
+                    ServiceId = "MovieTrackR",
                 }
             )
         };

@@ -9,35 +9,12 @@ using Microsoft.SemanticKernel.Connectors.OpenAI;
 using MovieTrackR.Domain.Entities.AI;
 using MovieTrackR.Domain.Enums.AI;
 using MovieTrackR.AI.Agents.ActorSeekerAgent.Plugins;
-using MovieTrackR.AI.Builder;
 using MovieTrackR.AI.Interfaces;
 
 namespace MovieTrackR.AI.Agents.ActorSeekerAgent;
 
-public sealed class PersonSeeker(SemanticKernelBuilder builder, IMediator mediator) : IPersonSeekerAgent
+public sealed class PersonSeeker(Kernel kernel, IMediator mediator) : IPersonSeekerAgent
 {
-    private readonly Kernel _kernel = CreateKernel(builder, mediator);
-
-    private ChatCompletionAgent BuildAgent(IntentType intent = IntentType.PersonSeekerAgent)
-    {
-        return new ChatCompletionAgent
-        {
-            Name = PersonSeekerProperties.Name,
-            Instructions = PersonSeekerProperties.GetInstructions(intent),
-            Kernel = _kernel,
-            Description = PersonSeekerProperties.Description,
-            Arguments = new KernelArguments(
-                    new OpenAIPromptExecutionSettings()
-                    {
-                        ServiceId = PersonSeekerProperties.Service,
-                        FunctionChoiceBehavior = FunctionChoiceBehavior.Required(),
-                        MaxTokens = 200,
-                        Temperature = 0.2,
-                    }
-                )
-        };
-    }
-
     public async Task ProcessRequestAsync(ChatHistory chatHistory, AgentContext agentContext, IntentResponse? intentResponse = null, CancellationToken cancellationToken = default)
     {
         ChatCompletionAgent ActorSeekerAgent = BuildAgent();
@@ -92,11 +69,25 @@ public sealed class PersonSeeker(SemanticKernelBuilder builder, IMediator mediat
         }
     }
 
-    private static Kernel CreateKernel(SemanticKernelBuilder builder, IMediator mediator)
+    private ChatCompletionAgent BuildAgent(IntentType intent = IntentType.PersonSeekerAgent)
     {
-        Kernel kernel = builder.BuildKernel(serviceId: PersonSeekerProperties.Service);
         kernel.Plugins.AddFromObject(new ActorSeekerPlugin(mediator));
-        return kernel;
+        return new ChatCompletionAgent
+        {
+            Name = PersonSeekerProperties.Name,
+            Instructions = PersonSeekerProperties.GetInstructions(intent),
+            Kernel = kernel,
+            Description = PersonSeekerProperties.Description,
+            Arguments = new KernelArguments(
+                    new OpenAIPromptExecutionSettings()
+                    {
+                        ServiceId = "MovieTrackR",
+                        FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
+                        MaxTokens = 200,
+                        Temperature = 0.2,
+                    }
+                )
+        };
     }
 
     private class AgentResponseData

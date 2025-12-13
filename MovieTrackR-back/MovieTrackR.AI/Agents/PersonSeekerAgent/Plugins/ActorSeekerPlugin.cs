@@ -21,7 +21,10 @@ public sealed class ActorSeekerPlugin(IMediator mediator)
     [Description("Search people based on a query")]
     [return: Description("A IEnumerable of people")]
     public async Task<IReadOnlyList<PersonDetailsDto>> SearchPeopleAsync(CancellationToken cancellationToken = default)
-    => await mediator.Send(new GetAllPeopleQuery(), cancellationToken);
+    {
+        Console.WriteLine("🔥 ActorSeekerPlugin.SearchPeopleAsync called");
+        return await mediator.Send(new GetAllPeopleQuery(), cancellationToken);
+    }
 
     [KernelFunction("get_person_by_id")]
     [Description("Get a details of a person based on is id or tmdbId")]
@@ -30,6 +33,7 @@ public sealed class ActorSeekerPlugin(IMediator mediator)
     {
         if (personId is null && tmdbID is null)
             throw new ArgumentException("Provide either personId or tmdbId.");
+        Console.WriteLine("🔥 ActorSeekerPlugin.GetPersonByIdAsync called");
 
         Guid localId;
 

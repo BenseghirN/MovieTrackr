@@ -19,6 +19,11 @@ public static class DependencyInjection
 
         // Enregistrement de la configuration du Kernel
         services.AddScoped<SemanticKernelBuilder>();
+        services.AddScoped(sp =>
+        {
+            SemanticKernelBuilder builder = sp.GetRequiredService<SemanticKernelBuilder>();
+            return builder.BuildKernel(serviceId: "MovieTrackR");
+        });
 
         services.AddScoped<IRouteurAgent, Routeur>();
         services.AddScoped<IntentExtractor>();

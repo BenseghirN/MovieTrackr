@@ -2,8 +2,8 @@ using Microsoft.SemanticKernel.ChatCompletion;
 using MovieTrackR.Application.AI.Interfaces;
 using MovieTrackR.Domain.Entities.AI;
 using MovieTrackR.Domain.Enums.AI;
-using MovieTrackR.AI.Agents.IntentExtractorAgent;
 using MovieTrackR.AI.Interfaces;
+using MovieTrackR.AI.Agents.IntentExtractorAgent;
 
 namespace MovieTrackR.AI.Agents.RouteurAgent;
 
@@ -32,17 +32,17 @@ public sealed class Routeur(
         // }
         // else
         // {
-        // intentResponse = await intentExtractor.ExtractIntent(chatHistory);
-        intentResponse = new IntentResponse(
-            intents: new List<IntentProcessingStep>
-            {
-                    new IntentProcessingStep(
-                        IntentType.PersonSeekerAgent,
-                        additionalContext: "name=Keanu Reeves"
-                    )
-            },
-            message: "Search for person Keanu Reeves"
-        );
+        intentResponse = await intentExtractor.ExtractIntent(chatHistory);
+        // intentResponse = new IntentResponse(
+        //     intents: new List<IntentProcessingStep>
+        //     {
+        //             new IntentProcessingStep(
+        //                 IntentType.PersonSeekerAgent,
+        //                 additionalContext: "name=Keanu Reeves"
+        //             )
+        //     },
+        //     message: "Search for person Keanu Reeves"
+        // );
         // }
         await RouteToAgent(intentResponse, chatHistory, agentContext, cancellationToken);
     }
