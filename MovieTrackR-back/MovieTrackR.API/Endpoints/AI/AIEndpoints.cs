@@ -1,12 +1,12 @@
 using Asp.Versioning;
 using Asp.Versioning.Builder;
-using Microsoft.Extensions.AI;
+using MovieTrackR.Application.AI.Contracts;
 
 namespace MovieTrackR.API.Endpoints.AI;
 
 public static class AIEndpoints
 {
-    public static IEndpointRouteBuilder MapGenresEndpoints(this IEndpointRouteBuilder app)
+    public static IEndpointRouteBuilder MapAIEndpoints(this IEndpointRouteBuilder app)
     {
         ApiVersionSet vset = app.NewApiVersionSet()
             .HasApiVersion(new ApiVersion(1, 0))

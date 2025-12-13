@@ -6,6 +6,6 @@ namespace MovieTrackR.AI.Interfaces;
 
 public interface IAgent
 {
-    Task ProcessRequestAsync(ChatHistory chatHistory, AgentContext agentContext, IntentResponse? intentResponse = null);
+    Task ProcessRequestAsync(ChatHistory chatHistory, AgentContext agentContext, IntentResponse? intentResponse = null, CancellationToken cancellationToken = default);
 }
 

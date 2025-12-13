@@ -15,6 +15,7 @@ using MovieTrackR.Application.Configuration;
 using MovieTrackR.Application.Interfaces;
 using MovieTrackR.AI.Configuration;
 using MovieTrackR.Infrastructure.Configuration;
+using MovieTrackR.API.Endpoints.AI;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -79,6 +80,7 @@ app
 .MapGenresEndpoints()
 .MapPeopleEndpoints()
 .MapUserProfilesEndpoints()
+.MapAIEndpoints()
 .MapHealthChecks("/health");
 
 // Sert index.html dans /browser comme page par défaut

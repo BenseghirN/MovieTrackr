@@ -28,8 +28,6 @@ public sealed class IntentExtractor(SemanticKernelBuilder builder)
                 new OpenAIPromptExecutionSettings()
                 {
                     ServiceId = IntentExtractorAgentProperties.Service,
-                    MaxTokens = 100,
-                    Temperature = 0.7
                 }
             )
         };

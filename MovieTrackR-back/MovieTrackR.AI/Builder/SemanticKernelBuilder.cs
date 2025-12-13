@@ -13,8 +13,8 @@ public sealed class SemanticKernelBuilder(IOptions<AiOptions> options)
 
         builder.AddAzureOpenAIChatCompletion(
             deploymentName: _options.ModelName,
-            endpoint: _options.EndpointUrl,
             apiKey: _options.ApiKey,
+            endpoint: _options.EndpointUrl,
             serviceId: serviceId
         );
 

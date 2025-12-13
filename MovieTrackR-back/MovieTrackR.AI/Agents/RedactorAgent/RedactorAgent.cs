@@ -28,13 +28,12 @@ public sealed class Redactor(SemanticKernelBuilder builder) : IRedactorAgent
                 {
                     ServiceId = "RedactorAgent",
                     FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
-                    Temperature = 0.3
                 }
             )
         };
     }
 
-    public async Task ProcessRequestAsync(ChatHistory chatHistory, AgentContext agentContext, IntentResponse? intentResponse = null)
+    public async Task ProcessRequestAsync(ChatHistory chatHistory, AgentContext agentContext, IntentResponse? intentResponse = null, CancellationToken cancellationToken = default)
     {
         ChatCompletionAgent RedactorAgent;
         if (agentContext.ContainsKey("combinedResponses") && agentContext["combinedResponses"] is string combinedResponses)

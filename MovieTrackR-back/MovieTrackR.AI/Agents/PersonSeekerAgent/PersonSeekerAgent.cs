@@ -14,7 +14,7 @@ using MovieTrackR.AI.Interfaces;
 
 namespace MovieTrackR.AI.Agents.ActorSeekerAgent;
 
-public sealed class PersonSeeker(SemanticKernelBuilder builder, IMediator mediator, CancellationToken cancellationToken = default) : IPersonSeekerAgent
+public sealed class PersonSeeker(SemanticKernelBuilder builder, IMediator mediator) : IPersonSeekerAgent
 {
     private readonly Kernel _kernel = CreateKernel(builder, mediator);
 
@@ -30,24 +30,24 @@ public sealed class PersonSeeker(SemanticKernelBuilder builder, IMediator mediat
                     new OpenAIPromptExecutionSettings()
                     {
                         ServiceId = PersonSeekerProperties.Service,
-                        FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
+                        FunctionChoiceBehavior = FunctionChoiceBehavior.Required(),
+                        MaxTokens = 200,
+                        Temperature = 0.2,
                     }
                 )
         };
     }
 
-    public async Task ProcessRequestAsync(ChatHistory chatHistory, AgentContext agentContext, IntentResponse? intentResponse = null)
+    public async Task ProcessRequestAsync(ChatHistory chatHistory, AgentContext agentContext, IntentResponse? intentResponse = null, CancellationToken cancellationToken = default)
     {
         ChatCompletionAgent ActorSeekerAgent = BuildAgent();
         ChatHistory agentChatHistory = new ChatHistory();
 
         // 1) Reprendre l’historique (sans System si tu veux)
-        foreach (ChatMessageContent message in chatHistory)
+        foreach (var message in chatHistory.Where(m => m.Role != AuthorRole.System).TakeLast(6))
         {
-            if (message.Role == AuthorRole.System) continue;
-            if (string.IsNullOrWhiteSpace(message.Content)) continue;
-
-            agentChatHistory.AddMessage(message.Role, message.Content);
+            if (!string.IsNullOrWhiteSpace(message.Content))
+                agentChatHistory.AddMessage(message.Role, message.Content!);
         }
 
         // 2) Injecter un contexte "router" (System)

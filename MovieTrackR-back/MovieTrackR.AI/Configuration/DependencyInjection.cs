@@ -7,6 +7,7 @@ using MovieTrackR.AI.Agents.RouteurAgent;
 using MovieTrackR.AI.Builder;
 using MovieTrackR.AI.Interfaces;
 using MovieTrackR.AI.Utils;
+using MovieTrackR.AI.Agents.ActorSeekerAgent;
 
 namespace MovieTrackR.AI.Configuration;
 
@@ -24,6 +25,7 @@ public static class DependencyInjection
 
         //Enregistrement des différents agents IA & Plugins
         services.AddScoped<IRedactorAgent, Redactor>();
+        services.AddScoped<IPersonSeekerAgent, PersonSeeker>();
 
         // services.AddSingleton<UserPlugin>();
         // services.AddSingleton<IUserAgent, UserAgent>();
