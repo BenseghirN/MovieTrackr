@@ -65,7 +65,9 @@ app
 .UseGlobalExceptionHandler()
 .UseCorsConfiguration(app.Environment)
 .UseAuthentication()
-.UseAuthorization();
+.UseAuthorization()
+.UseUserSessionConfiguration();
+
 app.UseRateLimitingConfiguration();
 
 // Map endpoints
