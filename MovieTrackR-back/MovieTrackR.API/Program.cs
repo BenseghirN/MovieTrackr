@@ -27,6 +27,7 @@ builder.Services
     .AddAuthorization()
     .AddRateLimitingConfiguration()
     .AddAzureAnthenticationConfiguration(builder.Configuration)
+    .AddUserSessionConfiguration(builder.Configuration, builder.Environment)
     .AddAppAuthorization() // custom Authorization policies
     .AddEndpointsApiExplorer()
     .AddInfrastructure(builder.Configuration) //custom service from Infrastructure project

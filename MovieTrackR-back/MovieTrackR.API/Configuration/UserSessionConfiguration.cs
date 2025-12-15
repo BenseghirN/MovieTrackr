@@ -4,9 +4,9 @@ namespace MovieTrackR.API.Configuration;
 
 public static class UserSessionConfiguration
 {
-    public static void AddUserSessionConfiguration(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
+    public static IServiceCollection AddUserSessionConfiguration(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
     {
-        var sessionOptions = configuration.GetSection("SessionOptions").Get<CustomSessionOptions>();
+        CustomSessionOptions sessionOptions = configuration.GetSection("SessionOptions").Get<CustomSessionOptions>() ?? new CustomSessionOptions();
         services.AddDistributedMemoryCache(); // Pour stocker les sessions en mémoire (peut être remplacé par Redis pour plus d'évolutivité)
         services.AddSession(options =>
         {
@@ -20,6 +20,8 @@ public static class UserSessionConfiguration
                     ? SameSiteMode.Lax // Autorise des requêtes cross-origin simples en dev
                     : SameSiteMode.None;
         });
+
+        return services;
     }
     public static void UseUserSessionConfiguration(this IApplicationBuilder app)
     {

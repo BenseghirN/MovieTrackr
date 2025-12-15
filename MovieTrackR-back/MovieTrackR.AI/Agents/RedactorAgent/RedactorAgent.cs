@@ -7,13 +7,14 @@ using Microsoft.SemanticKernel.Connectors.OpenAI;
 using MovieTrackR.Domain.Entities.AI;
 using MovieTrackR.AI.Builder;
 using MovieTrackR.AI.Interfaces;
+using MovieTrackR.AI.Utils;
 
 namespace MovieTrackR.AI.Agents.RedactorAgent;
 
 public sealed class Redactor(SemanticKernelBuilder builder) : IRedactorAgent
 {
     private readonly Kernel _kernel =
-        builder.BuildKernel(serviceId: "RedactorAgent");
+        builder.BuildKernel();
 
     private ChatCompletionAgent BuildAgent(string? input = null, string? format = null)
     {
@@ -26,14 +27,14 @@ public sealed class Redactor(SemanticKernelBuilder builder) : IRedactorAgent
             Arguments = new KernelArguments(
                 new OpenAIPromptExecutionSettings()
                 {
-                    ServiceId = "RedactorAgent",
+                    ServiceId = AiOptions.KernelService,
                     FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
                 }
             )
         };
     }
 
-    public async Task ProcessRequestAsync(ChatHistory chatHistory, AgentContext agentContext, IntentResponse? intentResponse = null, CancellationToken cancellationToken = default)
+    public async Task ProcessRequestAsync(ChatHistory chatHistory, AgentContext agentContext, IntentProcessingStep? intentStep = null, CancellationToken cancellationToken = default)
     {
         ChatCompletionAgent RedactorAgent;
         if (agentContext.ContainsKey("combinedResponses") && agentContext["combinedResponses"] is string combinedResponses)

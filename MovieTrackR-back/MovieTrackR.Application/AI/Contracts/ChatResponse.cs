@@ -6,34 +6,24 @@ namespace MovieTrackR.Application.AI.Contracts;
 
 public class ChatResponse
 {
-    public string Message { get; set; }
+    public string Message { get; set; } = string.Empty;
     public AuthorRole AuthorRole { get; set; }
-    public object? Attachments { get; set; }
-    public List<string>? WebSources { get; set; }
-    public object? AdditionalContext { get; set; }
+    public string? AdditionalContext { get; set; }
 
-    public ChatResponse(string message, AuthorRole authorRole, object? attachments = null, object? webSources = null)
-    {
-        Message = message;
-        AuthorRole = authorRole;
-        Attachments = attachments;
-        WebSources = webSources as List<string>;
-    }
+    // public object? Attachments { get; set; }
 
     public static ChatResponse BuildChatResponse(ChatHistory chatHistory, AgentContext agentContext)
     {
         ChatMessageContent LastMessage = chatHistory.Last();
-        object? attachments = agentContext.TryGetValue("attachments", out var attach) ? attach : null;
-        object? additionalContext = agentContext.TryGetValue("additionalContext", out var addCtx) ? addCtx : null;
-        List<string> webSources = [.. agentContext.WebSources];
-        return new ChatResponse(
-            LastMessage.Content ?? throw new ArgumentNullException(nameof(LastMessage.Content), "Content of the last message cannot be null."),
-            LastMessage.Role,
-            attachments,
-            webSources
-        )
+        if (LastMessage.Content is null)
+            throw new ArgumentNullException(nameof(LastMessage.Content), "Content of the last message cannot be null.");
+        // object? attachments = agentContext.TryGetValue("attachments", out var attach) ? attach : null;
+
+        return new ChatResponse
         {
-            AdditionalContext = additionalContext
+            Message = LastMessage.Content,
+            AuthorRole = LastMessage.Role,
+            AdditionalContext = agentContext.AdditionalContext
         };
     }
 }

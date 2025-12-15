@@ -4,7 +4,6 @@ public class IntentExtractorAgentProperties
 {
     public const string Name = "IntentExtractor";
     public const string Description = "Extracts the main intention from the user query.";
-    public const string Service = "IntentExtractor";
     public const string Instructions = """
                                         You are the IntentExtractor of MovieTrackR.
 

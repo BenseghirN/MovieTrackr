@@ -10,62 +10,163 @@ using MovieTrackR.Domain.Entities.AI;
 using MovieTrackR.Domain.Enums.AI;
 using MovieTrackR.AI.Agents.ActorSeekerAgent.Plugins;
 using MovieTrackR.AI.Interfaces;
+using MovieTrackR.AI.Utils;
 
 namespace MovieTrackR.AI.Agents.ActorSeekerAgent;
 
 public sealed class PersonSeeker(Kernel kernel, IMediator mediator) : IPersonSeekerAgent
 {
-    public async Task ProcessRequestAsync(ChatHistory chatHistory, AgentContext agentContext, IntentResponse? intentResponse = null, CancellationToken cancellationToken = default)
+    public async Task ProcessRequestAsync(ChatHistory chatHistory, AgentContext agentContext, IntentProcessingStep? intentStep = null, CancellationToken cancellationToken = default)
     {
-        ChatCompletionAgent ActorSeekerAgent = BuildAgent();
+        ChatCompletionAgent ActorSeekerAgent = BuildAgent(intentStep?.IntentType ?? IntentType.PersonSeekerAgent);
         ChatHistory agentChatHistory = new ChatHistory();
 
-        // 1) Reprendre l’historique (sans System si tu veux)
-        foreach (var message in chatHistory.Where(m => m.Role != AuthorRole.System).TakeLast(6))
+        foreach (ChatMessageContent message in chatHistory.Where(m => m.Role != AuthorRole.System).TakeLast(6))
         {
             if (!string.IsNullOrWhiteSpace(message.Content))
                 agentChatHistory.AddMessage(message.Role, message.Content!);
         }
 
-        // 2) Injecter un contexte "router" (System)
-        if (intentResponse is not null && !string.IsNullOrWhiteSpace(intentResponse.Message))
+        if (!string.IsNullOrWhiteSpace(intentStep?.AdditionalContext))
         {
-            agentChatHistory.AddMessage(
-                AuthorRole.System,
-                $"Context for this step (from router): {intentResponse.Message}"
+            agentChatHistory.AddSystemMessage(
+                $"Current step instruction (follow strictly): {intentStep.AdditionalContext}"
             );
         }
 
-        // 3) Accumuler la réponse (évite le JSON cassé par le streaming)
+        if (!string.IsNullOrWhiteSpace(agentContext.AdditionalContext))
+        {
+            agentChatHistory.AddSystemMessage(
+                $"Selected context (DO NOT GUESS): {agentContext.AdditionalContext}"
+            );
+        }
+
         StringBuilder sb = new StringBuilder();
 
         await foreach (ChatMessageContent response in ActorSeekerAgent.InvokeAsync(agentChatHistory, cancellationToken: cancellationToken))
         {
-            if (string.IsNullOrWhiteSpace(response.Content)) continue;
-            sb.Append(response.Content);
+            if (!string.IsNullOrWhiteSpace(response.Content))
+                sb.Append(response.Content);
         }
 
         string raw = sb.ToString().Trim();
-        // 4) Parser JSON si possible
+
+        if (!LooksLikeJson(raw))
+        {
+            agentContext.Result = raw;
+            return;
+        }
+
         try
         {
+            // Parse le JSON externe
             AgentResponseData? jsonData = JsonSerializer.Deserialize<AgentResponseData>(
                 raw,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
             );
 
-            if (!string.IsNullOrWhiteSpace(jsonData?.Message))
-                agentContext.Result = jsonData.Message;
-            else
+            if (jsonData is null)
+            {
                 agentContext.Result = raw;
+                return;
+            }
 
-            if (!string.IsNullOrWhiteSpace(jsonData?.AdditionalContext))
+            // ✅ Gestion du double-encodage dans message
+            if (LooksLikeJsonText(jsonData.Message))
+            {
+                var decodedMessage = TryDecodeJsonString(jsonData.Message);
+
+                if (decodedMessage != null && LooksLikeJson(decodedMessage))
+                {
+                    try
+                    {
+                        // Parse le JSON interne
+                        AgentResponseData? innerData = JsonSerializer.Deserialize<AgentResponseData>(
+                            decodedMessage,
+                            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                        );
+
+                        if (innerData != null)
+                        {
+                            // Remplace message ET additional_context
+                            if (!string.IsNullOrWhiteSpace(innerData.Message))
+                                jsonData.Message = innerData.Message;
+
+                            if (!string.IsNullOrWhiteSpace(innerData.AdditionalContext))
+                                jsonData.AdditionalContext = innerData.AdditionalContext;
+                        }
+                    }
+                    catch (JsonException ex)
+                    {
+                        Console.WriteLine($"⚠️ Failed to parse inner JSON: {ex.Message}");
+                        // Garde le message décodé brut
+                        jsonData.Message = decodedMessage;
+                    }
+                }
+            }
+
+            // ✅ Gestion du double-encodage dans additional_context
+            if (LooksLikeJsonText(jsonData.AdditionalContext))
+            {
+                var decoded = TryDecodeJsonString(jsonData.AdditionalContext);
+                if (!string.IsNullOrWhiteSpace(decoded))
+                    jsonData.AdditionalContext = decoded;
+            }
+
+            agentContext.Result = !string.IsNullOrWhiteSpace(jsonData.Message)
+                ? jsonData.Message
+                : raw;
+
+            if (!string.IsNullOrWhiteSpace(jsonData.AdditionalContext))
                 agentContext.AdditionalContext = jsonData.AdditionalContext;
+        }
+        catch (JsonException ex)
+        {
+            Console.WriteLine($"❌ Invalid JSON from agent: {ex.Message}\nRAW: {raw}");
+            agentContext.Result = raw;
+        }
+    }
+
+    private static bool LooksLikeJson(string? s)
+    {
+        if (string.IsNullOrWhiteSpace(s)) return false;
+        s = s.Trim();
+        return (s.StartsWith("{") && s.EndsWith("}"))
+            || (s.StartsWith("[") && s.EndsWith("]"));
+    }
+
+    private static bool LooksLikeJsonText(string? s)
+    {
+        if (string.IsNullOrWhiteSpace(s)) return false;
+        s = s.Trim();
+
+        // Détecte les strings JSON encodées ou les objets JSON
+        return (s.StartsWith("\"{") && s.EndsWith("}\""))
+            || (s.StartsWith("{") && s.EndsWith("}"))
+            || (s.StartsWith("\"[") && s.EndsWith("]\""))
+            || (s.StartsWith("[") && s.EndsWith("]"));
+    }
+    private static string? TryDecodeJsonString(string? s)
+    {
+        if (string.IsNullOrWhiteSpace(s)) return null;
+
+        s = s.Trim();
+
+        // Si c'est déjà un objet JSON brut, on le retourne tel quel
+        if ((s.StartsWith("{") && s.EndsWith("}"))
+         || (s.StartsWith("[") && s.EndsWith("]")))
+        {
+            return s;
+        }
+
+        // Sinon on essaie de désérialiser comme une string JSON
+        try
+        {
+            return JsonSerializer.Deserialize<string>(s);
         }
         catch
         {
-            // fallback si l’agent n’a pas renvoyé du JSON
-            agentContext.Result = raw;
+            return null;
         }
     }
 
@@ -81,10 +182,11 @@ public sealed class PersonSeeker(Kernel kernel, IMediator mediator) : IPersonSee
             Arguments = new KernelArguments(
                     new OpenAIPromptExecutionSettings()
                     {
-                        ServiceId = "MovieTrackR",
+                        ServiceId = AiOptions.KernelService,
                         FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
-                        MaxTokens = 200,
+                        MaxTokens = 800,
                         Temperature = 0.2,
+                        ResponseFormat = "json_object"
                     }
                 )
         };

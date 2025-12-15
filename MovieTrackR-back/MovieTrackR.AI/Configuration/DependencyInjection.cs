@@ -8,6 +8,7 @@ using MovieTrackR.AI.Builder;
 using MovieTrackR.AI.Interfaces;
 using MovieTrackR.AI.Utils;
 using MovieTrackR.AI.Agents.ActorSeekerAgent;
+using Microsoft.Extensions.Options;
 
 namespace MovieTrackR.AI.Configuration;
 
@@ -22,7 +23,8 @@ public static class DependencyInjection
         services.AddScoped(sp =>
         {
             SemanticKernelBuilder builder = sp.GetRequiredService<SemanticKernelBuilder>();
-            return builder.BuildKernel(serviceId: "MovieTrackR");
+            AiOptions options = sp.GetRequiredService<IOptions<AiOptions>>().Value;
+            return builder.BuildKernel();
         });
 
         services.AddScoped<IRouteurAgent, Routeur>();
@@ -31,15 +33,6 @@ public static class DependencyInjection
         //Enregistrement des différents agents IA & Plugins
         services.AddScoped<IRedactorAgent, Redactor>();
         services.AddScoped<IPersonSeekerAgent, PersonSeeker>();
-
-        // services.AddSingleton<UserPlugin>();
-        // services.AddSingleton<IUserAgent, UserAgent>();
-
-        // services.AddSingleton<IIssAgent, IssAgent>();
-        // services.AddSingleton<IBingAgent, BingAgent>();
-
-        // services.AddSingleton<OcrPlugin>();
-        // services.AddSingleton<IOcrAgent, OcrAgent>();
 
         return services;
     }

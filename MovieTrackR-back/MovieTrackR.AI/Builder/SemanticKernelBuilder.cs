@@ -7,7 +7,7 @@ namespace MovieTrackR.AI.Builder;
 public sealed class SemanticKernelBuilder(IOptions<AiOptions> options)
 {
     private readonly AiOptions _options = options.Value;
-    public Kernel BuildKernel(string? serviceId = null)
+    public Kernel BuildKernel()
     {
         IKernelBuilder builder = Kernel.CreateBuilder();
 
@@ -15,7 +15,7 @@ public sealed class SemanticKernelBuilder(IOptions<AiOptions> options)
             deploymentName: _options.ModelName,
             apiKey: _options.ApiKey,
             endpoint: _options.EndpointUrl,
-            serviceId: serviceId
+            serviceId: AiOptions.KernelService
         );
 
         return builder.Build();

@@ -5,5 +5,5 @@ namespace MovieTrackR.Application.AI.Interfaces;
 
 public interface IRouteurAgent
 {
-    Task ProcessRequestAsync(ChatHistory chatHistory, AgentContext agentContext, CancellationToken cancellationToken = default);
+    Task ProcessRequestAsync(ChatHistory chatHistory, AgentContext agentContext, CancellationToken cancellationToken);
 }

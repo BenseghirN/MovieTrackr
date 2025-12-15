@@ -23,6 +23,11 @@ public static class AIEndpoints
             .WithSummary("Chat with MovieTrackR AI")
             .Produces<ChatResponse>(StatusCodes.Status200OK);
 
+        group.MapDelete("/chat/resetSession", AIHandlers.ResetChatHistory)
+            .WithName("Reset_Chat_Session")
+            .WithSummary("Reset the user session for chat history")
+            .Produces(StatusCodes.Status200OK);
+
         return app;
     }
 }

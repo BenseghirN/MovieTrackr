@@ -4,13 +4,16 @@ namespace MovieTrackR.Domain.Entities.AI;
 
 public class IntentResponse
 {
-    public List<IntentProcessingStep> Intents { get; } = new();
-    public string Message { get; }
+    public List<IntentProcessingStep> Intents { get; init; } = new();
+    public string Message { get; set; } = string.Empty;
 
-    public IntentResponse(List<IntentProcessingStep> intents, string message)
+    public static IntentResponse BuildIntent(List<IntentProcessingStep> intents, string message)
     {
-        Intents = intents ?? new List<IntentProcessingStep>();
-        Message = message;
+        return new IntentResponse
+        {
+            Intents = intents,
+            Message = message
+        };
     }
 
     public string GetMessage() => Message;
@@ -19,12 +22,15 @@ public class IntentResponse
 
 public class IntentProcessingStep
 {
-    public IntentType IntentType { get; }
+    public IntentType IntentType { get; set; }
     public string? AdditionalContext { get; set; }  // Add some context for the next agant 
 
-    public IntentProcessingStep(IntentType intentType, string? additionalContext = null)
+    public static IntentProcessingStep BuildProcessingSteps(IntentType intentType, string? context)
     {
-        IntentType = intentType;
-        AdditionalContext = additionalContext;
+        return new IntentProcessingStep
+        {
+            IntentType = intentType,
+            AdditionalContext = context
+        };
     }
 }

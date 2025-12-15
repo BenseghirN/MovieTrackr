@@ -1,10 +1,12 @@
 // #pragma warning disable SKEXP0001 , SKEXP0110
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
+using MovieTrackR.AI.Utils;
 using MovieTrackR.Domain.Entities.AI;
 using MovieTrackR.Domain.Enums.AI;
 
@@ -23,7 +25,7 @@ public sealed class IntentExtractor(Kernel kernel)
             Arguments = new KernelArguments(
                 new OpenAIPromptExecutionSettings()
                 {
-                    ServiceId = "MovieTrackR",
+                    ServiceId = AiOptions.KernelService
                 }
             )
         };
@@ -32,88 +34,54 @@ public sealed class IntentExtractor(Kernel kernel)
     /// <summary>
     /// Analyse la requête utilisateur et identifie l’intention principale.
     /// </summary>
-    public async Task<IntentResponse> ExtractIntent(ChatHistory chatHistory)
+    public async Task<IntentResponse> ExtractIntent(ChatHistory chatHistory, AgentContext context, CancellationToken cancellationToken)
     {
-        ChatHistory agentChatHistory = FewShotExamples();
-        agentChatHistory.Add(chatHistory.Last());
+        ChatHistory agentChatHistory = new ChatHistory();
+
+        if (!string.IsNullOrWhiteSpace(context?.AdditionalContext))
+            agentChatHistory.AddSystemMessage($"Current selected context (do not guess, use as truth): {context.AdditionalContext}");
+
+        foreach (ChatMessageContent message in chatHistory.Where(m => m.Role != AuthorRole.System).TakeLast(6))
+        {
+            if (!string.IsNullOrWhiteSpace(message.Content))
+                agentChatHistory.AddMessage(message.Role, message.Content);
+        }
+
         ChatCompletionAgent intentExtractorAgent = BuildAgent();
+        StringBuilder sb = new StringBuilder();
+        await foreach (ChatMessageContent response in intentExtractorAgent.InvokeAsync(agentChatHistory, cancellationToken: cancellationToken))
+        {
+            if (!string.IsNullOrWhiteSpace(response.Content))
+                sb.Append(response.Content);
+        }
+
+        string raw = sb.ToString().Trim();
+
         try
         {
-            await foreach (ChatMessageContent response in intentExtractorAgent.InvokeAsync(agentChatHistory))
+            IntentResponseData? jsonData = JsonSerializer.Deserialize<IntentResponseData>(
+                raw,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            );
+
+            if (jsonData?.Intents?.Any() == true)
             {
-                if (!string.IsNullOrWhiteSpace(response.Content))
-                {
-                    try
-                    {
-                        IntentResponseData? jsonData = JsonSerializer.Deserialize<IntentResponseData>(
-                            response.Content,
-                            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
-                        );
+                List<IntentProcessingStep> intentSteps = jsonData.Intents.Select(intent =>
+                    IntentProcessingStep.BuildProcessingSteps(
+                        Enum.TryParse(intent.IntentType, true, out IntentType parsedIntent) ? parsedIntent : IntentType.None,
+                        intent.AdditionalContext
+                    )).ToList();
 
-                        if (jsonData != null && jsonData.Intents.Any())
-                        {
-                            // IntentType intentType = Enum.TryParse(jsonData.Intent, true, out IntentType parsedIntent)
-                            //     ? parsedIntent
-                            //     : IntentType.None;
-                            List<IntentProcessingStep> intentSteps = jsonData.Intents.Select(intent =>
-                                new IntentProcessingStep(Enum.TryParse(intent.IntentType, true, out IntentType parsedIntent) ? parsedIntent : IntentType.None,
-                                intent.AdditionalContext
-                            )).ToList();
-
-                            string clarifySentence = jsonData.ClarifySentence ?? "";
-                            return new IntentResponse(intentSteps, clarifySentence);
-                        }
-                    }
-                    catch (JsonException ex)
-                    {
-                        Console.WriteLine($"❌ Error parsing intent JSON response: {ex.Message}");
-                        return new IntentResponse(new List<IntentProcessingStep>(), "❌ Unable to determine intent.");
-                    }
-                }
+                return IntentResponse.BuildIntent(intentSteps, jsonData.ClarifySentence ?? "");
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"❌ Error while extracting intent: {ex.Message}");
-            throw;
+            Console.WriteLine($"❌ Error parsing intent JSON: {ex.Message}");
+            return IntentResponse.BuildIntent(new List<IntentProcessingStep>(), "❌ Unable to determine intent.");
         }
 
-        return new IntentResponse(new List<IntentProcessingStep>(), "❌ No response from intent agent.");
-    }
-
-    /// <summary>
-    /// Ajoute un exemple de conversation pour l'entraînement du modèle et de l'agent.
-    /// </summary>
-    private ChatHistory FewShotExamples()
-    {
-        return new ChatHistory
-        {
-            // new ChatMessageContent(AuthorRole.User, "Can you delete a user?"),
-            // new ChatMessageContent(AuthorRole.Assistant, "{\"intent\": \"None\", \"clarify_sentence\": \"I'm sorry can't help with that. I can review your account details, transactions and help you with your payments.\"}"),
-            new ChatMessageContent(AuthorRole.User, "Can you show me the users?"),
-            new ChatMessageContent(AuthorRole.Assistant,
-                "{\"intents\": [{\"intent_type\": \"UserAgent\", \"additional_context\": null}], \"clarify_sentence\": \"User wants to get all the users as a list\"}"),
-
-            new ChatMessageContent(AuthorRole.User, "Who's the last created person?"),
-            new ChatMessageContent(AuthorRole.Assistant,
-                "{\"intents\": [{\"intent_type\": \"UserAgent\", \"additional_context\": null}], \"clarify_sentence\": \"User wants to get the last user by created date\"}"),
-
-            new ChatMessageContent(AuthorRole.User, "Delete this user please"),
-            new ChatMessageContent(AuthorRole.Assistant,
-                "{\"intents\": [{\"intent_type\": \"UserAgent\", \"additional_context\": \"last_created_user_id\"}], \"clarify_sentence\": \"User wants to delete the last created user\"}"),
-
-            new ChatMessageContent(AuthorRole.User, "Where's the station currently located?"),
-            new ChatMessageContent(AuthorRole.Assistant,
-            "{\"intents\": [{\"intent_type\": \"IssAgent\", \"additional_context\": null}], \"clarify_sentence\": \"Retrieving the ISS position\"}"),
-
-            new ChatMessageContent(AuthorRole.User, "Do you know about the game The Last Of Us?"),
-            new ChatMessageContent(AuthorRole.Assistant,
-                "{\"intents\": [{\"intent_type\": \"BingAgent\", \"additional_context\": null}], \"clarify_sentence\": \"User is looking for information about The Last Of Us\"}"),
-
-            new ChatMessageContent(AuthorRole.User, "Can you search for Semantic Kernel information?"),
-            new ChatMessageContent(AuthorRole.Assistant,
-                "{\"intents\": [{\"intent_type\": \"BingAgent\", \"additional_context\": null}], \"clarify_sentence\": \"User is looking for information about Semantic Kernel Technology\"}")
-        };
+        return IntentResponse.BuildIntent(new List<IntentProcessingStep>(), "❌ No response from intent agent.");
     }
 
     private class IntentResponseData

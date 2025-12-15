@@ -7,4 +7,5 @@ public sealed class AiOptions
     public string EndpointUrl { get; init; } = default!;
     public string ApiKey { get; init; } = default!;
     public string ModelName { get; init; } = default!;
+    public static string KernelService = "MovieTrackR";
 }
