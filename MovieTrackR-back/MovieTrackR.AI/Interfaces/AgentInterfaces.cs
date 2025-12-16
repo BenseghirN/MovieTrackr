@@ -6,3 +6,4 @@ public interface IBingAgent : IAgent { }
 public interface IRedactorAgent : IAgent { }
 public interface IOcrAgent : IAgent { }
 public interface IPersonSeekerAgent : IAgent { }
+public interface ISimilarMovieSeekerAgent : IAgent { }

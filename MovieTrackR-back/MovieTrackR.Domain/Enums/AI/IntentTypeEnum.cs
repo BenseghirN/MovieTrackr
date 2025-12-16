@@ -5,11 +5,8 @@ public enum IntentType
     MovieSeekerAgent,
     PersonSeekerAgent,
     ReviewRedactorAgent,
-    UserProfileQuery,
+    UserProfileAgent,
+    SimilarMovieSeekerAgent,
     SystemHelperAgent,
-    // UserAgent,
-    // IssAgent,
-    // BingAgent,
-    // OcrAgent,
     None,
 }

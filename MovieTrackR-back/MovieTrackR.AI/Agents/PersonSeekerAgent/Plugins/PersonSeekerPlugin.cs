@@ -8,7 +8,7 @@ using MovieTrackR.Application.People.Queries;
 
 namespace MovieTrackR.AI.Agents.ActorSeekerAgent.Plugins;
 
-public sealed class ActorSeekerPlugin(IMediator mediator)
+public sealed class PersonSeekerPlugin(IMediator mediator)
 {
 
 
@@ -29,7 +29,7 @@ public sealed class ActorSeekerPlugin(IMediator mediator)
         if (string.IsNullOrWhiteSpace(query))
             return Array.Empty<SearchPersonResultDto>();
 
-        var criteria = new PeopleSearchCriteria
+        PeopleSearchCriteria criteria = new PeopleSearchCriteria
         {
             Query = query.Trim(),
             Page = Math.Max(1, page),

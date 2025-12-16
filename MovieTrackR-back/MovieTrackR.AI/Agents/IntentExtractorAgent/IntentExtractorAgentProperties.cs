@@ -15,6 +15,7 @@ public class IntentExtractorAgentProperties
                                         ALLOWED INTENTS (use EXACT strings, case-sensitive):
                                             - MovieSeekerAgent
                                             - PersonSeekerAgent
+                                            - SimilarMovieSeekerAgent
                                             - ReviewRedactorAgent
                                             - SystemHelperAgent
                                             - None                                

@@ -8,17 +8,17 @@ using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using MovieTrackR.Domain.Entities.AI;
 using MovieTrackR.Domain.Enums.AI;
-using MovieTrackR.AI.Agents.ActorSeekerAgent.Plugins;
 using MovieTrackR.AI.Interfaces;
 using MovieTrackR.AI.Utils;
+using MovieTrackR.AI.Agents.ActorSeekerAgent.Plugins;
 
-namespace MovieTrackR.AI.Agents.ActorSeekerAgent;
+namespace MovieTrackR.AI.Agents.SimilarMovieSeekerAgent;
 
-public sealed class PersonSeeker(Kernel kernel, IMediator mediator) : IPersonSeekerAgent
+public sealed class SimilarMovieSeeker(Kernel kernel, IMediator mediator) : ISimilarMovieSeekerAgent
 {
     public async Task ProcessRequestAsync(ChatHistory chatHistory, AgentContext agentContext, IntentProcessingStep? intentStep = null, CancellationToken cancellationToken = default)
     {
-        ChatCompletionAgent ActorSeekerAgent = BuildAgent(intentStep?.IntentType ?? IntentType.PersonSeekerAgent);
+        ChatCompletionAgent SimilarMovieSeeker = BuildAgent(intentStep?.IntentType ?? IntentType.SimilarMovieSeekerAgent);
         ChatHistory agentChatHistory = new ChatHistory();
 
         foreach (ChatMessageContent message in chatHistory.Where(m => m.Role != AuthorRole.System).TakeLast(6))
@@ -43,7 +43,7 @@ public sealed class PersonSeeker(Kernel kernel, IMediator mediator) : IPersonSee
 
         StringBuilder sb = new StringBuilder();
 
-        await foreach (ChatMessageContent response in ActorSeekerAgent.InvokeAsync(agentChatHistory, cancellationToken: cancellationToken))
+        await foreach (ChatMessageContent response in SimilarMovieSeeker.InvokeAsync(agentChatHistory, cancellationToken: cancellationToken))
         {
             if (!string.IsNullOrWhiteSpace(response.Content))
                 sb.Append(response.Content);
@@ -68,6 +68,11 @@ public sealed class PersonSeeker(Kernel kernel, IMediator mediator) : IPersonSee
 
             if (!string.IsNullOrWhiteSpace(data.AdditionalContext))
                 agentContext.AdditionalContext = data.AdditionalContext;
+
+            if (data.Attachments is not null && data.Attachments.Count > 0)
+                agentContext.Attachments = data.Attachments;
+            else
+                agentContext.Attachments = null;
         }
         catch (JsonException)
         {
@@ -75,15 +80,15 @@ public sealed class PersonSeeker(Kernel kernel, IMediator mediator) : IPersonSee
         }
     }
 
-    private ChatCompletionAgent BuildAgent(IntentType intent = IntentType.PersonSeekerAgent)
+    private ChatCompletionAgent BuildAgent(IntentType intent = IntentType.SimilarMovieSeekerAgent)
     {
-        kernel.Plugins.AddFromObject(new PersonSeekerPlugin(mediator));
+        kernel.Plugins.AddFromObject(new SimilarMovieSeekerPlugin(mediator));
         return new ChatCompletionAgent
         {
-            Name = PersonSeekerProperties.Name,
-            Instructions = PersonSeekerProperties.GetInstructions(intent),
+            Name = SimilarMovieSeekerProperties.Name,
+            Instructions = SimilarMovieSeekerProperties.GetInstructions(intent),
             Kernel = kernel,
-            Description = PersonSeekerProperties.Description,
+            Description = SimilarMovieSeekerProperties.Description,
             Arguments = new KernelArguments(
                     new OpenAIPromptExecutionSettings()
                     {
@@ -104,5 +109,8 @@ public sealed class PersonSeeker(Kernel kernel, IMediator mediator) : IPersonSee
 
         [JsonPropertyName("additional_context")]
         public string? AdditionalContext { get; set; }
+
+        [JsonPropertyName("attachments")]
+        public List<MovieCandidateAttachment>? Attachments { get; set; }
     }
 }

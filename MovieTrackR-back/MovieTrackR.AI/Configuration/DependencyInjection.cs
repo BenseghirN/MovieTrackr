@@ -9,6 +9,7 @@ using MovieTrackR.AI.Interfaces;
 using MovieTrackR.AI.Utils;
 using MovieTrackR.AI.Agents.ActorSeekerAgent;
 using Microsoft.Extensions.Options;
+using MovieTrackR.AI.Agents.SimilarMovieSeekerAgent;
 
 namespace MovieTrackR.AI.Configuration;
 
@@ -33,6 +34,7 @@ public static class DependencyInjection
         //Enregistrement des différents agents IA & Plugins
         services.AddScoped<IRedactorAgent, Redactor>();
         services.AddScoped<IPersonSeekerAgent, PersonSeeker>();
+        services.AddScoped<ISimilarMovieSeekerAgent, SimilarMovieSeeker>();
 
         return services;
     }

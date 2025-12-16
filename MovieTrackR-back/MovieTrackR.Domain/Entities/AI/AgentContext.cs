@@ -26,4 +26,14 @@ public class AgentContext : Dictionary<string, object>
                 this["additionalContext"] = value;
         }
     }
+
+    public object? Attachments
+    {
+        get => TryGetValue("attachments", out var v) ? v : null;
+        set
+        {
+            if (value == null) Remove("attachments");
+            else this["attachments"] = value;
+        }
+    }
 }

@@ -9,7 +9,8 @@ namespace MovieTrackR.AI.Agents.RouteurAgent;
 
 public sealed class Routeur(
     IntentExtractor intentExtractor,
-    IPersonSeekerAgent personSeekerAgent
+    IPersonSeekerAgent personSeekerAgent,
+    ISimilarMovieSeekerAgent similarMovieSeekerAgent
     // IRedactorAgent redactor
     ) : IRouteurAgent
 {
@@ -26,11 +27,15 @@ public sealed class Routeur(
 
         foreach (IntentProcessingStep step in intentResponse.Intents)
         {
-            agentContext.Result = string.Empty;
             switch (step.IntentType)
             {
                 case IntentType.PersonSeekerAgent:
+                    agentContext.Result = string.Empty;
                     await personSeekerAgent.ProcessRequestAsync(chatHistory, agentContext, step, cancellationToken);
+                    break;
+                case IntentType.SimilarMovieSeekerAgent:
+                    agentContext.Result = string.Empty;
+                    await similarMovieSeekerAgent.ProcessRequestAsync(chatHistory, agentContext, step, cancellationToken);
                     break;
                 case IntentType.None:
                     chatHistory.AddAssistantMessage(intentResponse.Message ?? "Désolé je n'ai pas compris votre demande.");

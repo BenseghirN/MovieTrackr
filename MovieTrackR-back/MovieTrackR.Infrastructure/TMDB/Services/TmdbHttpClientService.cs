@@ -70,6 +70,15 @@ public sealed class TmdbHttpClientService(HttpClient httpClient, IOptions<TmdbOp
         return await GetFromTmdbAsync<TmdbSearchMoviesResponse>(relative, cancellationToken);
     }
 
+    public async Task<TmdbSearchMoviesResponse> SearchSimilarMoviesAsync(int tmdbMovieId, string language, CancellationToken cancellationToken)
+    {
+        string lang = string.IsNullOrWhiteSpace(language) ? "fr-FR" : language;
+
+        string relative = $"movie/{tmdbMovieId}/similar?language={Uri.EscapeDataString(lang)}&page=1";
+
+        return await GetFromTmdbAsync<TmdbSearchMoviesResponse>(relative, cancellationToken);
+    }
+
     public async Task<TmdbSearchPeopleResponse> SearchPeopleAsync(string query, int page, string? language, CancellationToken cancellationToken = default)
     {
         string lang = string.IsNullOrWhiteSpace(language) ? "fr-FR" : language;
