@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieTrackR.Domain", "Movie
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieTrackR.Infrastructure", "MovieTrackR.Infrastructure\MovieTrackR.Infrastructure.csproj", "{E6E72E89-557F-4BAE-AC73-863C24988477}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieTrackR.IA", "MovieTrackR.IA\MovieTrackR.IA.csproj", "{B8AAB239-2986-4643-8BA1-189D5EF6083F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieTrackR.AI", "MovieTrackR.AI\MovieTrackR.AI.csproj", "{B8AAB239-2986-4643-8BA1-189D5EF6083F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieTrackR.UnitTests", "MovieTrackR.UnitTests\MovieTrackR.UnitTests.csproj", "{695518DD-C21F-425C-9264-B849E3ECED87}"
 EndProject

@@ -10,7 +10,7 @@ namespace MovieTrackR.Application.Configuration;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         // AutoMapper : Add all profiles from Application
         services.AddAutoMapper(cfg => { }, typeof(MappingProfile).Assembly);

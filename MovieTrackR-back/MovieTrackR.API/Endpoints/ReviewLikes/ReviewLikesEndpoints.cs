@@ -15,7 +15,8 @@ public static class ReviewLikesEndpoints
         .WithApiVersionSet(vset)
         .MapToApiVersion(1, 0)
         .WithTags("ReviewLikes")
-        .WithOpenApi();
+        .WithOpenApi()
+        .RequireAuthorization();
 
     group.MapPost("", ReviewLikesHandlers.Like)
      .WithSummary("Like a review")

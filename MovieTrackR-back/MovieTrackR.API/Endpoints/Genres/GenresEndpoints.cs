@@ -17,7 +17,8 @@ public static class GenresEndpoints
             .WithApiVersionSet(vset)
             .MapToApiVersion(1, 0)
             .WithTags("Genres")
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization();
 
         group.MapGet("/", GenresHandlers.GetAll)
             .WithName("Genres_GetAll")

@@ -18,7 +18,8 @@ public static class ReviewsEndpoints
       .WithApiVersionSet(vset)
       .MapToApiVersion(1, 0)
       .WithTags("Reviews")
-      .WithOpenApi();
+      .WithOpenApi()
+      .RequireAuthorization();
 
     group.MapGet("/", ReviewsHandlers.GetAll)
       .RequireAuthorization(AuthorizationConfiguration.AdminPolicy)

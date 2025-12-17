@@ -18,7 +18,8 @@ public static class MoviesEndpoints
             .WithApiVersionSet(vset)
             .MapToApiVersion(1, 0)
             .WithTags("Movies")
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization();
 
         group.MapGet("/{id:guid}", MoviesHandlers.GetById)
             .AllowAnonymous()
@@ -45,13 +46,13 @@ public static class MoviesEndpoints
             .WithName("Search_Movies")
             .WithSummary("Search movies (paged)")
             .AllowAnonymous()
-            .Produces<IReadOnlyList<SearchMovieResultDto>>(StatusCodes.Status200OK);
+            .Produces<HybridPagedResult<SearchMovieResultDto>>(StatusCodes.Status200OK);
 
         group.MapGet("/popular", MoviesHandlers.GetPopular)
             .WithName("Get_Popular")
             .WithSummary("Get popular/newest movies from TMDB (paged)")
             .AllowAnonymous()
-            .Produces<IReadOnlyList<SearchMovieResultDto>>(StatusCodes.Status200OK);
+            .Produces<HybridPagedResult<SearchMovieResultDto>>(StatusCodes.Status200OK);
 
         group.MapGet("/trending", MoviesHandlers.GetTrending)
             .WithName("Get_Trending")
