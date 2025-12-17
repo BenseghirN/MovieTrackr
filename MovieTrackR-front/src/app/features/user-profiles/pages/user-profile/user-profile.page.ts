@@ -15,6 +15,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { UserProfileModalComponent } from '../../components/user-profile-edit-modal/user-profile-edit-modal.component';
 import { TooltipModule } from 'primeng/tooltip';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-user-profile-page',
@@ -26,6 +27,7 @@ import { TooltipModule } from 'primeng/tooltip';
 export class UserProfilePage {
   private readonly route = inject(ActivatedRoute);
   private readonly location = inject(Location);
+  private readonly title = inject(Title);
   private readonly profilesService = inject(UserProfilesService);
   private readonly authService = inject(AuthService);
   private readonly notificationService = inject(NotificationService);
@@ -78,8 +80,30 @@ export class UserProfilePage {
           this.error.set('Identifiant utilisateur manquant.');
           return;          
       }
-
       this.loadUserProfile(id);
+    });
+
+    effect(() => {
+      const profile = this.userProfile();
+      const currentUser = this.authService.currentUser();
+      const pseudo = profile?.pseudo;
+
+      if (!profile) {
+        this.title.setTitle('Profil utilisateur | MovieTrackR');
+        return;
+      }
+
+      if (profile.id === currentUser?.id) {
+        this.title.setTitle('Mon profil | MovieTrackR');
+        return;
+      }
+
+      if (pseudo) {
+        this.title.setTitle(`Profil de ${pseudo} | MovieTrackR`);
+        return;
+      }
+
+      this.title.setTitle('Profil utilisateur | MovieTrackR');
     });
   }
 
@@ -122,6 +146,7 @@ export class UserProfilePage {
 
     this.profilesService.getProfileById(id).subscribe({
       next: (profile: UserProfile) => {
+        this.title.setTitle(`Profil de ${profile.pseudo} | MovieTrackR`);
         this.userProfile.set(profile);
         this.loading.set(false);
       },

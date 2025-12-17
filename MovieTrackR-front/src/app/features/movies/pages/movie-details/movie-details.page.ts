@@ -16,6 +16,7 @@ import { DialogModule } from 'primeng/dialog';
 import { MovieStreamingOffers } from '../../models/streaming-offers.model';
 import { AddToListPopoverComponent } from '../../../user-lists/components/add-to-list-popover/add-to-list-popover.component';
 import { TooltipModule } from 'primeng/tooltip';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-movie-details-page',
@@ -39,6 +40,7 @@ export class MovieDetailsPage {
   private readonly route = inject(ActivatedRoute);
   private readonly location = inject(Location);
   private readonly router = inject(Router);
+  private readonly title = inject(Title);
 
   private readonly moviesService = inject(MovieService);
   readonly imageService = inject(TmdbImageService);
@@ -154,7 +156,7 @@ export class MovieDetailsPage {
         this.posterFlipped.set(false);
         return;
       }
-
+      this.title.setTitle(`${m.title} (${m.year}) | MovieTrackR`);
       this.loadStreamingOffers(m.tmdbId);
     });
   }

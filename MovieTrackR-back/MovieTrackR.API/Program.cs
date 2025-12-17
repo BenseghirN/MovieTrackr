@@ -13,7 +13,9 @@ using MovieTrackR.API.Endpoints.UserLists;
 using MovieTrackR.API.Endpoints.Users;
 using MovieTrackR.Application.Configuration;
 using MovieTrackR.Application.Interfaces;
+using MovieTrackR.AI.Configuration;
 using MovieTrackR.Infrastructure.Configuration;
+using MovieTrackR.API.Endpoints.AI;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -25,10 +27,12 @@ builder.Services
     .AddAuthorization()
     .AddRateLimitingConfiguration()
     .AddAzureAnthenticationConfiguration(builder.Configuration)
+    .AddUserSessionConfiguration(builder.Configuration, builder.Environment)
     .AddAppAuthorization() // custom Authorization policies
     .AddEndpointsApiExplorer()
     .AddInfrastructure(builder.Configuration) //custom service from Infrastructure project
-    .AddApplication(builder.Configuration) //custom service from Application project
+    .AddApplication() //custom service from Application project
+    .AddAI(builder.Configuration) //custom service from AI project
     .AddValidatorsFromAssembly(typeof(Program).Assembly) // Register FluentValidation validators
     .AddControllers()
     .AddJsonOptions(options =>
@@ -62,7 +66,9 @@ app
 .UseGlobalExceptionHandler()
 .UseCorsConfiguration(app.Environment)
 .UseAuthentication()
-.UseAuthorization();
+.UseAuthorization()
+.UseUserSessionConfiguration();
+
 app.UseRateLimitingConfiguration();
 
 // Map endpoints
@@ -77,6 +83,7 @@ app
 .MapGenresEndpoints()
 .MapPeopleEndpoints()
 .MapUserProfilesEndpoints()
+.MapAIEndpoints()
 .MapHealthChecks("/health");
 
 // Sert index.html dans /browser comme page par défaut

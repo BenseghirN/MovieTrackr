@@ -16,7 +16,7 @@ public sealed class GetPopularMoviesHandler(ITmdbClientService tmdbClient, IMapp
     {
         MovieSearchCriteria searchCriteria = searchQuery.searchCriteria;
 
-        TmdbSearchMoviesResponse tmdb = await tmdbClient.GetPopularMovies(
+        TmdbSearchMoviesResponse tmdb = await tmdbClient.GetPopularMoviesAsync(
             language: "fr-FR",
             page: searchCriteria.Page,
             cancellationToken: cancellationToken);

@@ -18,13 +18,14 @@ public static class ReviewCommentsEndpoints
                         .WithApiVersionSet(vset)
                         .MapToApiVersion(1, 0)
                         .WithTags("ReviewComments")
-                        .WithOpenApi();
+                        .WithOpenApi()
+                        .RequireAuthorization();
 
                 group.MapGet("", ReviewCommentsHandlers.GetComments)
-                                .AllowAnonymous()
-                                .WithSummary("List comments for a review")
-                                .WithDescription("Returns a paginated list of comments for the specified review.")
-                                .Produces<PagedResult<CommentDto>>(StatusCodes.Status200OK);
+                        .AllowAnonymous()
+                        .WithSummary("List comments for a review")
+                        .WithDescription("Returns a paginated list of comments for the specified review.")
+                        .Produces<PagedResult<CommentDto>>(StatusCodes.Status200OK);
 
                 group.MapPost("", ReviewCommentsHandlers.CreateComment)
                         .WithSummary("Create a comment")
