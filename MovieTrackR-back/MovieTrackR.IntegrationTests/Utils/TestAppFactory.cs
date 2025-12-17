@@ -42,7 +42,10 @@ public sealed class TestAppFactory : WebApplicationFactory<Program>
                 ["EntraExternalId:ClientSecret"] = "fake-secret",
                 ["EntraExternalId:CallbackPath"] = "/signin-oidc",
                 ["EntraExternalId:OpenIdScheme"] = "Test",
-                ["ConnectionStrings:MovieTrackRDatabase"] = _pg.ConnectionString
+                ["ConnectionStrings:MovieTrackRDatabase"] = _pg.ConnectionString,
+                ["SessionOptions:IdleTimeout"] = "00:30:00",
+                ["SessionOptions:CookieHttpOnly"] = "true",
+                ["SessionOptions:CookieIsEssential"] = "true"
             });
         });
 

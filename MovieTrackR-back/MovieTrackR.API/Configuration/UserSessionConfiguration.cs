@@ -10,7 +10,14 @@ public static class UserSessionConfiguration
         services.AddDistributedMemoryCache(); // Pour stocker les sessions en mémoire (peut être remplacé par Redis pour plus d'évolutivité)
         services.AddSession(options =>
         {
-            options.IdleTimeout = TimeSpan.Parse(sessionOptions.IdleTimeout); // Durée d'inactivité avant expiration
+            TimeSpan idleTimeout = TimeSpan.FromMinutes(30);
+            if (!string.IsNullOrWhiteSpace(sessionOptions.IdleTimeout)
+                && TimeSpan.TryParse(sessionOptions.IdleTimeout, out var parsed))
+            {
+                idleTimeout = parsed;
+            }
+
+            options.IdleTimeout = idleTimeout; // Durée d'inactivité avant expiration
             options.Cookie.HttpOnly = sessionOptions.CookieHttpOnly;
             options.Cookie.IsEssential = sessionOptions.CookieIsEssential;
             options.Cookie.SecurePolicy = environment.IsDevelopment()
