@@ -5,7 +5,7 @@ namespace MovieTrackR.AI.Agents.DiscoverMoviesAgent;
 public class DiscoverMoviesProperties
 {
     public const string Name = "DiscoverMovies";
-    public const string Description = "Look and search for movies similar to one asked by the user";
+    public const string Description = "Search for movies based on Year and/or Genres as requested by the user";
 
     public const string Instructions = """
                                             You are the DiscoverMovies Agent of MovieTrackR.

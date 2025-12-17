@@ -5,20 +5,21 @@ using MovieTrackR.Domain.Enums.AI;
 using MovieTrackR.AI.Interfaces;
 using MovieTrackR.AI.Agents.IntentExtractorAgent;
 
-namespace MovieTrackR.AI.Agents.RouteurAgent;
+namespace MovieTrackR.AI.Agents.Routeur;
 
 public sealed class Routeur(
-    IntentExtractor intentExtractor,
+    IntentExtractor intentExtractorAgent
+    ,
     IPersonSeekerAgent personSeekerAgent,
     ISimilarMovieSeekerAgent similarMovieSeekerAgent,
-    IDiscoverMoviesAgent discoverMoviesAgent
-    // IRedactorAgent redactor
-    ) : IRouteurAgent
+    IDiscoverMoviesAgent discoverMoviesAgent,
+    IRedactorAgent redactorAgent
+    ) : IRouteur
 {
     public async Task ProcessRequestAsync(ChatHistory chatHistory, AgentContext agentContext, CancellationToken cancellationToken)
     {
         if (agentContext == null) agentContext = new AgentContext();
-        IntentResponse intentResponse = await intentExtractor.ExtractIntent(chatHistory, agentContext, cancellationToken);
+        IntentResponse intentResponse = await intentExtractorAgent.ExtractIntent(chatHistory, agentContext, cancellationToken);
         await RouteToAgent(intentResponse, chatHistory, agentContext, cancellationToken);
     }
 
@@ -41,6 +42,10 @@ public sealed class Routeur(
                 case IntentType.SimilarMovieSeekerAgent:
                     agentContext.Result = string.Empty;
                     await similarMovieSeekerAgent.ProcessRequestAsync(chatHistory, agentContext, step, cancellationToken);
+                    break;
+                case IntentType.ReviewRedactorAgent:
+                    agentContext.Result = string.Empty;
+                    await redactorAgent.ProcessRequestAsync(chatHistory, agentContext, step, cancellationToken);
                     break;
                 case IntentType.None:
                     chatHistory.AddAssistantMessage(intentResponse.Message ?? "Désolé je n'ai pas compris votre demande.");

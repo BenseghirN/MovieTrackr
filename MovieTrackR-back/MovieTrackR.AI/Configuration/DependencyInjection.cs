@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MovieTrackR.Application.AI.Interfaces;
 using MovieTrackR.AI.Agents.IntentExtractorAgent;
 using MovieTrackR.AI.Agents.RedactorAgent;
-using MovieTrackR.AI.Agents.RouteurAgent;
+using MovieTrackR.AI.Agents.Routeur;
 using MovieTrackR.AI.Builder;
 using MovieTrackR.AI.Interfaces;
 using MovieTrackR.AI.Utils;
@@ -29,16 +29,14 @@ public static class DependencyInjection
             return builder.BuildKernel();
         });
 
-        services.AddScoped<IRouteurAgent, Routeur>();
-        services.AddScoped<IntentExtractor>();
+        services.AddScoped<IRouteur, Routeur>();
 
         //Enregistrement des différents agents IA & Plugins
+        services.AddScoped<IntentExtractor>();
         services.AddScoped<IRedactorAgent, Redactor>();
         services.AddScoped<IPersonSeekerAgent, PersonSeeker>();
         services.AddScoped<ISimilarMovieSeekerAgent, SimilarMovieSeeker>();
         services.AddScoped<IDiscoverMoviesAgent, DiscoverMovies>();
-
-
 
         return services;
     }

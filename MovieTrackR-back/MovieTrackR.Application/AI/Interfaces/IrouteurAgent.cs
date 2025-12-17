@@ -3,7 +3,7 @@ using MovieTrackR.Domain.Entities.AI;
 
 namespace MovieTrackR.Application.AI.Interfaces;
 
-public interface IRouteurAgent
+public interface IRouteur
 {
     Task ProcessRequestAsync(ChatHistory chatHistory, AgentContext agentContext, CancellationToken cancellationToken);
 }

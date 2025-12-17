@@ -8,7 +8,7 @@ namespace MovieTrackR.Application.AI.Queries;
 
 public sealed record ChatAppQuery(ChatAppRequest Request, ChatHistory ChatHistory) : IRequest<ChatResponse>;
 
-public sealed class ChatAppHandler(IRouteurAgent routeurAgent) : IRequestHandler<ChatAppQuery, ChatResponse>
+public sealed class ChatAppHandler(IRouteur routeurAgent) : IRequestHandler<ChatAppQuery, ChatResponse>
 {
     public async Task<ChatResponse> Handle(ChatAppQuery query, CancellationToken cancellationToken)
     {

@@ -12,11 +12,20 @@ namespace MovieTrackR.AI.Agents.ActorSeekerAgent.Plugins;
 public sealed class DiscoverMoviesPlugin(IMediator mediator)
 {
     [KernelFunction("discover_movies")]
-    [Description("")]
+    [Description(
+        "Discover movies by STRICT filters: release year + one or more genreIds (TMDB genre ids stored in MovieTrackR DB). " +
+        "This is a hybrid query (local DB + TMDB discover). " +
+        "Do NOT call this without having validated genreIds from the database. " +
+        "Use page >= 1. Returns a paginated result with up to PageSize items (default 20) and meta info."
+    )]
     public async Task<HybridPagedResult<SearchMovieResultDto>> DiscoverMoviesAsync(
-        [Description("")] int year,
-        [Description("")] List<int> genreIds,
-        [Description("")] int page,
+        [Description("Release year to filter movies. Must be a 4-digit year (e.g., 1900..2100).")] int year,
+        [Description(
+            "List of TMDB genre ids (integers) as stored in MovieTrackR database (Genre.TmdbId). " +
+            "Example: [28, 12] for Action + Adventure. " +
+            "Never invent ids: resolve them via find_genre_by_name or get_all_genres."
+        )] List<int> genreIds,
+        [Description("Page number (1-based). Example: 1 for first page, 2 for next page.")] int page,
         CancellationToken cancellationToken = default)
     {
         DiscoverCriteria criterias = new DiscoverCriteria
@@ -29,7 +38,10 @@ public sealed class DiscoverMoviesPlugin(IMediator mediator)
     }
 
     [KernelFunction("get_all_genres")]
-    [Description("")]
+    [Description(
+        "Return the full list of movie genres available in MovieTrackR (local database), including their TMDB ids. " +
+        "Use this when a user provides a genre name that cannot be resolved directly, to propose the closest matches."
+    )]
     public async Task<IReadOnlyList<GenreDto>> GetAllGenresAsync(
         CancellationToken cancellationToken = default)
     {
@@ -37,9 +49,15 @@ public sealed class DiscoverMoviesPlugin(IMediator mediator)
     }
 
     [KernelFunction("find_genre_by_name")]
-    [Description("")]
-    public async Task<GenreDto?> GetAllGenresAsync(
-        [Description("")] string genreName,
+    [Description(
+        "Find a single genre in MovieTrackR by a human name (case-insensitive). " +
+        "Example inputs: 'Science-Fiction', 'Action', 'Comédie'. " +
+        "Returns null if no close match exists. " +
+        "If null, call get_all_genres and ask the user to pick among suggestions."
+    )]
+    public async Task<GenreDto?> FindGenreByNameAsync(
+        [Description("Genre name provided by the user. Example: 'Science-Fiction' Do NOT pass ids here, only text."
+        )] string genreName,
         CancellationToken cancellationToken = default)
     {
         return await mediator.Send(new FindGenreByNameQuery(genreName), cancellationToken);
