@@ -62,12 +62,5 @@ public sealed class Routeur(
                 responses.Add($"[{step.IntentType}] {agentContext.Result}");
             }
         }
-
-        // if (responses.Count > 0)
-        // {
-        //     agentContext.Add("combinedResponses", string.Join("\n", responses));
-        //     await redactor.ProcessRequestAsync(chatHistory, agentContext, cancellationToken: cancellationToken);
-        //     chatHistory.AddAssistantMessage(agentContext.Result);
-        // }
     }
 }

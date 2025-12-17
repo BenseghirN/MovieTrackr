@@ -1,0 +1,160 @@
+<button
+  class="chat-fab"
+  (click)="onToggle()"
+  [class.open]="store.isOpen()"
+  pTooltip="Assistant MovieTrackR"
+  tooltipPosition="left"
+>
+  <i class="pi" [class.pi-comments]="!store.isOpen()" [class.pi-times]="store.isOpen()"></i>
+</button>
+
+<div class="chat-window" [class.open]="store.isOpen()">
+  <div class="chat-header">
+    <div class="header-info">
+      <div class="avatar">
+        <i class="pi pi-star-fill"></i>
+      </div>
+      <div class="header-text">
+        <span class="header-title">MovieTrackR AI</span>
+        <span class="header-status">
+          @if (store.loading()) {
+          <span class="status-dot typing"></span>
+          En train d'écrire... } @else {
+          <span class="status-dot online"></span>
+          En ligne }
+        </span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button
+        class="header-btn"
+        (click)="reset()"
+        [disabled]="store.loading()"
+        pTooltip="Nouvelle conversation"
+        tooltipPosition="bottom"
+      >
+        <i class="pi pi-refresh"></i>
+      </button>
+      <button class="header-btn" (click)="onClose()" pTooltip="Fermer" tooltipPosition="bottom">
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="chat-messages" #messagesContainer>
+    @if (!store.chatMessages().length && !store.loading()) {
+    <div class="welcome-message">
+      <div class="welcome-icon">
+        <i class="pi pi-star-fill"></i>
+      </div>
+      <h4>Bienvenue !</h4>
+      <p>
+        Je suis l'assistant MovieTrackR. Posez-moi des questions sur les films, demandez des
+        recommandations ou cherchez un film spécifique !
+      </p>
+      <div class="welcome-suggestions">
+        <button
+          class="suggestion-chip"
+          (click)="draft.set('Trouve-moi des films similaires à Inception'); onSend()"
+        >
+          🎯 Films similaires
+        </button>
+        <button
+          class="suggestion-chip"
+          (click)="
+            draft.set('Recommande-moi des films de science-fiction sortis après 2020'); onSend()
+          "
+        >
+          🚀 SF récents
+        </button>
+        <button
+          class="suggestion-chip"
+          (click)="draft.set('Qui est Christopher Nolan ?'); onSend()"
+        >
+          🎬 Info réalisateur
+        </button>
+        <button
+          class="suggestion-chip"
+          (click)="draft.set('Aide-moi à rédiger une critique pour Interstellar'); onSend()"
+        >
+          ✍️ Écrire une review
+        </button>
+      </div>
+    </div>
+    } @for (msg of store.chatMessages(); track $index) {
+    <div
+      class="message"
+      [class.user]="msg.role === 'user'"
+      [class.assistant]="msg.role === 'assistant'"
+    >
+      @if (msg.role === 'assistant') {
+      <div class="message-avatar">
+        <i class="pi pi-star-fill"></i>
+      </div>
+      }
+      <div class="message-bubble">
+        <div class="message-content" [innerHTML]="msg.content"></div>
+      </div>
+    </div>
+    } @if (store.attachments()?.length) {
+    <div class="message assistant">
+      <div class="message-avatar">
+        <i class="pi pi-star-fill"></i>
+      </div>
+      <div class="attachments-container">
+        <div class="attachments-label">Films trouvés :</div>
+        <div class="movie-attachments">
+          @for (movie of store.attachments(); track movie.tmdbId || movie.localId) {
+          <a class="movie-card" [routerLink]="getMovieLink(movie)" (click)="onClose()">
+            <div class="movie-poster">
+              @if (movie.posterPath) {
+              <img [src]="imageService.getPosterUrl(movie.posterPath, 'w92')" [alt]="movie.title" />
+              } @else {
+              <div class="poster-placeholder">
+                <i class="pi pi-image"></i>
+              </div>
+              }
+            </div>
+            <div class="movie-info">
+              <span class="movie-title">{{ movie.title }}</span>
+              @if (movie.year) {
+              <span class="movie-year">{{ movie.year }}</span>
+              }
+            </div>
+          </a>
+          }
+        </div>
+      </div>
+    </div>
+    } @if (store.loading()) {
+    <div class="message assistant">
+      <div class="message-avatar">
+        <i class="pi pi-star-fill"></i>
+      </div>
+      <div class="message-bubble typing">
+        <div class="typing-dots">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+
+  <div class="chat-input">
+    <textarea
+      [(ngModel)]="draft"
+      (ngModelChange)="draft.set($event)"
+      (keydown)="onKeyDown($event)"
+      [disabled]="store.loading()"
+      placeholder="Écrivez votre message..."
+      rows="1"
+    ></textarea>
+    <button class="send-btn" (click)="onSend()" [disabled]="!canSend()">
+      <i class="pi pi-send"></i>
+    </button>
+  </div>
+</div>
+
+<div class="chat-backdrop" [class.open]="store.isOpen()" (click)="onClose()"></div>

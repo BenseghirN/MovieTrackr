@@ -17,7 +17,7 @@ public static class AIHandlers
 
         try
         {
-            Console.WriteLine($"📌 Session ID: {httpCtx.Session.Id}");
+            // Console.WriteLine($"📌 Session ID: {httpCtx.Session.Id}");
 
             ChatHistory chatHistory = httpCtx.Session.GetChatHistory("ChatHistory") ?? new ChatHistory();
             chatHistory.AddRange(ConvertChatHistory(chatRequest));

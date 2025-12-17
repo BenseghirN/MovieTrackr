@@ -21,10 +21,10 @@ public static class ReviewCommentsEndpoints
                         .WithOpenApi();
 
                 group.MapGet("", ReviewCommentsHandlers.GetComments)
-                                .AllowAnonymous()
-                                .WithSummary("List comments for a review")
-                                .WithDescription("Returns a paginated list of comments for the specified review.")
-                                .Produces<PagedResult<CommentDto>>(StatusCodes.Status200OK);
+                        .AllowAnonymous()
+                        .WithSummary("List comments for a review")
+                        .WithDescription("Returns a paginated list of comments for the specified review.")
+                        .Produces<PagedResult<CommentDto>>(StatusCodes.Status200OK);
 
                 group.MapPost("", ReviewCommentsHandlers.CreateComment)
                         .WithSummary("Create a comment")
