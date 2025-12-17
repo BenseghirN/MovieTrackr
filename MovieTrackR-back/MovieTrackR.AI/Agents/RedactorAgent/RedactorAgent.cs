@@ -1,4 +1,3 @@
-// #pragma warning disable SKEXP0001 , SKEXP0110
 using System.Text.Json.Serialization;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
@@ -78,4 +77,3 @@ public sealed class Redactor(SemanticKernelBuilder builder) : IRedactorAgent
         public List<string> WebSources { get; set; } = new List<string>();
     }
 }
-// #pragma warning restore SKEXP0001, SKEXP0110

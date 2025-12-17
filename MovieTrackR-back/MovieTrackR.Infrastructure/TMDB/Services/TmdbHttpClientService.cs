@@ -102,11 +102,36 @@ public sealed class TmdbHttpClientService(HttpClient httpClient, IOptions<TmdbOp
         return await GetFromTmdbAsync<TmdbPersonMovieCredits>(relative, cancellationToken);
     }
 
-    public async Task<TmdbSearchMoviesResponse> GetPopularMovies(string? language, int page, CancellationToken cancellationToken = default)
+    public async Task<TmdbSearchMoviesResponse> GetPopularMoviesAsync(string? language, int page, CancellationToken cancellationToken = default)
     {
         string lang = string.IsNullOrWhiteSpace(language) ? "fr-FR" : language;
         int safePage = page <= 0 ? 1 : page;
         string relative = $"movie/popular?&page={safePage}&language={Uri.EscapeDataString(lang)}";
+        return await GetFromTmdbAsync<TmdbSearchMoviesResponse>(relative, cancellationToken);
+    }
+
+    public async Task<TmdbSearchMoviesResponse> DiscoverAsync(DiscoverCriteria criterias, CancellationToken cancellationToken = default)
+    {
+        string lang = string.IsNullOrWhiteSpace(criterias.Language) ? "fr-FR" : criterias.Language;
+        int safePage = criterias.Page <= 0 ? 1 : criterias.Page;
+        List<string> qs = new List<string>
+        {
+            "include_adult=false",
+            "include_video=false",
+            "sort_by=title.asc",
+            $"language={Uri.EscapeDataString(lang)}",
+            $"page={safePage}"
+        };
+
+        if (criterias.Year.HasValue)
+            qs.Add($"primary_release_year={criterias.Year}");
+
+        if (criterias.GenreIds.Count > 0)
+        {
+            string csv = string.Join(",", criterias.GenreIds);
+            qs.Add($"with_genres={Uri.EscapeDataString(csv)}");
+        }
+        string relative = $"discover/movie?" + string.Join("&", qs);
         return await GetFromTmdbAsync<TmdbSearchMoviesResponse>(relative, cancellationToken);
     }
 

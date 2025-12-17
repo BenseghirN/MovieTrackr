@@ -7,3 +7,5 @@ public interface IRedactorAgent : IAgent { }
 public interface IOcrAgent : IAgent { }
 public interface IPersonSeekerAgent : IAgent { }
 public interface ISimilarMovieSeekerAgent : IAgent { }
+public interface IDiscoverMoviesAgent : IAgent { }
+

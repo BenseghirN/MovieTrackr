@@ -1,4 +1,3 @@
-// #pragma warning disable SKEXP0001 , SKEXP0110
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -31,9 +30,6 @@ public sealed class IntentExtractor(Kernel kernel)
         };
     }
 
-    /// <summary>
-    /// Analyse la requête utilisateur et identifie l’intention principale.
-    /// </summary>
     public async Task<IntentResponse> ExtractIntent(ChatHistory chatHistory, AgentContext context, CancellationToken cancellationToken)
     {
         ChatHistory agentChatHistory = new ChatHistory();
@@ -102,4 +98,3 @@ public sealed class IntentExtractor(Kernel kernel)
         public string? AdditionalContext { get; set; }
     }
 }
-// #pragma warning restore SKEXP0001, SKEXP0110

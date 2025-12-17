@@ -74,7 +74,7 @@ public sealed class SimilarMovieSeekerPlugin(IMediator mediator)
 
 public sealed class MovieCandidateAttachment
 {
-    public int Index { get; init; }              // 1..N (utile pour "le 2")
+    public int Index { get; init; }
     public Guid? LocalId { get; init; }
     public int? TmdbId { get; init; }
     public string Title { get; init; } = string.Empty;

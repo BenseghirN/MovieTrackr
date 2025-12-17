@@ -13,11 +13,10 @@ public class IntentExtractorAgentProperties
                                             - NEVER invent new intents. Use ONLY the exact intents listed below.
 
                                         ALLOWED INTENTS (use EXACT strings, case-sensitive):
-                                            - MovieSeekerAgent
+                                            - DiscoverMovieAgent (If someone ask for movies by year or genre)
                                             - PersonSeekerAgent
-                                            - SimilarMovieSeekerAgent
                                             - ReviewRedactorAgent
-                                            - SystemHelperAgent
+                                            - SimilarMovieSeekerAgent
                                             - None                                
 
                                             ⚠️ Do not infer or invent subcategories. If the user asks about a specific action (e.g., 'SearchActor'), assign the closest category (e.g., 'PersonSeekerAgent').

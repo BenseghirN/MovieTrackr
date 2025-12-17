@@ -10,7 +10,8 @@ namespace MovieTrackR.AI.Agents.RouteurAgent;
 public sealed class Routeur(
     IntentExtractor intentExtractor,
     IPersonSeekerAgent personSeekerAgent,
-    ISimilarMovieSeekerAgent similarMovieSeekerAgent
+    ISimilarMovieSeekerAgent similarMovieSeekerAgent,
+    IDiscoverMoviesAgent discoverMoviesAgent
     // IRedactorAgent redactor
     ) : IRouteurAgent
 {
@@ -29,6 +30,10 @@ public sealed class Routeur(
         {
             switch (step.IntentType)
             {
+                case IntentType.DiscoverMovieAgent:
+                    agentContext.Result = string.Empty;
+                    await discoverMoviesAgent.ProcessRequestAsync(chatHistory, agentContext, step, cancellationToken);
+                    break;
                 case IntentType.PersonSeekerAgent:
                     agentContext.Result = string.Empty;
                     await personSeekerAgent.ProcessRequestAsync(chatHistory, agentContext, step, cancellationToken);

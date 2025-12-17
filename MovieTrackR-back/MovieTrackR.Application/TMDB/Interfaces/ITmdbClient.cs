@@ -15,8 +15,9 @@ public interface ITmdbClientService
     Task<TmdbWatchProvidersResponse?> GetMovieWatchProvidersAsync(int tmdbId, CancellationToken cancellationToken);
     Task<TmdbConfigurationImages> GetConfigurationImagesAsync(CancellationToken cancellationToken);
     Task<TmdbGenresResponse> GetGenresAsync(string language, CancellationToken cancellationToken);
-    Task<TmdbSearchPeopleResponse> SearchPeopleAsync(string query, int page, string? language, CancellationToken cancellationToken = default);
-    Task<TmdbPersonDetails?> GetPersonDetailsAsync(int tmdbId, string? language, CancellationToken cancellationToken = default);
-    Task<TmdbPersonMovieCredits?> GetPersonMovieCreditsAsync(int tmdbId, string? language, CancellationToken cancellationToken = default);
-    Task<TmdbSearchMoviesResponse> GetPopularMovies(string? language, int page, CancellationToken cancellationToken = default);
+    Task<TmdbSearchPeopleResponse> SearchPeopleAsync(string query, int page, string? language, CancellationToken cancellationToken);
+    Task<TmdbPersonDetails?> GetPersonDetailsAsync(int tmdbId, string? language, CancellationToken cancellationToken);
+    Task<TmdbPersonMovieCredits?> GetPersonMovieCreditsAsync(int tmdbId, string? language, CancellationToken cancellationToken);
+    Task<TmdbSearchMoviesResponse> GetPopularMoviesAsync(string? language, int page, CancellationToken cancellationToken);
+    Task<TmdbSearchMoviesResponse> DiscoverAsync(DiscoverCriteria criterias, CancellationToken cancellationToken);
 }
