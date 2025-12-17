@@ -16,9 +16,11 @@ public static class UserProfilesEndpoints
             .WithApiVersionSet(vset)
             .MapToApiVersion(1, 0)
             .WithTags("User Profiles")
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization();
 
         group.MapGet("/{id:guid}", UserProfilesHandlers.GetById)
+            .AllowAnonymous()
             .WithName("UserProfiles_GetById")
             .WithSummary("Récupère le profil public d'un utilisateur.")
             .WithDescription("Retourne uniquement les informations publiques d'un utilisateur.")

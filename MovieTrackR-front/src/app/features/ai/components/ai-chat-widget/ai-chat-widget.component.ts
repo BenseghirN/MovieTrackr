@@ -9,6 +9,8 @@ import { AiChatStore } from '../../store/ai-chat.store';
 import { RouterModule } from '@angular/router';
 import { TooltipModule } from 'primeng/tooltip';
 import { TmdbImageService } from '../../../../core/services/tmdb-image.service';
+import { AuthService } from '../../../../core/services/auth.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-ai-chat-widget',
@@ -27,6 +29,9 @@ import { TmdbImageService } from '../../../../core/services/tmdb-image.service';
   styleUrl: './ai-chat-widget.component.scss',
 })
 export class AiChatWidgetComponent {
+  private readonly authService = inject(AuthService);
+  readonly isAuthenticated = this.authService.isAuthenticated;
+  private readonly notificationService = inject(NotificationService);
   readonly store = inject(AiChatStore);
   readonly imageService = inject(TmdbImageService);
 
@@ -43,6 +48,10 @@ export class AiChatWidgetComponent {
   }
 
   onToggle(): void {
+    if (!this.authService.isAuthenticated()) {
+      this.notificationService.info("Connectez-vous pour discuter avec l'assistant IA");
+      return;
+    }
     this.store.toggle();
     if (this.store.isOpen()) {
       queueMicrotask(() => this.scrollToBottom());

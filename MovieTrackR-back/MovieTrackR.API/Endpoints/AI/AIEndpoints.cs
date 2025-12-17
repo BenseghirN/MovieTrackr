@@ -16,7 +16,8 @@ public static class AIEndpoints
             .WithApiVersionSet(vset)
             .MapToApiVersion(1, 0)
             .WithTags("AI")
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization();
 
         group.MapPost("/chat", AIHandlers.Chat)
             .WithName("Chat_AI")

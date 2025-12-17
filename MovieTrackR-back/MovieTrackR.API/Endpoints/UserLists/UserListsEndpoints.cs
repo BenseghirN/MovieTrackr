@@ -17,7 +17,8 @@ public static class UserListsEndpoints
         .WithApiVersionSet(vset)
         .MapToApiVersion(1, 0)
         .WithTags("UserLists")
-        .WithOpenApi();
+        .WithOpenApi()
+        .RequireAuthorization();
 
     group.MapGet("/", UserListsHandlers.GetMine)
       .WithName("Get_My_Lists")
@@ -27,8 +28,8 @@ public static class UserListsEndpoints
 
     group.MapGet("/{listId:guid}", UserListsHandlers.GetById)
       .WithName("Get_My_List_ById")
-      .WithSummary("Récupère une de mes listes par son identifiant.")
-      .WithDescription("Retourne la vue 'détails' d’une liste, incluant les films ordonnés par position. Restreint au propriétaire de la liste.")
+      .WithSummary("Récupère une listes par son identifiant.")
+      .WithDescription("Retourne la vue 'détails' d'une liste, incluant les films ordonnés par position. Restreint au propriétaire de la liste.")
       .Produces<UserListDetailsDto>(StatusCodes.Status200OK)
       .Produces(StatusCodes.Status404NotFound);
 

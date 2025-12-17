@@ -18,7 +18,8 @@ public static class ReviewCommentsEndpoints
                         .WithApiVersionSet(vset)
                         .MapToApiVersion(1, 0)
                         .WithTags("ReviewComments")
-                        .WithOpenApi();
+                        .WithOpenApi()
+                        .RequireAuthorization();
 
                 group.MapGet("", ReviewCommentsHandlers.GetComments)
                         .AllowAnonymous()

@@ -18,7 +18,8 @@ public static class MoviesEndpoints
             .WithApiVersionSet(vset)
             .MapToApiVersion(1, 0)
             .WithTags("Movies")
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization();
 
         group.MapGet("/{id:guid}", MoviesHandlers.GetById)
             .AllowAnonymous()

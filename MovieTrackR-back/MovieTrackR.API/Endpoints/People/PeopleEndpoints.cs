@@ -17,7 +17,8 @@ public static class PeopleEndpoints
             .WithApiVersionSet(vset)
             .MapToApiVersion(1, 0)
             .WithTags("People")
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization();
 
         group.MapGet("/", PeopleHandlers.GetAll)
             .RequireAuthorization(AuthorizationConfiguration.AdminPolicy)
