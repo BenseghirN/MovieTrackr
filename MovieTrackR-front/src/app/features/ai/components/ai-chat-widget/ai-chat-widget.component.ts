@@ -11,6 +11,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { TmdbImageService } from '../../../../core/services/tmdb-image.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { ChatAttachment, MovieAttachment, PersonAttachment } from '../../models/chat-request.model';
 
 @Component({
   selector: 'app-ai-chat-widget',
@@ -70,7 +71,7 @@ export class AiChatWidgetComponent {
     this.store.sendMessage(message);
 
     queueMicrotask(() => this.scrollToBottom());
-    setTimeout(() => this.scrollToBottom(), 100);
+    setTimeout(() => this.scrollToBottom(), 50);
   }
 
   onKeyDown(event: KeyboardEvent): void {
@@ -93,6 +94,23 @@ export class AiChatWidgetComponent {
       return ['/movies', attachment.tmdbId.toString()];
     }
     return [];
+  }
+
+  onSelectPerson(person: PersonAttachment): void {
+    const technicalMessage = `Oui celui-ci: index=${person.index}, localId=${person.localId}, tmdbId=${person.tmdbId}`;
+    const displayMessage = `Le #${person.index}: ${person.name}`;
+    this.store.sendMessage(technicalMessage, { hidden: true, displayAs: displayMessage });
+
+    queueMicrotask(() => this.scrollToBottom());
+    setTimeout(() => this.scrollToBottom(), 50);
+  }
+
+  isPersonAttachment(attachment: ChatAttachment): attachment is PersonAttachment {
+    return 'name' in attachment && !('title' in attachment);
+  }
+
+  isMovieAttachment(attachment: ChatAttachment): attachment is MovieAttachment {
+    return 'title' in attachment;
   }
 
   private scrollToBottom(): void {
