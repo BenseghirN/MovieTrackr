@@ -68,6 +68,11 @@ public sealed class PersonSeeker(Kernel kernel, IMediator mediator) : IPersonSee
 
             if (!string.IsNullOrWhiteSpace(data.AdditionalContext))
                 agentContext.AdditionalContext = data.AdditionalContext;
+
+            if (data.Attachments is not null && data.Attachments.Count > 0)
+                agentContext.Attachments = data.Attachments;
+            else
+                agentContext.Attachments = null;
         }
         catch (JsonException)
         {
@@ -104,5 +109,8 @@ public sealed class PersonSeeker(Kernel kernel, IMediator mediator) : IPersonSee
 
         [JsonPropertyName("additional_context")]
         public string? AdditionalContext { get; set; }
+
+        [JsonPropertyName("attachments")]
+        public List<PersonCandidateAttachment>? Attachments { get; set; }
     }
 }

@@ -67,3 +67,12 @@ public sealed class PersonSeekerPlugin(IMediator mediator)
         return await mediator.Send(new GetPersonByIdQuery(localId), cancellationToken);
     }
 }
+
+public sealed class PersonCandidateAttachment
+{
+    public int Index { get; init; }
+    public Guid? LocalId { get; set; }
+    public int? TmdbId { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string? ProfilePath { get; set; }
+}

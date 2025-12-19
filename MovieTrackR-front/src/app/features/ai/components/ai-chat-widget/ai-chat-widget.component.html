@@ -102,10 +102,39 @@
         <i class="pi pi-star-fill"></i>
       </div>
       <div class="attachments-container">
+        @if (isPersonAttachment(store.attachments()![0])) {
+        <div class="attachments-label">Personnes trouvées :</div>
+        <div class="person-attachments">
+          @for (person of store.attachments(); track person.tmdbId || person.index) {
+          <button class="person-card" (click)="onSelectPerson($any(person))">
+            <div class="person-photo">
+              @if (person.profilePath) {
+              <img
+                [src]="imageService.getProfileUrl(person.profilePath, 'w92')"
+                [alt]="person.name"
+              />
+              } @else {
+              <div class="photo-placeholder">
+                <i class="pi pi-user"></i>
+              </div>
+              }
+            </div>
+            <div class="person-info">
+              <span class="person-name">{{ person.name }}</span>
+              <span class="person-index">#{{ person.index }}</span>
+            </div>
+          </button>
+          }
+        </div>
+        } @if (isMovieAttachment(store.attachments()![0])) {
         <div class="attachments-label">Films trouvés :</div>
         <div class="movie-attachments">
           @for (movie of store.attachments(); track movie.tmdbId || movie.localId) {
-          <a class="movie-card" [routerLink]="getMovieLink(movie)" (click)="onClose()">
+          <button
+            class="movie-card selectable"
+            [routerLink]="getMovieLink(movie)"
+            (click)="onClose()"
+          >
             <div class="movie-poster">
               @if (movie.posterPath) {
               <img [src]="imageService.getPosterUrl(movie.posterPath, 'w92')" [alt]="movie.title" />
@@ -121,9 +150,10 @@
               <span class="movie-year">{{ movie.year }}</span>
               }
             </div>
-          </a>
+          </button>
           }
         </div>
+        }
       </div>
     </div>
     } @if (store.loading()) {

@@ -29,27 +29,34 @@ public class PersonSeekerProperties
                                                 5) Be concise, clear, and conversational.
                                                 6) Ask for clarification when needed.
                                                 7) If the user message is a confirmation (e.g. “oui”, “c'est lui”, “yes”),
-                                                    you MUST reuse the identifier already present in `agentContext.additionalContext`.
+                                                    Check the `agentContext.additionalContext` for the right ids to use.
 
                                             STRICT OUTPUT FORMAT:
                                                 You must respond ONLY with a valid JSON object, with no text before or after:
                                                 {
                                                     "message": "text displayed to the user (IN FRENCH)",
-                                                    "additional_context": "string or null"
+                                                    "additional_context": "string or null",
+                                                    "attachments": <array or null>
                                                 }
+
+                                                - message: what the user reads (French).
+                                                - attachments MUST ALWAYS be either null OR an array of PersonCandidateAttachment objects with EXACT fields:
+                                                    {
+                                                        "index": <number>,
+                                                        "localId": <guid or null>,
+                                                        "tmdbId": <number or null>,
+                                                        "Name": <string>,
+                                                        "profilePath": <string or null>
+                                                    }
+                                                ⚠️ DO NOT include ANY other fields in attachments (no overview, no popularity, no voteAverage, etc.).
+                                                    If you include extra fields, the answer is considered invalid.
 
                                                 `additional_context` MUST ALWAYS be either:
                                                     - null
                                                 OR
                                                     - a SINGLE STRING using EXACTLY one of the following formats:
-                                                        - "tmdbPersonId=<number>"
-                                                        - "localPersonId=<guid>"
-                                                        - "tmdbPersonId=<number>;localPersonId=<guid>"
-                                                        - "candidates=<json-array>" Where <json-array> is a JSON array of up to 3 objects with EXACTLY these keys:
-                                                            - tmdbPersonId (number or null)
-                                                            - localPersonId (guid or null)
-                                                            - name (string)
-                                                            - profilePath (string or null)
+                                                        - "candidates=[1:tmdb:<id>|local:<guid>,2:tmdb:<id>|local:<guid>,3:tmdb:<id>|local:<guid>]"
+                                                        - "searchQuery=<string>"
 
                                             INTERACTION FLOW (MANDATORY):
 
@@ -66,10 +73,13 @@ public class PersonSeekerProperties
                                                         - STOP
 
                                                     b) MULTIPLE PERSONS FOUND
-                                                        - Ask a clarification question (max 3 options) and help the user identify (use profilePath via candidates)
+                                                        - Ask a clarification question (max 3 options) and help the user identify.
                                                         - Do NOT expose identifiers in the message
-                                                        - Set additional_context to:
-                                                            candidates=[{tmdbPersonId, localPersonId, name, profilePath}, ...] (max 3)
+                                                        - Set additional_context to the name requested by the user
+                                                        - Set attachments to an array of PersonCandidateAttachement:
+                                                            [{"index":1,"localId":"a1ca4fba-d2ec-11f0-9f61-1781c55f10dc","tmdbId":603,"name":"Keanu Reeves","profilePath":"/pEoqbqtLc4CcwDUDqxmEDSWpWTZ.jpg"},
+                                                            {"index":2,"localId":"a789da74-d2ec-11f0-9f61-03626da56217","tmdbId":604,"name":"Keanu Reeves","profilePath":"/...jpg"},
+                                                            ...]
                                                         - STOP
 
                                                     c) NO PERSON FOUND
@@ -78,7 +88,7 @@ public class PersonSeekerProperties
                                                         - STOP
 
                                                 3) USER CONFIRMS THE PERSON
-                                                    (e.g. "oui", "c'est lui", "yes")
+                                                    (e.g. "oui", "c'est lui", "yes", "Oui c'est bien lui", any other form of confirm message)
 
                                                     - Extract the chosen identifier from the previous candidates
                                                     - Set additional_context to the chosen id format (tmdbPersonId/localPersonId)
@@ -110,13 +120,13 @@ public class PersonSeekerProperties
 
                                                 Multiple matches:
                                                     {
-                                                        "message": "Plusieurs personnes correspondent à ce nom. Parles-tu de Robert Downey Jr. (acteur) ou d'une autre personne ?",
-                                                        "additional_context": null
-                                                    }
-
-                                                    {
                                                         "message": "J'ai trouvé plusieurs personnes. Laquelle cherches-tu ? (1) Robert Downey Jr. (2) Robert Downey Sr. (3) Robert Downey (autre)",
-                                                        "additional_context": "candidates=[{\"tmdbPersonId\":3223,\"localPersonId\":null,\"name\":\"Robert Downey Jr.\",\"profilePath\":\"/abc.jpg\"},{\"tmdbPersonId\":80550,\"localPersonId\":null,\"name\":\"Robert Downey Sr.\",\"profilePath\":\"/def.jpg\"},{\"tmdbPersonId\":12345,\"localPersonId\":null,\"name\":\"Robert Downey\",\"profilePath\":null}]"
+                                                        "additional_context": "candidates=[{tmdbPersonId:3223,localPersonId:null,name:"Robert Downey Jr"},{tmdbPersonId:80550,localPersonId:null,name:"Robert Downey Sr."},{tmdbPersonId:12345,localPersonId:null,name:"Robert Downey"}]",
+                                                        "attachments": [
+                                                            {"index":1,"localId":"a1ca4fba-d2ec-11f0-9f61-1781c55f10dc","tmdbId":603,"name":"Robert Downey Jr.","profilePath":"/pEoqbqtLc4CcwDUDqxmEDSWpWTZ.jpg"},
+                                                            {"index":2,"localId":null,"tmdbId":758,"name":"Robert Downey Sr.","profilePath":"/...jpg"},
+                                                            {"index":2,"localId":null,"tmdbId":12896,"name":"Robert Downey","profilePath":"/...jpg"},
+                                                        ]
                                                     }
 
                                                 No match:

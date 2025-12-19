@@ -39,32 +39,23 @@ export class AiChatStore {
     });
   }
 
-  sendMessage(text: string): void {
-    console.log('TEXT: ', text);
-    const content = (text ?? '').trim();
-    if (!content || this.loading()) return;
+  sendMessage(text: string, options?: { hidden?: boolean; displayAs?: string }): void {
+    const technicalContent = (text ?? '').trim();
+    if (!technicalContent || this.loading()) return;
 
-    console.log('CONTENT: ', content);
-
-    this.chatMessages.update((m) => [
-      ...m,
-      {
-        role: 'user',
-        content: content,
-      },
-    ]);
-
-    console.log('chatMessages: ', this.chatMessages());
-
-    this.loading.set(true);
+    const displayContent =
+      options?.hidden && options?.displayAs ? options.displayAs : technicalContent;
 
     const request: ChatRequest = {
-      messages: this.chatMessages().map((m) => ({ role: m.role, content: m.content })),
+      messages: [
+        ...this.chatMessages().map((m) => ({ role: m.role, content: m.content })),
+        { role: 'user', content: technicalContent },
+      ],
       agentContext: { additionalContext: this.additionalContext() },
     };
+    this.chatMessages.update((m) => [...m, { role: 'user', content: displayContent }]);
 
-    console.log('request: ', request);
-
+    this.loading.set(true);
     this.aiService.chat(request).subscribe({
       next: (result) => {
         this.chatMessages.update((m) => [...m, { role: 'assistant', content: result.message }]);
