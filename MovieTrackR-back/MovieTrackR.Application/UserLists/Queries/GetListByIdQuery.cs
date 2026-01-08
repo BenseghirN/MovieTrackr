@@ -9,12 +9,12 @@ using MovieTrackR.Application.Interfaces;
 namespace MovieTrackR.Application.UserLists.Queries;
 
 public sealed record GetListByIdQuery(CurrentUserDto currentUser, Guid ListId) : IRequest<UserListDetailsDto?>;
-public sealed class GetListByIdHandler(IMovieTrackRDbContext dbContext, IMapper mapper, ISender sender)
+public sealed class GetListByIdHandler(IMovieTrackRDbContext dbContext, IMapper mapper, IMediator mediator)
     : IRequestHandler<GetListByIdQuery, UserListDetailsDto?>
 {
     public async Task<UserListDetailsDto?> Handle(GetListByIdQuery query, CancellationToken cancellationToken)
     {
-        Guid userId = await sender.Send(new EnsureUserExistsCommand(query.currentUser), cancellationToken);
+        Guid userId = await mediator.Send(new EnsureUserExistsCommand(query.currentUser), cancellationToken);
 
         return await dbContext.UserLists
             .Where(l => l.Id == query.ListId && l.UserId == userId)

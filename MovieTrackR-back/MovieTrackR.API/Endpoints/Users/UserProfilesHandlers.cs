@@ -12,9 +12,9 @@ public static class UserProfilesHandlers
         return dto is null ? TypedResults.NotFound() : TypedResults.Ok(dto);
     }
 
-    public static async Task<IResult> GetListsByUser(Guid id, ISender sender, CancellationToken cancellationToken)
+    public static async Task<IResult> GetListsByUser(Guid id, IMediator mediator, CancellationToken cancellationToken)
     {
-        IReadOnlyList<UserListDto> result = await sender.Send(new GetListsByUserIdQuery(id), cancellationToken);
+        IReadOnlyList<UserListDto> result = await mediator.Send(new GetListsByUserIdQuery(id), cancellationToken);
         return TypedResults.Ok(result);
     }
 }

@@ -11,11 +11,11 @@ namespace MovieTrackR.Application.UserLists.Commands;
 
 public sealed record UpdateListCommand(CurrentUserDto currentUser, Guid ListId, string Title, string Description) : IRequest<UserListDto>;
 
-public sealed class UpdateListHandler(IMovieTrackRDbContext dbContext, IMapper mapper, ISender sender) : IRequestHandler<UpdateListCommand, UserListDto>
+public sealed class UpdateListHandler(IMovieTrackRDbContext dbContext, IMapper mapper, IMediator mediator) : IRequestHandler<UpdateListCommand, UserListDto>
 {
     public async Task<UserListDto> Handle(UpdateListCommand command, CancellationToken cancellationToken)
     {
-        Guid userId = await sender.Send(new EnsureUserExistsCommand(command.currentUser), cancellationToken);
+        Guid userId = await mediator.Send(new EnsureUserExistsCommand(command.currentUser), cancellationToken);
 
         UserList list = await dbContext.UserLists.FirstOrDefaultAsync(l => l.Id == command.ListId && l.UserId == userId, cancellationToken)
             ?? throw new NotFoundException("Userlist", command.ListId);
