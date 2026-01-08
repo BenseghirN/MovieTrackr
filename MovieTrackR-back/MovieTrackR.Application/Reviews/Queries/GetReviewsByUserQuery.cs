@@ -18,7 +18,7 @@ public sealed record GetReviewsByUserQuery(
     UserReviewSortOption Sort = UserReviewSortOption.Newest,
     int? RatingFilter = null) : IRequest<PagedResult<ReviewListItemDto>>;
 
-public sealed class GetReviewsByUserHandler(IMovieTrackRDbContext dbContext, IMapper mapper, ISender sender)
+public sealed class GetReviewsByUserHandler(IMovieTrackRDbContext dbContext, IMapper mapper, IMediator mediator)
     : IRequestHandler<GetReviewsByUserQuery, PagedResult<ReviewListItemDto>>
 {
     public async Task<PagedResult<ReviewListItemDto>> Handle(GetReviewsByUserQuery query, CancellationToken cancellationToken)
@@ -26,7 +26,7 @@ public sealed class GetReviewsByUserHandler(IMovieTrackRDbContext dbContext, IMa
         Guid? userId = null;
         if (query.CurrentUser is not null)
         {
-            userId = await sender.Send(new EnsureUserExistsCommand(query.CurrentUser), cancellationToken);
+            userId = await mediator.Send(new EnsureUserExistsCommand(query.CurrentUser), cancellationToken);
         }
 
         IQueryable<Review> baseSql = dbContext.Reviews

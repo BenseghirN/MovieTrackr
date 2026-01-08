@@ -10,12 +10,12 @@ namespace MovieTrackR.Application.UserLists.Commands;
 
 public sealed record ReorderListItemCommand(CurrentUserDto currentUser, Guid listId, Guid movieId, int newPosition) : IRequest;
 
-public sealed class ReorderListItemHandler(IMovieTrackRDbContext dbContext, ISender sender)
+public sealed class ReorderListItemHandler(IMovieTrackRDbContext dbContext, IMediator mediator)
     : IRequestHandler<ReorderListItemCommand>
 {
     public async Task Handle(ReorderListItemCommand command, CancellationToken cancellationToken)
     {
-        Guid userId = await sender.Send(new EnsureUserExistsCommand(command.currentUser), cancellationToken);
+        Guid userId = await mediator.Send(new EnsureUserExistsCommand(command.currentUser), cancellationToken);
 
         UserList list = await dbContext.UserLists
             .Include(l => l.Movies)

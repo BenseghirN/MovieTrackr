@@ -49,7 +49,7 @@ public class AddMovieToListHandlerTests
         db.Movies.Add(movie);
         await db.SaveChangesAsync();
 
-        Mock<ISender> sender = new Mock<ISender>();
+        Mock<IMediator> sender = new Mock<IMediator>();
         sender.Setup(s => s.Send(It.IsAny<EnsureUserExistsCommand>(), It.IsAny<CancellationToken>()))
               .ReturnsAsync(user.Id);
         sender.Setup(s => s.Send(It.IsAny<EnsureLocalMovieCommand>(), It.IsAny<CancellationToken>()))
@@ -90,13 +90,13 @@ public class AddMovieToListHandlerTests
 
         await db.SaveChangesAsync();
 
-        Mock<ISender> sender = new Mock<ISender>();
-        sender.Setup(s => s.Send(It.IsAny<EnsureUserExistsCommand>(), It.IsAny<CancellationToken>()))
+        Mock<IMediator> mediator = new Mock<IMediator>();
+        mediator.Setup(s => s.Send(It.IsAny<EnsureUserExistsCommand>(), It.IsAny<CancellationToken>()))
               .ReturnsAsync(user.Id);
-        sender.Setup(s => s.Send(It.IsAny<EnsureLocalMovieCommand>(), It.IsAny<CancellationToken>()))
+        mediator.Setup(s => s.Send(It.IsAny<EnsureLocalMovieCommand>(), It.IsAny<CancellationToken>()))
               .ReturnsAsync(movie.Id);
 
-        AddMovieToListHandler handler = new AddMovieToListHandler(dbAbs, sender.Object);
+        AddMovieToListHandler handler = new AddMovieToListHandler(dbAbs, mediator.Object);
 
         AddMovieToListCommand cmd = new AddMovieToListCommand(
             currentUser: FakeUser("ext-2", "x@test.dev"),
@@ -131,13 +131,13 @@ public class AddMovieToListHandlerTests
 
         await db.SaveChangesAsync();
 
-        Mock<ISender> sender = new Mock<ISender>();
-        sender.Setup(s => s.Send(It.IsAny<EnsureUserExistsCommand>(), It.IsAny<CancellationToken>()))
+        Mock<IMediator> mediator = new Mock<IMediator>();
+        mediator.Setup(s => s.Send(It.IsAny<EnsureUserExistsCommand>(), It.IsAny<CancellationToken>()))
               .ReturnsAsync(user.Id);
-        sender.Setup(s => s.Send(It.IsAny<EnsureLocalMovieCommand>(), It.IsAny<CancellationToken>()))
+        mediator.Setup(s => s.Send(It.IsAny<EnsureLocalMovieCommand>(), It.IsAny<CancellationToken>()))
               .ReturnsAsync(movie.Id);
 
-        AddMovieToListHandler handler = new AddMovieToListHandler(dbAbs, sender.Object);
+        AddMovieToListHandler handler = new AddMovieToListHandler(dbAbs, mediator.Object);
 
         AddMovieToListCommand cmd = new AddMovieToListCommand(
             currentUser: FakeUser("ext-3", "c@test.dev"),
@@ -170,13 +170,13 @@ public class AddMovieToListHandlerTests
 
         await db.SaveChangesAsync();
 
-        Mock<ISender> sender = new Mock<ISender>();
-        sender.Setup(s => s.Send(It.IsAny<EnsureUserExistsCommand>(), It.IsAny<CancellationToken>()))
+        Mock<IMediator> mediator = new Mock<IMediator>();
+        mediator.Setup(s => s.Send(It.IsAny<EnsureUserExistsCommand>(), It.IsAny<CancellationToken>()))
               .ReturnsAsync(Guid.NewGuid()); // ≠ owner.Id
-        sender.Setup(s => s.Send(It.IsAny<EnsureLocalMovieCommand>(), It.IsAny<CancellationToken>()))
+        mediator.Setup(s => s.Send(It.IsAny<EnsureLocalMovieCommand>(), It.IsAny<CancellationToken>()))
               .ReturnsAsync(movie.Id);
 
-        AddMovieToListHandler handler = new AddMovieToListHandler(dbAbs, sender.Object);
+        AddMovieToListHandler handler = new AddMovieToListHandler(dbAbs, mediator.Object);
 
         AddMovieToListCommand cmd = new AddMovieToListCommand(
             currentUser: FakeUser("intr-ext", "i@test.dev"),
@@ -212,11 +212,11 @@ public class AddMovieToListHandlerTests
         list.AddMovie(m1, 10);
         await db.SaveChangesAsync();
 
-        Mock<ISender> sender = new Mock<ISender>();
-        sender.Setup(s => s.Send(It.IsAny<EnsureUserExistsCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(user.Id);
-        sender.Setup(s => s.Send(It.IsAny<EnsureLocalMovieCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(m2.Id);
+        Mock<IMediator> mediator = new Mock<IMediator>();
+        mediator.Setup(s => s.Send(It.IsAny<EnsureUserExistsCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(user.Id);
+        mediator.Setup(s => s.Send(It.IsAny<EnsureLocalMovieCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(m2.Id);
 
-        AddMovieToListHandler handler = new AddMovieToListHandler(dbAbs, sender.Object);
+        AddMovieToListHandler handler = new AddMovieToListHandler(dbAbs, mediator.Object);
         AddMovieToListCommand cmd = new AddMovieToListCommand(new("ext-1", "u@test.dev", "UserTest", "User", "Test"),
             list.Id, m2.Id, null, 10);
 

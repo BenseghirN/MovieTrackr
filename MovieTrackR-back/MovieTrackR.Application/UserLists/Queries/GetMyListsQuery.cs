@@ -10,12 +10,12 @@ namespace MovieTrackR.Application.UserLists.Queries;
 
 public sealed record GetMyListsQuery(CurrentUserDto currentUser) : IRequest<IReadOnlyList<UserListDto>>;
 
-public sealed class GetMyListsHandler(IMovieTrackRDbContext dbContext, IMapper mapper, ISender sender)
+public sealed class GetMyListsHandler(IMovieTrackRDbContext dbContext, IMapper mapper, IMediator mediator)
     : IRequestHandler<GetMyListsQuery, IReadOnlyList<UserListDto>>
 {
     public async Task<IReadOnlyList<UserListDto>> Handle(GetMyListsQuery query, CancellationToken cancellationToken)
     {
-        Guid userId = await sender.Send(new EnsureUserExistsCommand(query.currentUser), cancellationToken);
+        Guid userId = await mediator.Send(new EnsureUserExistsCommand(query.currentUser), cancellationToken);
 
         return await dbContext.UserLists
             .Where(l => l.UserId == userId)

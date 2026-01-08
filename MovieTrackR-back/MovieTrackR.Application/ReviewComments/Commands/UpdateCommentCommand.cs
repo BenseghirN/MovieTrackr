@@ -11,12 +11,12 @@ namespace MovieTrackR.Application.ReviewComments.Commands;
 
 public sealed record UpdateCommentCommand(Guid ReviewId, Guid CommentId, CommentUpdateDto Dto, CurrentUserDto CurrentUser) : IRequest;
 
-public sealed class UpdateCommentHandler(IMovieTrackRDbContext dbContext, ISender sender)
+public sealed class UpdateCommentHandler(IMovieTrackRDbContext dbContext, IMediator mediator)
     : IRequestHandler<UpdateCommentCommand>
 {
     public async Task Handle(UpdateCommentCommand command, CancellationToken cancellationToken)
     {
-        Guid userId = await sender.Send(new EnsureUserExistsCommand(command.CurrentUser), cancellationToken);
+        Guid userId = await mediator.Send(new EnsureUserExistsCommand(command.CurrentUser), cancellationToken);
 
         ReviewComment comment = await dbContext.ReviewComments.FirstOrDefaultAsync(x => x.Id == command.CommentId && x.ReviewId == command.ReviewId, cancellationToken)
             ?? throw new NotFoundException("Comment not found.");

@@ -10,12 +10,12 @@ namespace MovieTrackR.Application.Reviews.Commands;
 
 public sealed record CreateReviewCommand(CreateReviewDto Review, CurrentUserDto CurrentUser) : IRequest<Guid>;
 
-public sealed class CreateReviewHandler(IMovieTrackRDbContext dbContext, IReviewContentSanitizer sanitizer, ISender sender)
+public sealed class CreateReviewHandler(IMovieTrackRDbContext dbContext, IReviewContentSanitizer sanitizer, IMediator mediator)
     : IRequestHandler<CreateReviewCommand, Guid>
 {
     public async Task<Guid> Handle(CreateReviewCommand command, CancellationToken cancellationToken)
     {
-        Guid userId = await sender.Send(new EnsureUserExistsCommand(command.CurrentUser), cancellationToken);
+        Guid userId = await mediator.Send(new EnsureUserExistsCommand(command.CurrentUser), cancellationToken);
 
         bool exists = await dbContext.Reviews
             .AnyAsync(r => r.UserId == userId && r.MovieId == command.Review.MovieId, cancellationToken);

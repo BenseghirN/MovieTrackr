@@ -10,12 +10,12 @@ namespace MovieTrackR.Application.ReviewComments.Commands;
 
 public sealed record CreateCommentCommand(Guid ReviewId, CommentCreateDto Dto, CurrentUserDto CurrentUser) : IRequest<Guid>;
 
-public sealed class CreateCommentHandler(IMovieTrackRDbContext dbContext, ISender sender)
+public sealed class CreateCommentHandler(IMovieTrackRDbContext dbContext, IMediator mediator)
     : IRequestHandler<CreateCommentCommand, Guid>
 {
     public async Task<Guid> Handle(CreateCommentCommand command, CancellationToken cancellationToken)
     {
-        Guid userId = await sender.Send(new EnsureUserExistsCommand(command.CurrentUser), cancellationToken);
+        Guid userId = await mediator.Send(new EnsureUserExistsCommand(command.CurrentUser), cancellationToken);
 
         bool reviewExists = await dbContext.Reviews.AnyAsync(r => r.Id == command.ReviewId, cancellationToken);
         if (!reviewExists) throw new NotFoundException("Review not found.");

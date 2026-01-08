@@ -10,12 +10,12 @@ namespace MovieTrackR.Application.ReviewLikes.Commands;
 
 public sealed record LikeReviewCommand(Guid ReviewId, CurrentUserDto CurrentUser) : IRequest;
 
-public sealed class LikeReviewHandler(IMovieTrackRDbContext dbContext, ISender sender)
+public sealed class LikeReviewHandler(IMovieTrackRDbContext dbContext, IMediator mediator)
     : IRequestHandler<LikeReviewCommand>
 {
     public async Task Handle(LikeReviewCommand command, CancellationToken cancellationToken)
     {
-        Guid userId = await sender.Send(new EnsureUserExistsCommand(command.CurrentUser), cancellationToken);
+        Guid userId = await mediator.Send(new EnsureUserExistsCommand(command.CurrentUser), cancellationToken);
 
         Review review = await dbContext.Reviews.AsNoTracking()
             .FirstOrDefaultAsync(r => r.Id == command.ReviewId, cancellationToken)

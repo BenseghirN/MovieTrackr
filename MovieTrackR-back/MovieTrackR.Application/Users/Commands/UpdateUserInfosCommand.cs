@@ -7,7 +7,7 @@ using MovieTrackR.Domain.Entities;
 
 public sealed record UpdateUserInfosCommand(Guid Id, CurrentUserDto CurrentUser, UserUpdateDto UpdatedInfos) : IRequest<PublicUserProfileDto>;
 
-internal sealed class UpdateUserInfosHandler(IMovieTrackRDbContext dbContext, IMapper mapper, ISender sender)
+internal sealed class UpdateUserInfosHandler(IMovieTrackRDbContext dbContext, IMapper mapper, IMediator mediator)
     : IRequestHandler<UpdateUserInfosCommand, PublicUserProfileDto>
 {
     public async Task<PublicUserProfileDto> Handle(UpdateUserInfosCommand command, CancellationToken cancellationToken)
@@ -15,7 +15,7 @@ internal sealed class UpdateUserInfosHandler(IMovieTrackRDbContext dbContext, IM
         User user = await dbContext.Users.FindAsync([command.Id], cancellationToken)
             ?? throw new KeyNotFoundException("User not found");
 
-        Guid userId = await sender.Send(new EnsureUserExistsCommand(command.CurrentUser), cancellationToken);
+        Guid userId = await mediator.Send(new EnsureUserExistsCommand(command.CurrentUser), cancellationToken);
 
         if (user.Id != userId) throw new UnauthorizedAccessException("You are not allowed to update this user.");
 

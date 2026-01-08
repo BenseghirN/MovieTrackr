@@ -10,12 +10,12 @@ namespace MovieTrackR.Application.Reviews.Commands;
 
 public sealed record DeleteReviewCommand(Guid ReviewId, CurrentUserDto CurrentUser) : IRequest;
 
-public sealed class DeleteReviewHandler(IMovieTrackRDbContext dbContext, ISender sender)
+public sealed class DeleteReviewHandler(IMovieTrackRDbContext dbContext, IMediator mediator)
     : IRequestHandler<DeleteReviewCommand>
 {
     public async Task Handle(DeleteReviewCommand command, CancellationToken cancellationToken)
     {
-        Guid userId = await sender.Send(new EnsureUserExistsCommand(command.CurrentUser), cancellationToken);
+        Guid userId = await mediator.Send(new EnsureUserExistsCommand(command.CurrentUser), cancellationToken);
 
         Review review = await dbContext.Reviews.FirstOrDefaultAsync(r => r.Id == command.ReviewId, cancellationToken)
             ?? throw new NotFoundException("Review not found.");
