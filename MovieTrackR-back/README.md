@@ -11,21 +11,6 @@
 
 ---
 
-## 📋 Table des matières
-
-- [Architecture](#-architecture)
-- [Structure du projet](#-structure-du-projet)
-- [Technologies](#-technologies)
-- [Patterns et principes](#-patterns-et-principes)
-- [Configuration](#-configuration)
-- [Endpoints API](#-endpoints-api)
-- [Intelligence artificielle](#-intelligence-artificielle)
-- [Base de données](#-base-de-données)
-- [Tests](#-tests)
-- [Déploiement](#-déploiement)
-
----
-
 ## 🏗️ Architecture
 
 Le backend suit les principes de **Clean Architecture** avec une séparation stricte en couches concentriques :
