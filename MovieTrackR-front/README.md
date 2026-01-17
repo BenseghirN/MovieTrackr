@@ -1,59 +1,209 @@
-# MovieTrackRFront
+# 🎨 MovieTrackR - Frontend Application
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.10.
+[![Angular](https://img.shields.io/badge/Angular-20-DD0031?logo=angular)](https://angular.io/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)](https://www.typescriptlang.org/)
+[![PrimeNG](https://img.shields.io/badge/PrimeNG-20-40B983)](https://primeng.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-22-339933?logo=nodedotjs)](https://nodejs.org/)
 
-## Development server
+> Application web SPA moderne construite avec Angular 20, implémentant Signals, lazy loading, et un design system cinématique.
 
-To start a local development server, run:
+---
 
-```bash
-ng serve
+## 🏗️ Architecture
+
+Le frontend suit une architecture **feature-based** modulaire avec séparation claire des responsabilités :
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        Presentation Layer                       │
+│  • Components (Smart & Presentational)                          │
+│  • Templates & Styling                                          │
+│  • User Interactions                                            │
+└────────────────────┬────────────────────────────────────────────┘
+                     │ Data Binding (Signals)
+┌────────────────────┴────────────────────────────────────────────┐
+│                       Services Layer                            │
+│  • HTTP Services (API Communication)                            │
+│  • State Management Services                                    │
+│  • Authentication Service                                       │
+│  • Business Logic Services                                      │
+└────────────────────┬────────────────────────────────────────────┘
+                     │ HTTP Interceptors
+┌────────────────────┴────────────────────────────────────────────┐
+│                    Infrastructure Layer                         │
+│  • HTTP Client                                                  │
+│  • Router                                                       │
+│  • Guards & Interceptors                                        │
+│  • Environment Configuration                                    │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+### Flux de données
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+```
+User Action
+    ↓
+Component (Signal/Event)
+    ↓
+Service Method
+    ↓
+HTTP Request → Backend API
+    ↓
+Observable Stream
+    ↓
+Signal Update
+    ↓
+Template Re-render
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+---
 
-```bash
-ng generate --help
+## 📁 Structure du projet
+
 ```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
+src/
+├── 📂 app/
+│   ├── 📂 core/                                            # Singletons & core functionality
+│   │   ├── 📂 guards/
+│   │   │   ├── 📜 admin.guard.ts
+│   │   │   └── 📜 auth.guard.ts
+│   │   ├── 📂 interceptors/
+│   │   │   ├── 📜 auth.interceptor.ts
+│   │   │   └── 📜 error.interceptor.ts
+│   │   ├── 📂 services/
+│   │   │   ├── 📜 api.service.ts
+│   │   │   ├── 📜 auth.service.ts
+│   │   │   └── 📜 ...
+│   │   └── 📂 models/
+│   │       ├── 📜 api-error.model.ts
+│   │       ├── 📜 genre.model.ts
+│   │       ├── 📜 notification.model.ts
+│   │       └── 📜 paginated-result.model.ts
+│   │
+│   ├── 📂 features/                                        # Feature modules
+│   │   ├── 📂 movies/
+│   │   │   ├── 📂 components/
+│   │   │   │   └── 📂 movie-card/
+│   │   │   │       ├── 📜 movie-card.component.ts
+│   │   │   │       ├── 📜 movie-card.component.html
+│   │   │   │       └── 📜 movie-card.component.scss
+│   │   │   ├── 📂 pages/
+│   │   │   │   ├── 📂 movie-details/
+│   │   │   │   └── 📂 movies/
+│   │   │   ├── 📂 services/
+│   │   │   │   └── 📜 movie.service.ts
+│   │   │   └── 📂 models/
+│   │   │       ├── 📜 movie-details.model.ts
+│   │   │       ├── 📜 movie.model.ts
+│   │   │       └── 📜 streaming-offers.model.ts
+│   │   │
+│   │   ├── 📂 reviews/
+│   │   │   ├── 📂 components/
+│   │   │   │   ├── 📂 comments-modal/
+│   │   │   │   ├── 📂 movie-reviews/
+│   │   │   │   ├── 📂 review-card/
+│   │   │   │   └── 📂 review-form-modal/
+│   │   │   ├── 📂 services/
+│   │   │   │   ├── 📜 review.service.ts
+│   │   │   │   └── 📜 ...
+│   │   │   └── 📂 models/
+│   │   │       └── 📜 review.model.ts
+│   │   ├── 📂 ai/
+│   │   │   ├── 📂 components/
+│   │   │   │   └── 📂 ai-chat-widget/
+│   │   │   ├── 📂 models/
+│   │   │   │   └── 📜 chat-request.model.ts
+│   │   │   ├── 📂 services/
+│   │   │   │   └── 📜 ai.service.ts
+│   │   │   └── 📂 store/
+│   │   │       └── 📜 ai.service.ts
+│   │   └── 📂 ...
+│   │
+│   ├── 📂 shared/                                          # Shared components & utilities
+│   │   ├── 📂 components/
+│   │   │   ├── 📂 layout/
+│   │   │   │   ├── 📂 footer/
+│   │   │   │   └── 📂 header/
+│   │   │   └── 📂 toast/
+│   │   ├── 📂 pages/
+│   │   │   ├── 📂 forbidden/
+│   │   │   └── 📂 not-found
+│   │   └── 📂 pipes/
+│   │       └── 📜 safe-url.pipe.ts
+│   │
+│   ├── 📜 app.config.ts                                    # Application configuration
+│   ├── 📜 app.html                                         # Application html
+│   ├── 📜 app.routes.ts                                    # Application routing
+│   ├── 📜 app.scss                                         # Application style
+│   └── 📜 app.ts                                           # Root component
+│
+├── 📂 assets/
+│   └── 📂 images/
+│
+├── 📂 environments/
+│   ├── 📜 environment.ts                                   # Development config
+│   └── 📜 environment.prod.ts                              # Production config
+│
+├──📜 index.html                                            # 
+├──📜 main.ts                                               # 
+└──📜 styles.scss                                           # 
 ```
+---
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## 🛠️ Technologies
 
-## Running unit tests
+### Core Framework
+- **Angular 20** - Framework SPA avec signals
+- **TypeScript 5** - Superset typé de JavaScript
+- **RxJS 7** - Programmation réactive
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+### UI Components & Styling
+- **PrimeNG 20** - Bibliothèque de composants UI riche
+- **PrimeIcons** - Set d'icônes intégré
+- **SCSS** - Préprocesseur CSS avec variables et mixins
+- **CSS Grid & Flexbox** - Layout moderne responsive
 
-```bash
-ng test
-```
+### State Management
+- **Angular Signals** - Gestion d'état réactive native
+- **RxJS BehaviorSubject** - State management patterns
 
-## Running end-to-end tests
+### HTTP & Communication
+- **HttpClient** - Client HTTP natif Angular
+- **Interceptors** - Middleware HTTP pour auth/errors
 
-For end-to-end (e2e) testing, run:
+### Routing & Navigation
+- **Angular Router** - Routing avec lazy loading
+- **Route Guards** - Protection des routes
 
-```bash
-ng e2e
-```
+### Forms & Validation
+- **Reactive Forms** - Formulaires typés et réactifs
+- **Template-driven Forms** - Formulaires simples
+- **Custom Validators** - Validation métier
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+### Build & Tooling
+- **Angular CLI** - Outillage de développement
+- **TypeScript Compiler** - Compilation TypeScript
+- **Webpack** - Bundling (via Angular CLI)
+- **ESLint** - Linting TypeScript/JavaScript
+- **Prettier** - Formatage de code
 
-## Additional Resources
+---
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## 📚 Ressources
+
+### Documentation officielle
+- [Angular Documentation](https://angular.dev/)
+- [Angular Signals](https://angular.dev/guide/signals)
+- [PrimeNG Components](https://primeng.org/)
+- [RxJS Documentation](https://rxjs.dev/)
+
+### Guides et références
+- [Angular Style Guide](https://angular.dev/style-guide)
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
+- [SCSS Documentation](https://sass-lang.com/documentation)
+
+---
+
+<div align="center">
+  <sub>Built with ❤️ using Angular 20 and modern web standards</sub>
+</div>
