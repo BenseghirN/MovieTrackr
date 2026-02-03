@@ -414,6 +414,7 @@ $breakpoint-xs: 576px;
   padding: 0.5rem;
   cursor: pointer;
   transition: $transition-smooth;
+  max-width: 200px;
 
   &:hover {
     .movie-poster img {
@@ -563,6 +564,9 @@ $breakpoint-xs: 576px;
 
   .p-carousel-item {
     padding: 0 0.25rem;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    max-width: 200px;
   }
 
   .p-carousel-prev,
